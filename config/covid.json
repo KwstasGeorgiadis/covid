@@ -2,6 +2,9 @@
 	"server" : {
 		"port" : ":9080"
 	},
+	"API" : {
+		"url" : "https://corona.lmao.ninja/countries?sort=country"
+	},
 	"redis" : {
 		"namespace" 	: "resque:",
 		"concurrency"	: 2,

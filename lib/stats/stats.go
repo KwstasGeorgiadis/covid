@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	pconf "../config"
 )
 
 type Country struct {
@@ -19,12 +20,18 @@ type Country struct {
 	CasesPerOneMillion float64 `json:"casesPerOneMillion"`
 }
 
+type Countries struct {
+	Data	[]Country  `json:"data"`
+}
+
+var (
+	serverConf = pconf.GetAppConfig("./config/covid.json")
+)
+
 func requestData() []Country {
-	url := "https://corona.lmao.ninja/countries?sort=country"
-	method := "GET"
 
 	client := &http.Client{}
-	req, err := http.NewRequest(method, url, nil)
+	req, err := http.NewRequest("GET", serverConf.API.URL, nil)
 
 	if err != nil {
 		fmt.Println(err)
@@ -42,8 +49,9 @@ func requestData() []Country {
 	return keys
 }
 
-func GetAllCountries() []Country {
-	return requestData()
+func GetAllCountries() Countries {
+	s := Countries{Data:  requestData()}
+	return s
 }
 
 func GetCountry(name string) Country {

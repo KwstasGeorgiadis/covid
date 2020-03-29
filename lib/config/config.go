@@ -16,6 +16,9 @@ import (
 		"server" : {
 			"port" : ":6660"
 		},
+		"API" : {
+			"url" : "https://corona.lmao.ninja/countries?sort=country"
+		},
 		"redis" : {
 			"namespace" 	: "resque:",
 			"concurrency"	: 2,
@@ -26,8 +29,13 @@ import (
 */
 
 type AppConf struct {
-	Server ServerConfig  	`json:"server"`
-	Redis  RedisConfig   	`json:"redis"`
+	Server ServerConfig `json:"server"`
+	API    APIConfig    `json:"API"`
+	Redis  RedisConfig  `json:"redis"`
+}
+
+type APIConfig struct {
+	URL string `json:"url"`
 }
 
 type ServerConfig struct {
@@ -39,7 +47,7 @@ type RedisConfig struct {
 	Namespace   string   `json:"namespace"`
 	Concurrency int      `json:"concurrency"`
 	Queues      []string `json:"queues"`
-	Name		string   `json:"name"`
+	Name        string   `json:"name"`
 }
 
 /*
