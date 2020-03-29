@@ -11,6 +11,7 @@ import (
 
 	countriesCon "./controller/countries"
 	countryCon "./controller/country"
+	sortCon "./controller/sort"
 	pconf "./lib/config"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -96,6 +97,15 @@ func countries(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 }
 
+func sort(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	jsonBody, status := sortCon.Perform(r)
+	w.WriteHeader(status)
+	w.Write(jsonBody)
+}
+
 func main() {
 	router := mux.NewRouter().StrictSlash(true)
 
@@ -103,6 +113,7 @@ func main() {
 
 	router.HandleFunc("/country", country).Methods("POST")
 	router.HandleFunc("/countries", countries).Methods("GET")
+	router.HandleFunc("/sort", sort).Methods("POST")
 
 	c := cors.New(cors.Options{
 		AllowCredentials: true,

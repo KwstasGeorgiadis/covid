@@ -1,12 +1,17 @@
 package stats
 
 import (
+	pconf "../config"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	pconf "../config"
+	"sort"
 )
+
+type Countries struct {
+	Data []Country `json:"data"`
+}
 
 type Country struct {
 	Country            string  `json:"country"`
@@ -18,10 +23,6 @@ type Country struct {
 	Active             int     `json:"active"`
 	Critical           int     `json:"critical"`
 	CasesPerOneMillion float64 `json:"casesPerOneMillion"`
-}
-
-type Countries struct {
-	Data	[]Country  `json:"data"`
 }
 
 var (
@@ -50,7 +51,7 @@ func requestData() []Country {
 }
 
 func GetAllCountries() Countries {
-	s := Countries{Data:  requestData()}
+	s := Countries{Data: requestData()}
 	return s
 }
 
@@ -64,4 +65,92 @@ func GetCountry(name string) Country {
 	}
 
 	return Country{}
+}
+
+func SortByCases() Countries {
+	allCountries := requestData()
+
+	sort.Slice(allCountries, func(i, j int) bool {
+		return allCountries[i].Cases > allCountries[j].Cases
+	})
+
+	s := Countries{Data: allCountries}
+	return s
+}
+
+func SortByDeaths() Countries {
+	allCountries := requestData()
+
+	sort.Slice(allCountries, func(i, j int) bool {
+		return allCountries[i].Deaths > allCountries[j].Deaths
+	})
+
+	s := Countries{Data: allCountries}
+	return s
+}
+
+func SortByTodayCases() Countries {
+	allCountries := requestData()
+
+	sort.Slice(allCountries, func(i, j int) bool {
+		return allCountries[i].TodayCases > allCountries[j].TodayCases
+	})
+
+	s := Countries{Data: allCountries}
+	return s
+}
+
+func SortByTodayDeaths() Countries {
+	allCountries := requestData()
+
+	sort.Slice(allCountries, func(i, j int) bool {
+		return allCountries[i].TodayDeaths > allCountries[j].TodayDeaths
+	})
+
+	s := Countries{Data: allCountries}
+	return s
+}
+
+func SortByRecovered() Countries {
+	allCountries := requestData()
+
+	sort.Slice(allCountries, func(i, j int) bool {
+		return allCountries[i].Recovered > allCountries[j].Recovered
+	})
+
+	s := Countries{Data: allCountries}
+	return s
+}
+
+func SortByActive() Countries {
+	allCountries := requestData()
+
+	sort.Slice(allCountries, func(i, j int) bool {
+		return allCountries[i].Active > allCountries[j].Active
+	})
+
+	s := Countries{Data: allCountries}
+	return s
+}
+
+func SortByCritical() Countries {
+	allCountries := requestData()
+
+	sort.Slice(allCountries, func(i, j int) bool {
+		return allCountries[i].Critical > allCountries[j].Critical
+	})
+
+	s := Countries{Data: allCountries}
+	return s
+}
+
+func SortByCasesPerOneMillion() Countries {
+	allCountries := requestData()
+
+	sort.Slice(allCountries, func(i, j int) bool {
+		return allCountries[i].CasesPerOneMillion > allCountries[j].CasesPerOneMillion
+	})
+
+	s := Countries{Data: allCountries}
+	return s
 }
