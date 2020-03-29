@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"net/http"
 
+	statisticsCon "./controller/statistics"
+
 	countriesCon "./controller/countries"
 	countryCon "./controller/country"
 	sortCon "./controller/sort"
@@ -106,6 +108,15 @@ func sort(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 }
 
+func statistics(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	jsonBody, status := statisticsCon.Perform(r)
+	w.WriteHeader(status)
+	w.Write(jsonBody)
+}
+
 func main() {
 	router := mux.NewRouter().StrictSlash(true)
 
@@ -114,6 +125,7 @@ func main() {
 	router.HandleFunc("/country", country).Methods("POST")
 	router.HandleFunc("/countries", countries).Methods("GET")
 	router.HandleFunc("/sort", sort).Methods("POST")
+	router.HandleFunc("/stats", statistics).Methods("POST")
 
 	c := cors.New(cors.Options{
 		AllowCredentials: true,

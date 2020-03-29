@@ -154,3 +154,20 @@ func SortByCasesPerOneMillion() Countries {
 	s := Countries{Data: allCountries}
 	return s
 }
+
+type CountryStats struct {
+	Country                   string `json:"country"`
+	TodayPerCentOfTotalCases  int    `json:"todayPerCentOfTotalCases"`
+	TodayPerCentOfTotalDeaths int    `json:"todayPerCentOfTotalDeaths"`
+}
+
+func StatsPerCountry(name string) CountryStats {
+	country := GetCountry(name)
+
+	var todayPerCentOfTotalCases = country.TodayCases * 100 / country.Cases
+	var todayPerCentOfTotalDeaths = country.TodayDeaths * 100 / country.Deaths
+
+	return CountryStats{Country: country.Country,
+		TodayPerCentOfTotalCases:  todayPerCentOfTotalCases,
+		TodayPerCentOfTotalDeaths: todayPerCentOfTotalDeaths}
+}
