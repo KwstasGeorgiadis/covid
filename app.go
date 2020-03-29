@@ -13,8 +13,11 @@ import (
 
 	countriesCon "./controller/countries"
 	countryCon "./controller/country"
+	totalStatisticsCon "./controller/totalStatistics"
+
 	sortCon "./controller/sort"
 	pconf "./lib/config"
+	//db "./lib/db"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 )
@@ -116,16 +119,25 @@ func statistics(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(status)
 	w.Write(jsonBody)
 }
+func totalStatistics(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	jsonBody, status := totalStatisticsCon.Perform()
+	w.WriteHeader(status)
+	w.Write(jsonBody)
+}
 
 func main() {
 	router := mux.NewRouter().StrictSlash(true)
-
+	//db.Save()
 	fmt.Println("server running at port " + serverConf.Server.Port)
 
 	router.HandleFunc("/country", country).Methods("POST")
 	router.HandleFunc("/countries", countries).Methods("GET")
 	router.HandleFunc("/sort", sort).Methods("POST")
 	router.HandleFunc("/stats", statistics).Methods("POST")
+	router.HandleFunc("/total", totalStatistics).Methods("GET")
 
 	c := cors.New(cors.Options{
 		AllowCredentials: true,

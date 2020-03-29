@@ -171,3 +171,40 @@ func StatsPerCountry(name string) CountryStats {
 		TodayPerCentOfTotalCases:  todayPerCentOfTotalCases,
 		TodayPerCentOfTotalDeaths: todayPerCentOfTotalDeaths}
 }
+
+type TotalStats struct {
+	TodayPerCentOfTotalCases  int `json:"todayPerCentOfTotalCases"`
+	TodayPerCentOfTotalDeaths int `json:"todayPerCentOfTotalDeaths"`
+	TotalCases                int `json:"totalCases"`
+	TotalDeaths               int `json:"totalDeaths"`
+	TodayTotalCases           int `json:"todayTotalCases"`
+	TodayTotalDeaths          int `json:"todayTotalDeaths"`
+}
+
+func GetTotalStats() TotalStats {
+	var totalDeaths = 0
+	var totalCases = 0
+	var todayTotalDeaths = 0
+	var todayTotalCases = 0
+
+	allCountries := requestData()
+
+	for _, v := range allCountries {
+		totalDeaths = totalDeaths + v.Deaths
+		totalCases = totalCases + v.Cases
+		todayTotalDeaths = todayTotalDeaths + v.TodayDeaths
+		todayTotalCases = todayTotalCases + v.TodayCases
+	}
+
+	var todayPerCentOfTotalCases = todayTotalDeaths * 100 / totalDeaths
+	var todayPerCentOfTotalDeaths = todayTotalCases * 100 / totalCases
+
+	return TotalStats{
+		TodayPerCentOfTotalCases:  todayPerCentOfTotalCases,
+		TodayPerCentOfTotalDeaths: todayPerCentOfTotalDeaths,
+		TotalCases:                totalCases,
+		TotalDeaths:               totalDeaths,
+		TodayTotalCases:           todayTotalCases,
+		TodayTotalDeaths:          todayTotalDeaths,
+	}
+}
