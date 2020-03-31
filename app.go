@@ -17,7 +17,7 @@ import (
 
 	sortCon "./controller/sort"
 	pconf "./lib/config"
-	//db "./lib/db"
+	//curve "./lib/curve"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 )
@@ -103,7 +103,6 @@ func countries(w http.ResponseWriter, r *http.Request) {
 }
 
 func sort(w http.ResponseWriter, r *http.Request) {
-
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	jsonBody, status := sortCon.Perform(r)
@@ -120,7 +119,6 @@ func statistics(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 }
 func totalStatistics(w http.ResponseWriter, r *http.Request) {
-
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	jsonBody, status := totalStatisticsCon.Perform()
@@ -130,7 +128,9 @@ func totalStatistics(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	router := mux.NewRouter().StrictSlash(true)
-	//db.Save()
+	//fmt.Println(curve.GetDataByDate("3/29/20"))
+	//fmt.Println(curve.GetCountry("Greece"))
+	//curve.DeathsPercentByDay("China")
 	fmt.Println("server running at port " + serverConf.Server.Port)
 
 	router.HandleFunc("/country", country).Methods("POST")

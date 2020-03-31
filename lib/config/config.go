@@ -35,7 +35,8 @@ type AppConf struct {
 }
 
 type APIConfig struct {
-	URL string `json:"url"`
+	URL         string `json:"url"`
+	URL_history string `json:"url_historical"`
 }
 
 type ServerConfig struct {

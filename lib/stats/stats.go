@@ -71,7 +71,11 @@ func SortByCases() Countries {
 	allCountries := requestData()
 
 	sort.Slice(allCountries, func(i, j int) bool {
-		return allCountries[i].Cases > allCountries[j].Cases
+		if allCountries[i].Cases != allCountries[j].Cases {
+			return allCountries[i].Cases > allCountries[j].Cases
+		} else {
+			return allCountries[i].Deaths > allCountries[j].Deaths
+		}
 	})
 
 	s := Countries{Data: allCountries}
@@ -82,7 +86,11 @@ func SortByDeaths() Countries {
 	allCountries := requestData()
 
 	sort.Slice(allCountries, func(i, j int) bool {
-		return allCountries[i].Deaths > allCountries[j].Deaths
+		if allCountries[i].Deaths != allCountries[j].Deaths {
+			return allCountries[i].Deaths > allCountries[j].Deaths
+		} else {
+			return allCountries[i].Cases > allCountries[j].Cases
+		}
 	})
 
 	s := Countries{Data: allCountries}

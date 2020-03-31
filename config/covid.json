@@ -3,7 +3,8 @@
 		"port" : ":9080"
 	},
 	"API" : {
-		"url" : "https://corona.lmao.ninja/countries?sort=country"
+		"url" : "https://corona.lmao.ninja/countries?sort=country",
+		"url_historical" : "https://corona.lmao.ninja/v2/historical"
 	},
 	"redis" : {
 		"namespace" 	: "resque:",
