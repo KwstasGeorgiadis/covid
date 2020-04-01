@@ -1,35 +1,22 @@
 package stats
 
 import (
-	pconf "../config"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"sort"
+
+	caching "../caching"
+	pconf "../config"
+	structs "../structs"
 )
-
-type Countries struct {
-	Data []Country `json:"data"`
-}
-
-type Country struct {
-	Country            string  `json:"country"`
-	Cases              int     `json:"cases"`
-	TodayCases         int     `json:"todayCases"`
-	Deaths             int     `json:"deaths"`
-	TodayDeaths        int     `json:"todayDeaths"`
-	Recovered          int     `json:"recovered"`
-	Active             int     `json:"active"`
-	Critical           int     `json:"critical"`
-	CasesPerOneMillion float64 `json:"casesPerOneMillion"`
-}
 
 var (
 	serverConf = pconf.GetAppConfig("./config/covid.json")
 )
 
-func requestData() []Country {
+func requestData() []structs.Country {
 
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", serverConf.API.URL, nil)
@@ -42,7 +29,7 @@ func requestData() []Country {
 	b, _ := ioutil.ReadAll(res.Body)
 
 	//var obj Countries
-	keys := make([]Country, 0)
+	keys := make([]structs.Country, 0)
 	if err := json.Unmarshal(b, &keys); err != nil {
 		panic(err)
 	}
@@ -50,12 +37,28 @@ func requestData() []Country {
 	return keys
 }
 
-func GetAllCountries() Countries {
-	s := Countries{Data: requestData()}
+func GetAllCountries() structs.Countries {
+	pool := caching.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
+
+	cachedData, _ := caching.Get(conn)
+	fmt.Println(cachedData)
+
+	var s structs.Countries
+
+	if len(cachedData.Data) == 0 {
+		n := requestData()
+		s = structs.Countries{Data: n}
+		caching.Set(conn, s)
+	} else {
+		return cachedData
+	}
+
 	return s
 }
 
-func GetCountry(name string) Country {
+func GetCountry(name string) structs.Country {
 	allCountries := requestData()
 
 	for _, v := range allCountries {
@@ -64,10 +67,10 @@ func GetCountry(name string) Country {
 		}
 	}
 
-	return Country{}
+	return structs.Country{}
 }
 
-func SortByCases() Countries {
+func SortByCases() structs.Countries {
 	allCountries := requestData()
 
 	sort.Slice(allCountries, func(i, j int) bool {
@@ -78,11 +81,11 @@ func SortByCases() Countries {
 		}
 	})
 
-	s := Countries{Data: allCountries}
+	s := structs.Countries{Data: allCountries}
 	return s
 }
 
-func SortByDeaths() Countries {
+func SortByDeaths() structs.Countries {
 	allCountries := requestData()
 
 	sort.Slice(allCountries, func(i, j int) bool {
@@ -93,73 +96,73 @@ func SortByDeaths() Countries {
 		}
 	})
 
-	s := Countries{Data: allCountries}
+	s := structs.Countries{Data: allCountries}
 	return s
 }
 
-func SortByTodayCases() Countries {
+func SortByTodayCases() structs.Countries {
 	allCountries := requestData()
 
 	sort.Slice(allCountries, func(i, j int) bool {
 		return allCountries[i].TodayCases > allCountries[j].TodayCases
 	})
 
-	s := Countries{Data: allCountries}
+	s := structs.Countries{Data: allCountries}
 	return s
 }
 
-func SortByTodayDeaths() Countries {
+func SortByTodayDeaths() structs.Countries {
 	allCountries := requestData()
 
 	sort.Slice(allCountries, func(i, j int) bool {
 		return allCountries[i].TodayDeaths > allCountries[j].TodayDeaths
 	})
 
-	s := Countries{Data: allCountries}
+	s := structs.Countries{Data: allCountries}
 	return s
 }
 
-func SortByRecovered() Countries {
+func SortByRecovered() structs.Countries {
 	allCountries := requestData()
 
 	sort.Slice(allCountries, func(i, j int) bool {
 		return allCountries[i].Recovered > allCountries[j].Recovered
 	})
 
-	s := Countries{Data: allCountries}
+	s := structs.Countries{Data: allCountries}
 	return s
 }
 
-func SortByActive() Countries {
+func SortByActive() structs.Countries {
 	allCountries := requestData()
 
 	sort.Slice(allCountries, func(i, j int) bool {
 		return allCountries[i].Active > allCountries[j].Active
 	})
 
-	s := Countries{Data: allCountries}
+	s := structs.Countries{Data: allCountries}
 	return s
 }
 
-func SortByCritical() Countries {
+func SortByCritical() structs.Countries {
 	allCountries := requestData()
 
 	sort.Slice(allCountries, func(i, j int) bool {
 		return allCountries[i].Critical > allCountries[j].Critical
 	})
 
-	s := Countries{Data: allCountries}
+	s := structs.Countries{Data: allCountries}
 	return s
 }
 
-func SortByCasesPerOneMillion() Countries {
+func SortByCasesPerOneMillion() structs.Countries {
 	allCountries := requestData()
 
 	sort.Slice(allCountries, func(i, j int) bool {
 		return allCountries[i].CasesPerOneMillion > allCountries[j].CasesPerOneMillion
 	})
 
-	s := Countries{Data: allCountries}
+	s := structs.Countries{Data: allCountries}
 	return s
 }
 

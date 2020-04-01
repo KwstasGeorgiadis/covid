@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	stats "../../lib/stats"
+	structs "../../lib/structs"
 )
 
 type SortRequest struct {
@@ -25,7 +26,7 @@ func Perform(r *http.Request) ([]byte, int) {
 	json.Unmarshal(b, &sortRequest)
 
 	sortType := sortRequest.Type
-	var countries stats.Countries
+	var countries structs.Countries
 
 	switch sortType {
 	case "deaths":
