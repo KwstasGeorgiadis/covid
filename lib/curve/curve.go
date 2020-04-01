@@ -4,6 +4,7 @@ import (
 	"sort"
 
 	pconf "../config"
+	structs "../structs"
 
 	"encoding/json"
 	"fmt"
@@ -128,7 +129,32 @@ func DeathsPercentByDay(name string) {
 			fmt.Println(100 * ((float64(xs[i]) - float64(xs[i-1])) / float64(xs[i-1])))
 		}
 	}
-	//if
-	//}
+}
 
+func CompareDeathsCountries(nameOne string, nameTwo string) structs.Compare {
+
+	country := GetCountry(nameOne)
+	countryTwo := GetCountry(nameTwo)
+
+	var countrySortedDeath []float64
+	var countryTwoSortedDeath []float64
+
+	for _, v := range country.Timeline.Deaths.(map[string]interface{}) {
+		countrySortedDeath = append(countrySortedDeath, v.(float64))
+	}
+	for _, v := range countryTwo.Timeline.Deaths.(map[string]interface{}) {
+		countryTwoSortedDeath = append(countryTwoSortedDeath, v.(float64))
+	}
+	sort.Float64s(countrySortedDeath)
+	sort.Float64s(countryTwoSortedDeath)
+
+	var countryOneStruct structs.CompareData
+	var countryTwoStruct structs.CompareData
+
+	countryOneStruct.Country = nameOne
+	countryOneStruct.Data = countrySortedDeath
+	countryTwoStruct.Country = nameTwo
+	countryTwoStruct.Data = countryTwoSortedDeath
+
+	return structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
 }

@@ -15,3 +15,13 @@ type Country struct {
 	Critical           int     `json:"critical"`
 	CasesPerOneMillion float64 `json:"casesPerOneMillion"`
 }
+
+type Compare struct {
+	CountryOne CompareData `json:"countryOne"`
+	CountryTwo CompareData `json:"countryTwo"`
+}
+
+type CompareData struct {
+	Country string    `json:"country"`
+	Data    []float64 `json:"data"`
+}

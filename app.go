@@ -14,10 +14,11 @@ import (
 	countriesCon "./controller/countries"
 	countryCon "./controller/country"
 	totalStatisticsCon "./controller/totalStatistics"
+	compare "./controller/compare"
 
 	sortCon "./controller/sort"
 	pconf "./lib/config"
-	//curve "./lib/curve"
+	curve "./lib/curve"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 )
@@ -118,6 +119,7 @@ func statistics(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(status)
 	w.Write(jsonBody)
 }
+
 func totalStatistics(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
@@ -126,11 +128,19 @@ func totalStatistics(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 }
 
+func compareHandle(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	jsonBody, status := compare.Perform(r)
+	w.WriteHeader(status)
+	w.Write(jsonBody)
+}
+
 func main() {
 	router := mux.NewRouter().StrictSlash(true)
 	//fmt.Println(curve.GetDataByDate("3/29/20"))
 	//fmt.Println(curve.GetCountry("Greece"))
-	//curve.DeathsPercentByDay("China")
+	fmt.Println(curve.CompareDeathsCountries("Italy","Greece"))
 	fmt.Println("server running at port " + serverConf.Server.Port)
 
 	router.HandleFunc("/country", country).Methods("POST")
@@ -138,6 +148,7 @@ func main() {
 	router.HandleFunc("/sort", sort).Methods("POST")
 	router.HandleFunc("/stats", statistics).Methods("POST")
 	router.HandleFunc("/total", totalStatistics).Methods("GET")
+	router.HandleFunc("/compare", compareHandle).Methods("POST")
 
 	c := cors.New(cors.Options{
 		AllowCredentials: true,

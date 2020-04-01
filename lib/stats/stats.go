@@ -58,7 +58,7 @@ func GetAllCountries() structs.Countries {
 }
 
 func GetCountry(name string) structs.Country {
-	allCountries := GetAllCountries()
+	allCountries := GetAllCountries().Data
 
 	for _, v := range allCountries {
 		if v.Country == name {
