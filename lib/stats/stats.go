@@ -43,7 +43,6 @@ func GetAllCountries() structs.Countries {
 	defer conn.Close()
 
 	cachedData, _ := caching.Get(conn)
-	fmt.Println(cachedData)
 
 	var s structs.Countries
 
@@ -59,7 +58,7 @@ func GetAllCountries() structs.Countries {
 }
 
 func GetCountry(name string) structs.Country {
-	allCountries := requestData()
+	allCountries := GetAllCountries()
 
 	for _, v := range allCountries {
 		if v.Country == name {
