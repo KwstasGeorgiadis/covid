@@ -12,12 +12,15 @@ import (
 )
 
 /*
+	Example of a config file
+
 	{
 		"server" : {
 			"port" : ":6660"
 		},
 		"API" : {
 			"url" : "https://corona.lmao.ninja/countries?sort=country"
+			"url_historical" : "https://corona.lmao.ninja/countires"
 		},
 		"redis" : {
 			"namespace" 	: "resque:",
@@ -28,21 +31,25 @@ import (
 	}
 */
 
+//AppConf contains all main structs
 type AppConf struct {
 	Server ServerConfig `json:"server"`
 	API    APIConfig    `json:"API"`
 	Redis  RedisConfig  `json:"redis"`
 }
 
+//APIConfig contains the data for exernal API
 type APIConfig struct {
-	URL         string `json:"url"`
-	URL_history string `json:"url_historical"`
+	URL        string `json:"url"`
+	URLHistory string `json:"url_historical"`
 }
 
+//ServerConfig contains the data for the server like port
 type ServerConfig struct {
 	Port string `json:"port"`
 }
 
+//RedisConfig contains the data for the redis server
 type RedisConfig struct {
 	URI         string   `json:"URI"`
 	Namespace   string   `json:"namespace"`

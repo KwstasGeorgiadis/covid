@@ -1,5 +1,7 @@
 package stats
 
+//TODO add expiration time
+
 import (
 	"encoding/json"
 	"fmt"

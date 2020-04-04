@@ -1,5 +1,7 @@
 package curve
 
+//TODO add fucking caching you piece of shit and add expiration time
+
 import (
 	"sort"
 
@@ -20,7 +22,7 @@ var (
 func requestData() []structs.CountryCurve {
 	//caching.ok
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", serverConf.API.URL_history, nil)
+	req, err := http.NewRequest("GET", serverConf.API.URLHistory, nil)
 
 	if err != nil {
 		fmt.Println(err)
@@ -158,13 +160,13 @@ func CompareDeathsFromFirstDeathCountries(nameOne string, nameTwo string) struct
 	var countryTwoSortedDeath []float64
 
 	for _, v := range country.Timeline.Deaths.(map[string]interface{}) {
-		if (v.(float64) == 0){
+		if v.(float64) == 0 {
 			continue
 		}
 		countrySortedDeath = append(countrySortedDeath, v.(float64))
 	}
 	for _, v := range countryTwo.Timeline.Deaths.(map[string]interface{}) {
-		if (v.(float64) == 0){
+		if v.(float64) == 0 {
 			continue
 		}
 		countryTwoSortedDeath = append(countryTwoSortedDeath, v.(float64))
@@ -227,13 +229,13 @@ func ComparePerDayDeathsCountries(nameOne string, nameTwo string) structs.Compar
 	var countryTwoSortedDeath []float64
 
 	for _, v := range country.Timeline.Deaths.(map[string]interface{}) {
-		if (v.(float64) == 0){
+		if v.(float64) == 0 {
 			continue
 		}
 		countrySortedDeath = append(countrySortedDeath, v.(float64))
 	}
 	for _, v := range countryTwo.Timeline.Deaths.(map[string]interface{}) {
-		if (v.(float64) == 0){
+		if v.(float64) == 0 {
 			continue
 		}
 		countryTwoSortedDeath = append(countryTwoSortedDeath, v.(float64))
@@ -243,24 +245,23 @@ func ComparePerDayDeathsCountries(nameOne string, nameTwo string) structs.Compar
 
 	var tempCountryOneSortedDeath []float64
 	for i := 0; i < len(countrySortedDeath); i++ {
-		tempCountryOneSortedDeath = append(tempCountryOneSortedDeath, countrySortedDeath [i])
-		if i == 0{
+		tempCountryOneSortedDeath = append(tempCountryOneSortedDeath, countrySortedDeath[i])
+		if i == 0 {
 			continue
 		}
 
-		countrySortedDeath [i] = countrySortedDeath [i] - tempCountryOneSortedDeath [i-1] 
+		countrySortedDeath[i] = countrySortedDeath[i] - tempCountryOneSortedDeath[i-1]
 	}
 
 	var tempCountryTwoSortedDeath []float64
 	for i := 0; i < len(countryTwoSortedDeath); i++ {
-		tempCountryTwoSortedDeath = append(tempCountryTwoSortedDeath, countryTwoSortedDeath [i])
+		tempCountryTwoSortedDeath = append(tempCountryTwoSortedDeath, countryTwoSortedDeath[i])
 
-		if i == 0{
+		if i == 0 {
 			continue
 		}
-		countryTwoSortedDeath [i] = countryTwoSortedDeath [i] - tempCountryTwoSortedDeath [i-1] 
+		countryTwoSortedDeath[i] = countryTwoSortedDeath[i] - tempCountryTwoSortedDeath[i-1]
 	}
-
 
 	var countryOneStruct structs.CompareData
 	var countryTwoStruct structs.CompareData
