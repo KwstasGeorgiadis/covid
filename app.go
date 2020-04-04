@@ -160,6 +160,20 @@ func statistics(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 }
 
+/*
+	Get request to /total with no parameters
+
+	Response:
+
+	{
+    	"todayPerCentOfTotalCases": 7,
+    	"todayPerCentOfTotalDeaths": 6,
+    	"totalCases": 1188489,
+    	"totalDeaths": 64103,
+    	"todayTotalCases": 71846,
+    	"todayTotalDeaths": 4933
+	}
+*/
 func totalStatistics(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
@@ -168,6 +182,37 @@ func totalStatistics(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 }
 
+/*
+	Get request to /countries with no parameters
+
+	Response:
+
+	{
+    	"data": [{
+            "country": "Zimbabwe",
+            "cases": 9,
+            "todayCases": 0,
+            "deaths": 1,
+            "todayDeaths": 0,
+            "recovered": 0,
+            "active": 8,
+            "critical": 0,
+            "casesPerOneMillion": 0.6
+        },
+        {
+            "country": "Zambia",
+            "cases": 39,
+            "todayCases": 0,
+            "deaths": 1,
+            "todayDeaths": 0,
+            "recovered": 2,
+            "active": 36,
+            "critical": 0,
+            "casesPerOneMillion": 2
+		}]
+	}
+		
+*/
 func allCountriesHandle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
@@ -176,6 +221,48 @@ func allCountriesHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 }
 
+/*
+	POST request to /compare endpoint
+
+	Request:
+
+	{
+		"countryOne" : "Spain",
+		"countryTwo" : "Italy"
+	}
+
+	Response
+
+	{
+    "countryOne": {
+        "country": "Spain",
+        "data": [
+            1,
+            2,
+            3,
+            7,
+            12428,
+            13155,
+            13915,
+            14681
+        ]
+    },
+    "countryTwo": {
+        "country": "Italy",
+        "data": [
+            1,
+            2,
+            3,
+            7,
+            12428,
+            13155,
+            13915,
+            14681
+        ]
+    }
+}
+
+*/
 func compareHandle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
@@ -184,6 +271,48 @@ func compareHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 }
 
+/*
+	POST request to /compare/firstdeath endpoint
+
+	Request:
+
+	{
+		"countryOne" : "Spain",
+		"countryTwo" : "Italy"
+	}
+
+	Response
+
+	{
+    "countryOne": {
+        "country": "Spain",
+        "data": [
+            1,
+            2,
+            3,
+            7,
+            12428,
+            13155,
+            13915,
+            14681
+        ]
+    },
+    "countryTwo": {
+        "country": "Italy",
+        "data": [
+            1,
+            2,
+            3,
+            7,
+            12428,
+            13155,
+            13915,
+            14681
+        ]
+    }
+}
+
+*/
 func compareFromFirstDeathHandle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
@@ -192,6 +321,48 @@ func compareFromFirstDeathHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 }
 
+/*
+	POST request to /compare/perday endpoint
+
+	Request:
+
+	{
+		"countryOne" : "Spain",
+		"countryTwo" : "Italy"
+	}
+
+	Response
+
+	{
+    "countryOne": {
+        "country": "Spain",
+        "data": [
+            1,
+            2,
+            3,
+            7,
+            12428,
+            13155,
+            13915,
+            14681
+        ]
+    },
+    "countryTwo": {
+        "country": "Italy",
+        "data": [
+            1,
+            2,
+            3,
+            7,
+            12428,
+            13155,
+            13915,
+            14681
+        ]
+    }
+}
+
+*/
 func comparPerDayDeathHandle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
