@@ -47,3 +47,25 @@ type TimelineStruct struct {
 	Deaths    interface{} `json:"deaths"`
 	Recovered interface{} `json:"recovered"`
 }
+
+// CountryStats is being used in lib/curve/stats.go
+type CountryStats struct {
+	Country                   string `json:"country"`
+	TodayPerCentOfTotalCases  int    `json:"todayPerCentOfTotalCases"`
+	TodayPerCentOfTotalDeaths int    `json:"todayPerCentOfTotalDeaths"`
+}
+
+// TotalStats is being used in lib/curve/stats.go
+type TotalStats struct {
+	TodayPerCentOfTotalCases  int `json:"todayPerCentOfTotalCases"`
+	TodayPerCentOfTotalDeaths int `json:"todayPerCentOfTotalDeaths"`
+	TotalCases                int `json:"totalCases"`
+	TotalDeaths               int `json:"totalDeaths"`
+	TodayTotalCases           int `json:"todayTotalCases"`
+	TodayTotalDeaths          int `json:"todayTotalDeaths"`
+}
+
+// AllCountriesName is being used in lib/curve/stats.go
+type AllCountriesName struct {
+	Countries []string `json:"countries"`
+}

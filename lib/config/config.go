@@ -1,7 +1,7 @@
 package pconf
 
 /*
-	return stuct of a json config
+	return stuct of a json config file
 */
 
 import (
@@ -58,12 +58,9 @@ type RedisConfig struct {
 	Name        string   `json:"name"`
 }
 
-/*
-	reads a spefic file and return the json format of it
-
-	@param configLocation string configs location
-	@return ServerConfig struct json format of the config file
-*/
+//GetAppConfig reads a spefic file and return the json format of it
+//@param configLocation string configs location
+//@return ServerConfig struct json format of the config file
 func GetAppConfig(configLocation string) AppConf {
 	jsonFile, openfileError := os.Open(configLocation)
 	if openfileError != nil {

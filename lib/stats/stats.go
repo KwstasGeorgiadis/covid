@@ -167,33 +167,18 @@ func SortByCasesPerOneMillion() structs.Countries {
 	return s
 }
 
-type CountryStats struct {
-	Country                   string `json:"country"`
-	TodayPerCentOfTotalCases  int    `json:"todayPerCentOfTotalCases"`
-	TodayPerCentOfTotalDeaths int    `json:"todayPerCentOfTotalDeaths"`
-}
-
-func StatsPerCountry(name string) CountryStats {
+func StatsPerCountry(name string) structs.CountryStats {
 	country := GetCountry(name)
 
 	var todayPerCentOfTotalCases = country.TodayCases * 100 / country.Cases
 	var todayPerCentOfTotalDeaths = country.TodayDeaths * 100 / country.Deaths
 
-	return CountryStats{Country: country.Country,
+	return structs.CountryStats{Country: country.Country,
 		TodayPerCentOfTotalCases:  todayPerCentOfTotalCases,
 		TodayPerCentOfTotalDeaths: todayPerCentOfTotalDeaths}
 }
 
-type TotalStats struct {
-	TodayPerCentOfTotalCases  int `json:"todayPerCentOfTotalCases"`
-	TodayPerCentOfTotalDeaths int `json:"todayPerCentOfTotalDeaths"`
-	TotalCases                int `json:"totalCases"`
-	TotalDeaths               int `json:"totalDeaths"`
-	TodayTotalCases           int `json:"todayTotalCases"`
-	TodayTotalDeaths          int `json:"todayTotalDeaths"`
-}
-
-func GetTotalStats() TotalStats {
+func GetTotalStats() structs.TotalStats {
 	var totalDeaths = 0
 	var totalCases = 0
 	var todayTotalDeaths = 0
@@ -214,7 +199,7 @@ func GetTotalStats() TotalStats {
 	var todayPerCentOfTotalCases = todayTotalDeaths * 100 / totalDeaths
 	var todayPerCentOfTotalDeaths = todayTotalCases * 100 / totalCases
 
-	return TotalStats{
+	return structs.TotalStats{
 		TodayPerCentOfTotalCases:  todayPerCentOfTotalCases,
 		TodayPerCentOfTotalDeaths: todayPerCentOfTotalDeaths,
 		TotalCases:                totalCases,
@@ -228,7 +213,7 @@ type AllCountriesName struct {
 	Countries []string `json:"countries"`
 }
 
-func GetAllCountriesName() AllCountriesName {
+func GetAllCountriesName() structs.AllCountriesName {
 	allCountries := GetAllCountries().Data
 	var counties []string
 
@@ -236,5 +221,5 @@ func GetAllCountriesName() AllCountriesName {
 		counties = append(counties, v.Country)
 	}
 
-	return AllCountriesName{Countries: counties}
+	return structs.AllCountriesName{Countries: counties}
 }
