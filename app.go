@@ -371,13 +371,36 @@ func comparPerDayDeathHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 }
 
+/*
+	Running the server in port 9080 (getting the value from ./config/covid.json )
+	
+	"server" : {
+                "port" : ":9080"
+    },
+
+	Endpoint:
+		GET:
+			/total
+			/countries
+			/countries/all
+		POST
+			/country
+			/sort
+			/stats
+			/compare
+			/compare/firstdeath
+			/compare/perday
+*/
+
 func main() {
 	router := mux.NewRouter().StrictSlash(true)
+	port := serverConf.Server.Port
 
-	fmt.Println("server running at port " + serverConf.Server.Port)
+	fmt.Println("server running at port " + port)
 
 	router.HandleFunc("/country", country).Methods("POST")
 	router.HandleFunc("/countries", countries).Methods("GET")
+	router.HandleFunc("/countries/all", allCountriesHandle).Methods("GET")
 	router.HandleFunc("/sort", sort).Methods("POST")
 	router.HandleFunc("/stats", statistics).Methods("POST")
 	router.HandleFunc("/total", totalStatistics).Methods("GET")
@@ -385,12 +408,10 @@ func main() {
 	router.HandleFunc("/compare/firstdeath", compareFromFirstDeathHandle).Methods("POST")
 	router.HandleFunc("/compare/perday", comparPerDayDeathHandle).Methods("POST")
 
-	router.HandleFunc("/countries/all", allCountriesHandle).Methods("GET")
-
 	c := cors.New(cors.Options{
 		AllowCredentials: true,
 	})
 
 	handler := c.Handler(router)
-	http.ListenAndServe(serverConf.Server.Port, handler)
+	http.ListenAndServe(port, handler)
 }
