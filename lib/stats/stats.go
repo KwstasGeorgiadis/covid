@@ -209,10 +209,6 @@ func GetTotalStats() structs.TotalStats {
 	}
 }
 
-type AllCountriesName struct {
-	Countries []string `json:"countries"`
-}
-
 func GetAllCountriesName() structs.AllCountriesName {
 	allCountries := GetAllCountries().Data
 	var counties []string
