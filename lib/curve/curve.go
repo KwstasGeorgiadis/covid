@@ -5,6 +5,7 @@ import (
 
 	pconf "../config"
 	structs "../structs"
+	//caching "../caching"
 
 	"encoding/json"
 	"fmt"
@@ -12,23 +13,12 @@ import (
 	"net/http"
 )
 
-type Country struct {
-	Country  string         `json:"country"`
-	Timeline TimelineStruct `json:"timeline"`
-}
-
-type TimelineStruct struct {
-	Cases     interface{} `json:"cases"`
-	Deaths    interface{} `json:"deaths"`
-	Recovered interface{} `json:"recovered"`
-}
-
 var (
 	serverConf = pconf.GetAppConfig("./config/covid.json")
 )
 
-func requestData() []Country {
-
+func requestData() []structs.CountryCurve {
+	//caching.ok
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", serverConf.API.URL_history, nil)
 
@@ -40,7 +30,7 @@ func requestData() []Country {
 	b, _ := ioutil.ReadAll(res.Body)
 
 	//var obj Countries
-	keys := make([]Country, 0)
+	keys := make([]structs.CountryCurve, 0)
 	if err := json.Unmarshal(b, &keys); err != nil {
 		panic(err)
 	}
@@ -48,12 +38,12 @@ func requestData() []Country {
 	return keys
 }
 
-func GetAllCountries() []Country {
+func GetAllCountries() []structs.CountryCurve {
 	s := requestData()
 	return s
 }
 
-func GetCountry(name string) Country {
+func GetCountry(name string) structs.CountryCurve {
 	allCountries := GetAllCountries()
 
 	for _, v := range allCountries {
@@ -62,7 +52,7 @@ func GetCountry(name string) Country {
 		}
 	}
 
-	return Country{}
+	return structs.CountryCurve{}
 }
 
 func GetDataByDate(date string) map[string]interface{} {
@@ -147,6 +137,130 @@ func CompareDeathsCountries(nameOne string, nameTwo string) structs.Compare {
 	}
 	sort.Float64s(countrySortedDeath)
 	sort.Float64s(countryTwoSortedDeath)
+
+	var countryOneStruct structs.CompareData
+	var countryTwoStruct structs.CompareData
+
+	countryOneStruct.Country = nameOne
+	countryOneStruct.Data = countrySortedDeath
+	countryTwoStruct.Country = nameTwo
+	countryTwoStruct.Data = countryTwoSortedDeath
+
+	return structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
+}
+
+func CompareDeathsFromFirstDeathCountries(nameOne string, nameTwo string) structs.Compare {
+
+	country := GetCountry(nameOne)
+	countryTwo := GetCountry(nameTwo)
+
+	var countrySortedDeath []float64
+	var countryTwoSortedDeath []float64
+
+	for _, v := range country.Timeline.Deaths.(map[string]interface{}) {
+		if (v.(float64) == 0){
+			continue
+		}
+		countrySortedDeath = append(countrySortedDeath, v.(float64))
+	}
+	for _, v := range countryTwo.Timeline.Deaths.(map[string]interface{}) {
+		if (v.(float64) == 0){
+			continue
+		}
+		countryTwoSortedDeath = append(countryTwoSortedDeath, v.(float64))
+	}
+	sort.Float64s(countrySortedDeath)
+	sort.Float64s(countryTwoSortedDeath)
+
+	var countryOneStruct structs.CompareData
+	var countryTwoStruct structs.CompareData
+
+	countryOneStruct.Country = nameOne
+	countryOneStruct.Data = countrySortedDeath
+	countryTwoStruct.Country = nameTwo
+	countryTwoStruct.Data = countryTwoSortedDeath
+
+	return structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
+}
+
+func ComparePerCentDeathsCountries(nameOne string, nameTwo string) structs.Compare {
+
+	country := GetCountry(nameOne)
+	countryTwo := GetCountry(nameTwo)
+
+	var countrySortedDeath []float64
+	var countryTwoSortedDeath []float64
+
+	for _, v := range country.Timeline.Deaths.(map[string]interface{}) {
+		countrySortedDeath = append(countrySortedDeath, v.(float64))
+	}
+	for _, v := range countryTwo.Timeline.Deaths.(map[string]interface{}) {
+		countryTwoSortedDeath = append(countryTwoSortedDeath, v.(float64))
+	}
+	sort.Float64s(countrySortedDeath)
+	sort.Float64s(countryTwoSortedDeath)
+
+	var countryOneStruct structs.CompareData
+	var countryTwoStruct structs.CompareData
+
+	for _, v := range country.Timeline.Deaths.(map[string]interface{}) {
+		countrySortedDeath = append(countrySortedDeath, v.(float64))
+	}
+	for _, v := range countryTwo.Timeline.Deaths.(map[string]interface{}) {
+		countryTwoSortedDeath = append(countryTwoSortedDeath, v.(float64))
+	}
+
+	countryOneStruct.Country = nameOne
+	countryOneStruct.Data = countrySortedDeath
+	countryTwoStruct.Country = nameTwo
+	countryTwoStruct.Data = countryTwoSortedDeath
+
+	return structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
+}
+
+func ComparePerDayDeathsCountries(nameOne string, nameTwo string) structs.Compare {
+
+	country := GetCountry(nameOne)
+	countryTwo := GetCountry(nameTwo)
+
+	var countrySortedDeath []float64
+	var countryTwoSortedDeath []float64
+
+	for _, v := range country.Timeline.Deaths.(map[string]interface{}) {
+		if (v.(float64) == 0){
+			continue
+		}
+		countrySortedDeath = append(countrySortedDeath, v.(float64))
+	}
+	for _, v := range countryTwo.Timeline.Deaths.(map[string]interface{}) {
+		if (v.(float64) == 0){
+			continue
+		}
+		countryTwoSortedDeath = append(countryTwoSortedDeath, v.(float64))
+	}
+	sort.Float64s(countrySortedDeath)
+	sort.Float64s(countryTwoSortedDeath)
+
+	var tempCountryOneSortedDeath []float64
+	for i := 0; i < len(countrySortedDeath); i++ {
+		tempCountryOneSortedDeath = append(tempCountryOneSortedDeath, countrySortedDeath [i])
+		if i == 0{
+			continue
+		}
+
+		countrySortedDeath [i] = countrySortedDeath [i] - tempCountryOneSortedDeath [i-1] 
+	}
+
+	var tempCountryTwoSortedDeath []float64
+	for i := 0; i < len(countryTwoSortedDeath); i++ {
+		tempCountryTwoSortedDeath = append(tempCountryTwoSortedDeath, countryTwoSortedDeath [i])
+
+		if i == 0{
+			continue
+		}
+		countryTwoSortedDeath [i] = countryTwoSortedDeath [i] - tempCountryTwoSortedDeath [i-1] 
+	}
+
 
 	var countryOneStruct structs.CompareData
 	var countryTwoStruct structs.CompareData

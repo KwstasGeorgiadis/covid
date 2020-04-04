@@ -25,3 +25,14 @@ type CompareData struct {
 	Country string    `json:"country"`
 	Data    []float64 `json:"data"`
 }
+
+type CountryCurve struct {
+	Country  string         `json:"country"`
+	Timeline TimelineStruct `json:"timeline"`
+}
+
+type TimelineStruct struct {
+	Cases     interface{} `json:"cases"`
+	Deaths    interface{} `json:"deaths"`
+	Recovered interface{} `json:"recovered"`
+}

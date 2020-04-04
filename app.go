@@ -11,14 +11,14 @@ import (
 
 	statisticsCon "./controller/statistics"
 
+	allCountries "./controller/allcountries"
+	compare "./controller/compare"
 	countriesCon "./controller/countries"
 	countryCon "./controller/country"
 	totalStatisticsCon "./controller/totalStatistics"
-	compare "./controller/compare"
 
 	sortCon "./controller/sort"
 	pconf "./lib/config"
-	curve "./lib/curve"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 )
@@ -29,8 +29,7 @@ var (
 )
 
 /*
-	POST request to /country wit no parameters
-
+	POST request to /country
 	Request:
 
 	{
@@ -62,7 +61,7 @@ func country(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-	Get request to /countries wit no parameters
+	Get request to /countries with no parameters
 
 	Response:
 
@@ -103,6 +102,43 @@ func countries(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 }
 
+/*
+	POST request to /sort endpoint
+
+	Request:
+
+	{
+		"type" : "deaths"
+	}
+
+	Response
+
+	{
+    	"data": [{
+        	"country": "Italy",
+            "cases": 124632,
+            "todayCases": 4805,
+            "deaths": 15362,
+            "todayDeaths": 681,
+            "recovered": 20996,
+            "active": 88274,
+            "critical": 3994,
+            "casesPerOneMillion": 2061
+        },
+        {
+            "country": "Spain",
+            "cases": 124736,
+            "todayCases": 5537,
+            "deaths": 11744,
+            "todayDeaths": 546,
+            "recovered": 34219,
+            "active": 78773,
+            "critical": 6416,
+            "casesPerOneMillion": 2668
+		}]
+	}
+
+*/
 func sort(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
@@ -111,6 +147,10 @@ func sort(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 }
 
+/*
+	CHECK THIS ENDPOINT LOOKS THAT IT IS MISSING
+
+*/
 func statistics(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -128,6 +168,14 @@ func totalStatistics(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 }
 
+func allCountriesHandle(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	jsonBody, status := allCountries.Perform()
+	w.WriteHeader(status)
+	w.Write(jsonBody)
+}
+
 func compareHandle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
@@ -136,11 +184,25 @@ func compareHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 }
 
+func compareFromFirstDeathHandle(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	jsonBody, status := compare.PerformFromFirstDeath(r)
+	w.WriteHeader(status)
+	w.Write(jsonBody)
+}
+
+func comparPerDayDeathHandle(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	jsonBody, status := compare.PerformPerDayDeath(r)
+	w.WriteHeader(status)
+	w.Write(jsonBody)
+}
+
 func main() {
 	router := mux.NewRouter().StrictSlash(true)
-	//fmt.Println(curve.GetDataByDate("3/29/20"))
-	//fmt.Println(curve.GetCountry("Greece"))
-	fmt.Println(curve.CompareDeathsCountries("Italy","Greece"))
+
 	fmt.Println("server running at port " + serverConf.Server.Port)
 
 	router.HandleFunc("/country", country).Methods("POST")
@@ -149,6 +211,10 @@ func main() {
 	router.HandleFunc("/stats", statistics).Methods("POST")
 	router.HandleFunc("/total", totalStatistics).Methods("GET")
 	router.HandleFunc("/compare", compareHandle).Methods("POST")
+	router.HandleFunc("/compare/firstdeath", compareFromFirstDeathHandle).Methods("POST")
+	router.HandleFunc("/compare/perday", comparPerDayDeathHandle).Methods("POST")
+
+	router.HandleFunc("/countries/all", allCountriesHandle).Methods("GET")
 
 	c := cors.New(cors.Options{
 		AllowCredentials: true,
