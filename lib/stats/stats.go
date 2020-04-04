@@ -44,14 +44,14 @@ func GetAllCountries() structs.Countries {
 	conn := pool.Get()
 	defer conn.Close()
 
-	cachedData, _ := caching.Get(conn)
+	cachedData, _ := caching.Get(conn, "total")
 
 	var s structs.Countries
 
 	if len(cachedData.Data) == 0 {
 		n := requestData()
 		s = structs.Countries{Data: n}
-		caching.Set(conn, s)
+		caching.Set(conn, s, "total")
 	} else {
 		return cachedData
 	}

@@ -69,3 +69,9 @@ type TotalStats struct {
 type AllCountriesName struct {
 	Countries []string `json:"countries"`
 }
+
+// ErrorMessage is being used across all controllers
+type ErrorMessage struct {
+	ErrorMessage string `json:"message"`
+	Code         int    `json:"code"`
+}

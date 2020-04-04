@@ -2,7 +2,6 @@ package caching
 
 import (
 	"encoding/json"
-	"fmt"
 
 	structs "../structs"
 	"github.com/gomodule/redigo/redis"
@@ -27,23 +26,21 @@ func NewPool() *redis.Pool {
 }
 
 // set executes the redis SET command
-func Set(c redis.Conn, countries structs.Countries) error {
-	fmt.Println(countries)
+func Set(c redis.Conn, countries structs.Countries, key string) error {
 
-	_, err := c.Do("SET", "total", countries)
+	_, err := c.Do("SET", key, countries)
 	if err != nil {
-		fmt.Println(err.Error())
 		return err
 	}
 
 	return nil
 }
 
-// get executes the redis GET command
-func Get(c redis.Conn) (structs.Countries, error) {
+// Get executes the redis GET command
+func Get(c redis.Conn, key string) (structs.Countries, error) {
 	// Simple GET example with String helper
 
-	s, err := redis.String(c.Do("GET", "total"))
+	s, err := redis.String(c.Do("GET", key))
 	if err != nil {
 		return structs.Countries{}, err
 	}
