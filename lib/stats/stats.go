@@ -39,12 +39,15 @@ func requestData() []structs.Country {
 	return keys
 }
 
-func GetAllCountries() structs.Countries {
+func GetAllCountries() (structs.Countries, error){
 	pool := caching.NewPool()
 	conn := pool.Get()
 	defer conn.Close()
 
-	cachedData, _ := caching.Get(conn, "total")
+	cachedData, cacheGetError := caching.Get(conn, "total")
+	if cacheGetError != nil {
+		return structs.Countries{}, cacheGetError
+	}
 
 	var s structs.Countries
 
@@ -53,27 +56,36 @@ func GetAllCountries() structs.Countries {
 		s = structs.Countries{Data: n}
 		caching.Set(conn, s, "total")
 	} else {
-		return cachedData
+		return cachedData,nil
 	}
 
-	return s
+	return s,nil
 }
 
-func GetCountry(name string) structs.Country {
-	allCountries := GetAllCountries().Data
+func GetCountry(name string) (structs.Country,error) {
+	allCountries, allCountriesError := GetAllCountries()
+	if allCountriesError != nil {
+		return structs.Country{}, allCountriesError
+	}
 
-	for _, v := range allCountries {
+	for _, v := range allCountries.Data {
 		if v.Country == name {
-			return v
+			return v, nil
 		}
 	}
 
-	return structs.Country{}
+	return structs.Country{}, nil
 }
 
-func SortByCases() structs.Countries {
-	allCountries := GetAllCountries().Data
-	fmt.Println(allCountries)
+func SortByCases() (structs.Countries,error) {
+
+	allCountriesArr, allCountriesError := GetAllCountries()
+	if allCountriesError != nil {
+		return structs.Countries{}, allCountriesError
+	}
+
+	allCountries := allCountriesArr.Data
+
 	sort.Slice(allCountries, func(i, j int) bool {
 		if allCountries[i].Cases != allCountries[j].Cases {
 			return allCountries[i].Cases > allCountries[j].Cases
@@ -83,11 +95,16 @@ func SortByCases() structs.Countries {
 	})
 
 	s := structs.Countries{Data: allCountries}
-	return s
+	return s, nil
 }
 
-func SortByDeaths() structs.Countries {
-	allCountries := GetAllCountries().Data
+func SortByDeaths() (structs.Countries,error) {
+	allCountriesArr, allCountriesError := GetAllCountries()
+	if allCountriesError != nil {
+		return structs.Countries{}, allCountriesError
+	}
+
+	allCountries := allCountriesArr.Data
 
 	sort.Slice(allCountries, func(i, j int) bool {
 		if allCountries[i].Deaths != allCountries[j].Deaths {
@@ -98,93 +115,134 @@ func SortByDeaths() structs.Countries {
 	})
 
 	s := structs.Countries{Data: allCountries}
-	return s
+	return s,nil 
 }
 
-func SortByTodayCases() structs.Countries {
-	allCountries := GetAllCountries().Data
+func SortByTodayCases() (structs.Countries,error) {
+	allCountriesArr, allCountriesError := GetAllCountries()
+	if allCountriesError != nil {
+		return structs.Countries{}, allCountriesError
+	}
+
+	allCountries := allCountriesArr.Data
 
 	sort.Slice(allCountries, func(i, j int) bool {
 		return allCountries[i].TodayCases > allCountries[j].TodayCases
 	})
 
 	s := structs.Countries{Data: allCountries}
-	return s
+	return s,nil
 }
 
-func SortByTodayDeaths() structs.Countries {
-	allCountries := GetAllCountries().Data
+func SortByTodayDeaths() (structs.Countries,error) {
+	allCountriesArr, allCountriesError := GetAllCountries()
+	if allCountriesError != nil {
+		return structs.Countries{}, allCountriesError
+	}
+
+	allCountries := allCountriesArr.Data
 
 	sort.Slice(allCountries, func(i, j int) bool {
 		return allCountries[i].TodayDeaths > allCountries[j].TodayDeaths
 	})
 
 	s := structs.Countries{Data: allCountries}
-	return s
+	return s,nil
 }
 
-func SortByRecovered() structs.Countries {
-	allCountries := GetAllCountries().Data
+func SortByRecovered() (structs.Countries,error) {
+	allCountriesArr, allCountriesError := GetAllCountries()
+	if allCountriesError != nil {
+		return structs.Countries{}, allCountriesError
+	}
+
+	allCountries := allCountriesArr.Data
 
 	sort.Slice(allCountries, func(i, j int) bool {
 		return allCountries[i].Recovered > allCountries[j].Recovered
 	})
 
 	s := structs.Countries{Data: allCountries}
-	return s
+	return s,nil
 }
 
-func SortByActive() structs.Countries {
-	allCountries := GetAllCountries().Data
+func SortByActive() (structs.Countries,error) {
+	allCountriesArr, allCountriesError := GetAllCountries()
+	if allCountriesError != nil {
+		return structs.Countries{}, allCountriesError
+	}
+
+	allCountries := allCountriesArr.Data
 
 	sort.Slice(allCountries, func(i, j int) bool {
 		return allCountries[i].Active > allCountries[j].Active
 	})
 
 	s := structs.Countries{Data: allCountries}
-	return s
+	return s, nil
 }
 
-func SortByCritical() structs.Countries {
-	allCountries := GetAllCountries().Data
+func SortByCritical() (structs.Countries,error) {
+	allCountriesArr, allCountriesError := GetAllCountries()
+	if allCountriesError != nil {
+		return structs.Countries{}, allCountriesError
+	}
+
+	allCountries := allCountriesArr.Data
+
 
 	sort.Slice(allCountries, func(i, j int) bool {
 		return allCountries[i].Critical > allCountries[j].Critical
 	})
 
 	s := structs.Countries{Data: allCountries}
-	return s
+	return s, nil
 }
 
-func SortByCasesPerOneMillion() structs.Countries {
-	allCountries := GetAllCountries().Data
+func SortByCasesPerOneMillion() (structs.Countries,error) {
+	allCountriesArr, allCountriesError := GetAllCountries()
+	if allCountriesError != nil {
+		return structs.Countries{}, allCountriesError
+	}
+
+	allCountries := allCountriesArr.Data
 
 	sort.Slice(allCountries, func(i, j int) bool {
 		return allCountries[i].CasesPerOneMillion > allCountries[j].CasesPerOneMillion
 	})
 
 	s := structs.Countries{Data: allCountries}
-	return s
+	return s, nil
 }
 
-func StatsPerCountry(name string) structs.CountryStats {
-	country := GetCountry(name)
+func StatsPerCountry(name string) (structs.CountryStats,error) {
+	country, countryError := GetCountry(name)
+	if countryError!= nil {
+		return structs.CountryStats{}, nil 
+	}
 
 	var todayPerCentOfTotalCases = country.TodayCases * 100 / country.Cases
 	var todayPerCentOfTotalDeaths = country.TodayDeaths * 100 / country.Deaths
 
-	return structs.CountryStats{Country: country.Country,
+	countryStats := structs.CountryStats{Country: country.Country,
 		TodayPerCentOfTotalCases:  todayPerCentOfTotalCases,
 		TodayPerCentOfTotalDeaths: todayPerCentOfTotalDeaths}
+
+	return countryStats, nil
 }
 
-func GetTotalStats() structs.TotalStats {
+func GetTotalStats() (structs.TotalStats,error) {
 	var totalDeaths = 0
 	var totalCases = 0
 	var todayTotalDeaths = 0
 	var todayTotalCases = 0
 
-	allCountries := GetAllCountries().Data
+	allCountriesArr, errorAllCountries := GetAllCountries()
+	if errorAllCountries!= nil {
+		return structs.TotalStats{}, nil 
+	}
+
+	allCountries := allCountriesArr.Data
 
 	for _, v := range allCountries {
 		if v.Country == "World" {
@@ -199,7 +257,7 @@ func GetTotalStats() structs.TotalStats {
 	var todayPerCentOfTotalCases = todayTotalDeaths * 100 / totalDeaths
 	var todayPerCentOfTotalDeaths = todayTotalCases * 100 / totalCases
 
-	return structs.TotalStats{
+	totalStatsStuct := structs.TotalStats{
 		TodayPerCentOfTotalCases:  todayPerCentOfTotalCases,
 		TodayPerCentOfTotalDeaths: todayPerCentOfTotalDeaths,
 		TotalCases:                totalCases,
@@ -207,15 +265,23 @@ func GetTotalStats() structs.TotalStats {
 		TodayTotalCases:           todayTotalCases,
 		TodayTotalDeaths:          todayTotalDeaths,
 	}
+
+	return totalStatsStuct, nil
 }
 
-func GetAllCountriesName() structs.AllCountriesName {
-	allCountries := GetAllCountries().Data
+func GetAllCountriesName() (structs.AllCountriesName,error) {
+	allCountriesArr, allCountriesError := GetAllCountries()
+	if allCountriesError != nil {
+		return structs.AllCountriesName{}, allCountriesError
+	}
+
+	allCountries := allCountriesArr.Data
+
 	var counties []string
 
 	for _, v := range allCountries {
 		counties = append(counties, v.Country)
 	}
 
-	return structs.AllCountriesName{Countries: counties}
+	return structs.AllCountriesName{Countries: counties}, nil
 }

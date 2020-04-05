@@ -29,7 +29,12 @@ import (
 //	@return int http code status
 func Perform() ([]byte, int) {
 
-	totalStats := stats.GetTotalStats()
+	totalStats,statsErr := stats.GetTotalStats()
+	if statsErr != nil {
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: statsErr.Error(), Code: 500})
+		return statsErrJSONBody, 500
+	}
+
 	jsonBody, err := json.Marshal(totalStats)
 	if err != nil {
 		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})

@@ -2,9 +2,9 @@ package countryCon
 
 import (
 	"encoding/json"
-	"fmt"
 
 	stats "../../lib/stats"
+	structs "../../lib/structs"
 
 	"io/ioutil"
 	"net/http"
@@ -19,14 +19,22 @@ func Perform(r *http.Request) ([]byte, int) {
 
 	b, errIoutilReadAll := ioutil.ReadAll(r.Body)
 	if errIoutilReadAll != nil {
-		// return some 500 stuff here
-		fmt.Println(errIoutilReadAll.Error())
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: errIoutilReadAll.Error(), Code: 500})
+		return statsErrJSONBody, 500
 	}
 
 	json.Unmarshal(b, &countryRequest)
 
-	country := stats.GetCountry(countryRequest.Name)
-	jsonBody, _ := json.Marshal(country)
+	country,err := stats.GetCountry(countryRequest.Name)
+	if err != nil {
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
+		return statsErrJSONBody, 500
+	}
+	jsonBody, jsonBodyErr := json.Marshal(country)
+	if jsonBodyErr != nil {
+		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
+		return errorJSONBody, 500
+	}
 
 	return jsonBody, 200
 }

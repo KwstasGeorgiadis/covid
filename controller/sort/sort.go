@@ -2,7 +2,6 @@ package sortCon
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -18,37 +17,74 @@ func Perform(r *http.Request) ([]byte, int) {
 	var sortRequest SortRequest
 
 	b, errIoutilReadAll := ioutil.ReadAll(r.Body)
-	if errIoutilReadAll != nil {
-		// return some 500 stuff here
-		fmt.Println(errIoutilReadAll.Error())
-	}
 
 	json.Unmarshal(b, &sortRequest)
 
 	sortType := sortRequest.Type
 	var countries structs.Countries
+	var countriesError error
 
 	switch sortType {
 	case "deaths":
-		countries = stats.SortByDeaths()
+		countries, countriesError = stats.SortByDeaths()
+		if countriesError != nil {
+			statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: countriesError.Error(), Code: 500})
+			return statsErrJSONBody, 500
+		}
 	case "cases":
-		countries = stats.SortByCases()
+		countries, countriesError = stats.SortByCases()
+		if errIoutilReadAll != nil {
+			statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: countriesError.Error(), Code: 500})
+			return statsErrJSONBody, 500
+		}
 	case "todayCases":
-		countries = stats.SortByTodayCases()
+		countries, countriesError = stats.SortByTodayCases()
+		if countriesError != nil {
+			statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: countriesError.Error(), Code: 500})
+			return statsErrJSONBody, 500
+		}
 	case "todayDeaths":
-		countries = stats.SortByTodayDeaths()
+		countries, countriesError = stats.SortByTodayDeaths()
+		if countriesError != nil {
+			statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: countriesError.Error(), Code: 500})
+			return statsErrJSONBody, 500
+		}
 	case "recovered":
-		countries = stats.SortByRecovered()
+		countries, countriesError = stats.SortByRecovered()
+		if errIoutilReadAll != nil {
+			statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: countriesError.Error(), Code: 500})
+			return statsErrJSONBody, 500
+		}
 	case "active":
-		countries = stats.SortByActive()
+		countries, countriesError = stats.SortByActive()
+		if errIoutilReadAll != nil {
+			statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: countriesError.Error(), Code: 500})
+			return statsErrJSONBody, 500
+		}
 	case "critical":
-		countries = stats.SortByCritical()
+		countries, countriesError = stats.SortByCritical()
+		if countriesError != nil {
+			statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: countriesError.Error(), Code: 500})
+			return statsErrJSONBody, 500
+		}
 	case "casesPerOneMillion":
-		countries = stats.SortByCasesPerOneMillion()
+		countries, countriesError = stats.SortByCasesPerOneMillion()
+		if countriesError != nil {
+			statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: countriesError.Error(), Code: 500})
+			return statsErrJSONBody, 500
+		}
 	default:
-		countries = stats.GetAllCountries()
+		countries, countriesError = stats.GetAllCountries()
+		if countriesError != nil {
+			statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: countriesError.Error(), Code: 500})
+			return statsErrJSONBody, 500
+		}
 	}
-	jsonBody, _ := json.Marshal(countries)
 
+	jsonBody, err := json.Marshal(countries)
+	if err != nil {
+		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
+		return errorJSONBody, 500
+	}
 	return jsonBody, 200
 }
