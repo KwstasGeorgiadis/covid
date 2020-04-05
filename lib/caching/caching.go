@@ -1,5 +1,11 @@
 package caching
 
+//TODO adding expiration time - need to be more dynamic
+
+/*
+	Caching the results of the external API request for covid-19 data
+*/
+
 import (
 	"encoding/json"
 
@@ -7,6 +13,7 @@ import (
 	"github.com/gomodule/redigo/redis"
 )
 
+//NewPool() connects to redis
 func NewPool() *redis.Pool {
 	return &redis.Pool{
 		// Maximum number of idle connections in the pool.
@@ -25,7 +32,8 @@ func NewPool() *redis.Pool {
 	}
 }
 
-// set executes the redis SET command
+// Set executes the redis SET command
+// @param c redis.Conn redis connection
 func Set(c redis.Conn, countries structs.Countries, key string) error {
 
 	_, err := c.Do("SET", key, countries)

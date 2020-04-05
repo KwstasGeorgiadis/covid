@@ -11,7 +11,7 @@ import (
 
 	statisticsCon "./controller/statistics"
 
-	allCountries "./controller/allcountries"
+	allcountries "./controller/allcountries"
 	compare "./controller/compare"
 	countriesCon "./controller/countries"
 	countryCon "./controller/country"
@@ -216,7 +216,7 @@ func totalStatistics(w http.ResponseWriter, r *http.Request) {
 func allCountriesHandle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
-	jsonBody, status := allCountries.Perform()
+	jsonBody, status := allcountries.Perform()
 	w.WriteHeader(status)
 	w.Write(jsonBody)
 }
