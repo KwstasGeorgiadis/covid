@@ -70,7 +70,11 @@ func Perform(r *http.Request) ([]byte, int) {
 		return statsErrJSONBody, 500
 	}
 
-	json.Unmarshal(b, &compareRequest)
+	unmarshallError := json.Unmarshal(b, &compareRequest)
+	if unmarshallError != nil {
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: unmarshallError.Error(), Code: 400})
+		return statsErrJSONBody, 400
+	}
 
 	country := curve.CompareDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo)
 	jsonBody, _ := json.Marshal(country)
@@ -127,7 +131,11 @@ func PerformFromFirstDeath(r *http.Request) ([]byte, int) {
 		return statsErrJSONBody, 500
 	}
 
-	json.Unmarshal(b, &compareRequest)
+	unmarshallError := json.Unmarshal(b, &compareRequest)
+	if unmarshallError != nil {
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: unmarshallError.Error(), Code: 400})
+		return statsErrJSONBody, 400
+	}
 
 	country := curve.CompareDeathsFromFirstDeathCountries(compareRequest.NameOne, compareRequest.NameTwo)
 	jsonBody, _ := json.Marshal(country)
@@ -178,13 +186,18 @@ func PerformFromFirstDeath(r *http.Request) ([]byte, int) {
 //	@return int http code status
 func PerformPerDayDeath(r *http.Request) ([]byte, int) {
 	var compareRequest CompareRequest
+
 	b, errIoutilReadAll := ioutil.ReadAll(r.Body)
 	if errIoutilReadAll != nil {
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: errIoutilReadAll.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
-	json.Unmarshal(b, &compareRequest)
+	unmarshallError := json.Unmarshal(b, &compareRequest)
+	if unmarshallError != nil {
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: unmarshallError.Error(), Code: 400})
+		return statsErrJSONBody, 400
+	}
 
 	country := curve.ComparePerDayDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo)
 	jsonBody, err := json.Marshal(country)

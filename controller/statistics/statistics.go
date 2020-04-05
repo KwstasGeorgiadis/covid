@@ -23,8 +23,12 @@ func Perform(r *http.Request) ([]byte, int) {
 		return statsErrJSONBody, 500
 	}
 
-	json.Unmarshal(b, &countryRequest)
-
+	unmarshallError := json.Unmarshal(b, &countryRequest)
+	if unmarshallError != nil {
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: unmarshallError.Error(), Code: 400})
+		return statsErrJSONBody, 400
+	}
+	
 	country, err := stats.StatsPerCountry(countryRequest.Name)
 	if err != nil {
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})

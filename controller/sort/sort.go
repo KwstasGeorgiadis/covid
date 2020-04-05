@@ -18,7 +18,11 @@ func Perform(r *http.Request) ([]byte, int) {
 
 	b, errIoutilReadAll := ioutil.ReadAll(r.Body)
 
-	json.Unmarshal(b, &sortRequest)
+	unmarshallError := json.Unmarshal(b, &sortRequest)
+	if unmarshallError != nil {
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: unmarshallError.Error(), Code: 400})
+		return statsErrJSONBody, 400
+	}
 
 	sortType := sortRequest.Type
 	var countries structs.Countries
