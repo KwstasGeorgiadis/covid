@@ -1,4 +1,4 @@
-package totalStatisticsCon
+package totalcon
 
 import (
 	"encoding/json"

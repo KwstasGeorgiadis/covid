@@ -15,7 +15,7 @@ import (
 	compare "./controller/compare"
 	countriesCon "./controller/countries"
 	countryCon "./controller/country"
-	totalStatisticsCon "./controller/totalStatistics"
+	totalcon "./controller/totalcon"
 
 	sortCon "./controller/sort"
 	pconf "./lib/config"
@@ -177,7 +177,7 @@ func statistics(w http.ResponseWriter, r *http.Request) {
 func totalStatistics(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
-	jsonBody, status := totalStatisticsCon.Perform()
+	jsonBody, status := totalcon.Perform()
 	w.WriteHeader(status)
 	w.Write(jsonBody)
 }
@@ -211,7 +211,7 @@ func totalStatistics(w http.ResponseWriter, r *http.Request) {
             "casesPerOneMillion": 2
 		}]
 	}
-		
+
 */
 func allCountriesHandle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -373,7 +373,7 @@ func comparPerDayDeathHandle(w http.ResponseWriter, r *http.Request) {
 
 /*
 	Running the server in port 9080 (getting the value from ./config/covid.json )
-	
+
 	"server" : {
                 "port" : ":9080"
     },
