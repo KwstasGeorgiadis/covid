@@ -8,21 +8,18 @@ import (
 )
 
 //Perform used in the /countries/all endpoint's handle to return
-//	the TotalStats struct as a json response by calling
-//	stats.GetTotalStats which get and return grobal statistics
+//	the AllCountriesName struct as a json response by calling
+//	stats.GetAllCountriesName which get and return grobal statistics
 //
-//	Total grobal covid-19 cases, total grobal deaths, today's grobal
-//	cases, today's grobal deaths, today's percentance increase in todal grobal deaths
-//	and  today's percentance increase in todal grobal cases.
+//	Array of all countries' name that we have covid-19 stats
 //
 //	In this JSON format
 //  {
-//		"todayPerCentOfTotalCases": 7,
-//		"todayPerCentOfTotalDeaths": 6,
-//		"totalCases": 1188489,
-//		"totalDeaths": 64103,
-//		"todayTotalCases": 71846,
-//		"todayTotalDeaths": 4933
+//  	"countries": [
+//   		"Zimbabwe",
+//        	"Zambia",
+//       	"Western Sahara"
+//		]
 //	}
 //
 //	@return array of bytes of the json object
