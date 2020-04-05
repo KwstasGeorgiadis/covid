@@ -76,8 +76,17 @@ func Perform(r *http.Request) ([]byte, int) {
 		return statsErrJSONBody, 400
 	}
 
-	country := curve.CompareDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo)
-	jsonBody, _ := json.Marshal(country)
+	country,err := curve.CompareDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	if err != nil{
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
+		return statsErrJSONBody, 500
+	}
+	
+	jsonBody, jsonBodyErr := json.Marshal(country)
+	if jsonBodyErr != nil {
+		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
+		return errorJSONBody, 500
+	}
 
 	return jsonBody, 200
 }
@@ -137,8 +146,17 @@ func PerformFromFirstDeath(r *http.Request) ([]byte, int) {
 		return statsErrJSONBody, 400
 	}
 
-	country := curve.CompareDeathsFromFirstDeathCountries(compareRequest.NameOne, compareRequest.NameTwo)
-	jsonBody, _ := json.Marshal(country)
+	country,err := curve.CompareDeathsFromFirstDeathCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	if err != nil{
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
+		return statsErrJSONBody, 500
+	}
+
+	jsonBody, jsonBodyErr := json.Marshal(country)
+	if jsonBodyErr != nil {
+		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
+		return errorJSONBody, 500
+	}
 
 	return jsonBody, 200
 }
@@ -199,10 +217,15 @@ func PerformPerDayDeath(r *http.Request) ([]byte, int) {
 		return statsErrJSONBody, 400
 	}
 
-	country := curve.ComparePerDayDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo)
-	jsonBody, err := json.Marshal(country)
-	if err != nil {
-		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
+	country,err := curve.ComparePerDayDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	if err != nil{
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
+		return statsErrJSONBody, 500
+	}
+	
+	jsonBody, jsonBodyErr := json.Marshal(country)
+	if jsonBodyErr != nil {
+		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}
 

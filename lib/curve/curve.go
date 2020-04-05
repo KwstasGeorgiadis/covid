@@ -19,47 +19,62 @@ var (
 	serverConf = pconf.GetAppConfig("./config/covid.json")
 )
 
-func requestData() []structs.CountryCurve {
-	//caching.ok
+func requestData() ([]structs.CountryCurve, error) {
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", serverConf.API.URLHistory, nil)
-
-	if err != nil {
-		fmt.Println(err)
+	req, reqErr := http.NewRequest("GET", serverConf.API.URLHistory, nil)
+	if reqErr != nil {
+		return []structs.CountryCurve{}, reqErr
 	}
-	res, err := client.Do(req)
+
+	res, resError := client.Do(req)
+	if resError != nil {
+		return []structs.CountryCurve{}, resError
+	}
 	defer res.Body.Close()
-	b, _ := ioutil.ReadAll(res.Body)
+
+	b, errorReadAll := ioutil.ReadAll(res.Body)
+	if errorReadAll != nil {
+		return []structs.CountryCurve{}, errorReadAll
+	}
 
 	//var obj Countries
 	keys := make([]structs.CountryCurve, 0)
-	if err := json.Unmarshal(b, &keys); err != nil {
-		panic(err)
+	if errUnmarshal := json.Unmarshal(b, &keys); errUnmarshal != nil {
+		return []structs.CountryCurve{}, errUnmarshal
 	}
 
-	return keys
+	return keys, nil
 }
 
-func GetAllCountries() []structs.CountryCurve {
-	s := requestData()
-	return s
+func GetAllCountries() ([]structs.CountryCurve, error) {
+	data, err := requestData()
+	if err != nil {
+		return []structs.CountryCurve{}, err
+	}
+	return data, nil
 }
 
-func GetCountry(name string) structs.CountryCurve {
-	allCountries := GetAllCountries()
+func GetCountry(name string) (structs.CountryCurve, error) {
+	allCountries, errGetAllCountries := GetAllCountries()
+	if errGetAllCountries != nil {
+		return structs.CountryCurve{}, errGetAllCountries
+	}
 
 	for _, v := range allCountries {
 		if v.Country == name {
-			return v
+			return v, nil
 		}
 	}
 
-	return structs.CountryCurve{}
+	return structs.CountryCurve{}, nil
 }
 
-func GetDataByDate(date string) map[string]interface{} {
+func GetDataByDate(date string) (map[string]interface{}, error) {
 	dic := make(map[string]interface{})
-	allCountries := GetAllCountries()
+	allCountries, errGetAllCountries := GetAllCountries()
+	if errGetAllCountries != nil {
+		return nil, errGetAllCountries
+	}
 
 	var cases float64
 	var deaths float64
@@ -90,13 +105,17 @@ func GetDataByDate(date string) map[string]interface{} {
 			"recovered": recovered,
 		}
 	}
-	return dic
+	return dic, nil
 
 }
 
+//something weird here look into that
 func DeathsPercentByDay(name string) {
 
-	country := GetCountry(name)
+	country, errGetCountry := GetCountry(name)
+	if errGetCountry != nil {
+		fmt.Println(errGetCountry)
+	}
 
 	var xs []float64
 
@@ -104,7 +123,6 @@ func DeathsPercentByDay(name string) {
 		xs = append(xs, v.(float64))
 	}
 	sort.Float64s(xs) //sort keys alphabetically
-	fmt.Println(xs)
 
 	for _, v := range xs {
 		if v == 0 {
@@ -123,10 +141,17 @@ func DeathsPercentByDay(name string) {
 	}
 }
 
-func CompareDeathsCountries(nameOne string, nameTwo string) structs.Compare {
+func CompareDeathsCountries(nameOne string, nameTwo string) (structs.Compare, error) {
 
-	country := GetCountry(nameOne)
-	countryTwo := GetCountry(nameTwo)
+	country, errGetCountryOne := GetCountry(nameOne)
+	if errGetCountryOne != nil {
+		return structs.Compare{}, errGetCountryOne
+	}
+
+	countryTwo, errGetCountryTwo := GetCountry(nameTwo)
+	if errGetCountryTwo != nil {
+		return structs.Compare{}, errGetCountryTwo
+	}
 
 	var countrySortedDeath []float64
 	var countryTwoSortedDeath []float64
@@ -148,13 +173,20 @@ func CompareDeathsCountries(nameOne string, nameTwo string) structs.Compare {
 	countryTwoStruct.Country = nameTwo
 	countryTwoStruct.Data = countryTwoSortedDeath
 
-	return structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
+	return structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}, nil
 }
 
-func CompareDeathsFromFirstDeathCountries(nameOne string, nameTwo string) structs.Compare {
+func CompareDeathsFromFirstDeathCountries(nameOne string, nameTwo string) (structs.Compare, error) {
 
-	country := GetCountry(nameOne)
-	countryTwo := GetCountry(nameTwo)
+	country, errGetCountryOne := GetCountry(nameOne)
+	if errGetCountryOne != nil {
+		return structs.Compare{}, errGetCountryOne
+	}
+
+	countryTwo, errGetCountryTwo := GetCountry(nameTwo)
+	if errGetCountryTwo != nil {
+		return structs.Compare{}, errGetCountryTwo
+	}
 
 	var countrySortedDeath []float64
 	var countryTwoSortedDeath []float64
@@ -182,13 +214,20 @@ func CompareDeathsFromFirstDeathCountries(nameOne string, nameTwo string) struct
 	countryTwoStruct.Country = nameTwo
 	countryTwoStruct.Data = countryTwoSortedDeath
 
-	return structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
+	return structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}, nil
 }
 
-func ComparePerCentDeathsCountries(nameOne string, nameTwo string) structs.Compare {
+func ComparePerCentDeathsCountries(nameOne string, nameTwo string) (structs.Compare, error) {
 
-	country := GetCountry(nameOne)
-	countryTwo := GetCountry(nameTwo)
+	country, errGetCountryOne := GetCountry(nameOne)
+	if errGetCountryOne != nil {
+		return structs.Compare{}, errGetCountryOne
+	}
+
+	countryTwo, errGetCountryTwo := GetCountry(nameTwo)
+	if errGetCountryTwo != nil {
+		return structs.Compare{}, errGetCountryTwo
+	}
 
 	var countrySortedDeath []float64
 	var countryTwoSortedDeath []float64
@@ -217,13 +256,20 @@ func ComparePerCentDeathsCountries(nameOne string, nameTwo string) structs.Compa
 	countryTwoStruct.Country = nameTwo
 	countryTwoStruct.Data = countryTwoSortedDeath
 
-	return structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
+	return structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}, nil
 }
 
-func ComparePerDayDeathsCountries(nameOne string, nameTwo string) structs.Compare {
+func ComparePerDayDeathsCountries(nameOne string, nameTwo string) (structs.Compare, error) {
 
-	country := GetCountry(nameOne)
-	countryTwo := GetCountry(nameTwo)
+	country, errGetCountryOne := GetCountry(nameOne)
+	if errGetCountryOne != nil {
+		return structs.Compare{}, errGetCountryOne
+	}
+
+	countryTwo, errGetCountryTwo := GetCountry(nameTwo)
+	if errGetCountryTwo != nil {
+		return structs.Compare{}, errGetCountryTwo
+	}
 
 	var countrySortedDeath []float64
 	var countryTwoSortedDeath []float64
@@ -271,5 +317,5 @@ func ComparePerDayDeathsCountries(nameOne string, nameTwo string) structs.Compar
 	countryTwoStruct.Country = nameTwo
 	countryTwoStruct.Data = countryTwoSortedDeath
 
-	return structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
+	return structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}, nil
 }
