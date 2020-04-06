@@ -4,7 +4,7 @@
 	},
 	"API" : {
 		"url" : "https://corona.lmao.ninja/countries?sort=country",
-		"url_historical" : "https://corona.lmao.ninja/v2/historical"
+		"url_historical" : "https://corona.lmao.ninja/v2/historical/?lastdays=all"
 	},
 	"redis" : {
 		"namespace" 	: "resque:",

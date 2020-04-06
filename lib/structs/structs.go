@@ -1,7 +1,7 @@
 package structs
 
 /*
-	structs that are used through the service
+	structs that are used across the service
 */
 
 // Countries is being used in controller/sort/sort.go,
