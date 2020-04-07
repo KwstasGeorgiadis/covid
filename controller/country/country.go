@@ -1,4 +1,4 @@
-package countryCon
+package countrycon
 
 import (
 	"encoding/json"
@@ -10,10 +10,46 @@ import (
 	"net/http"
 )
 
+//CountryRequest used for the https request's body
 type CountryRequest struct {
 	Name string `json:"country"`
 }
 
+//Perform used in the /country endpoint's handle to return
+//	the Country struct as a json response by calling
+//	stats.GetCountry which returns
+//
+//	CountryRequest used as the struct for the request
+//		example:
+//			{
+//				"country" : "Greece",
+//			}
+//
+//	Country string value of country name,
+//	cases integer in total confirm cases of the country, todayCases int contains
+//  today's cases in the country, todayDeaths int contains today's deaths
+//  in the country, deaths integer of total confirm deaths in the country,
+//	active integer of total confirm active cases in the country,
+//	critical integer of total confirm in critical conditions cases in the country,
+//  casesPerOneMillion float cases per one millions
+//
+//	In this JSON format
+//	{
+//		"country": "Greece",
+//		"cases": 1061,
+//		"todayCases": 0,
+//		"deaths": 37,
+//		"todayDeaths": 5,
+//		"recovered": 52,
+//		"active": 972,
+//		"critical": 66,
+//		"casesPerOneMillion": 102
+//	}
+//
+//	@param r *http.Request used to get http request's body
+//
+//	@return array of bytes of the json object
+//	@return int http code status
 func Perform(r *http.Request) ([]byte, int) {
 	var countryRequest CountryRequest
 
@@ -25,7 +61,7 @@ func Perform(r *http.Request) ([]byte, int) {
 
 	json.Unmarshal(b, &countryRequest)
 
-	country,err := stats.GetCountry(countryRequest.Name)
+	country, err := stats.GetCountry(countryRequest.Name)
 	if err != nil {
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
 		return statsErrJSONBody, 500

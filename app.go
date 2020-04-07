@@ -14,7 +14,7 @@ import (
 	allcountries "./controller/allcountries"
 	compare "./controller/compare"
 	countriescon "./controller/countries"
-	countryCon "./controller/country"
+	countrycon "./controller/country"
 	totalcon "./controller/totalcon"
 
 	sortCon "./controller/sort"
@@ -55,7 +55,7 @@ func country(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
-	jsonBody, status := countryCon.Perform(r)
+	jsonBody, status := countrycon.Perform(r)
 	w.WriteHeader(status)
 	w.Write(jsonBody)
 }

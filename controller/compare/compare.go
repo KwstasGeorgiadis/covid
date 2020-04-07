@@ -27,7 +27,7 @@ type CompareRequest struct {
 //	the Compare struct as a json response by calling
 //	curve.CompareDeathsCountries which get and return grobal statistics
 //
-//	CompareRequest used as the struct fro the request
+//	CompareRequest used as the struct for the request
 //		example:
 //			{
 //				"countryOne" : "Italy",
@@ -96,7 +96,7 @@ func Perform(r *http.Request) ([]byte, int) {
 //	curve.CompareDeathsFromFirstDeathCountries which get
 //	and return grobal statistics
 //
-//	CompareRequest used as the struct fro the request
+//	CompareRequest used as the struct for the request
 //		example:
 //			{
 //				"countryOne" : "Italy",
@@ -166,7 +166,7 @@ func PerformFromFirstDeath(r *http.Request) ([]byte, int) {
 //	curve.ComparePerDayDeathsCountries which get
 //	and return grobal statistics
 //
-//	CompareRequest used as the struct fro the request
+//	CompareRequest used as the struct for the request
 //		example:
 //			{
 //				"countryOne" : "Italy",
