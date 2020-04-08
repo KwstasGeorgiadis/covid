@@ -17,7 +17,7 @@ import (
 	countrycon "./controller/country"
 	totalcon "./controller/totalcon"
 
-	sortCon "./controller/sort"
+	sortcon "./controller/sort"
 	pconf "./lib/config"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -142,7 +142,7 @@ func countries(w http.ResponseWriter, r *http.Request) {
 func sort(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
-	jsonBody, status := sortCon.Perform(r)
+	jsonBody, status := sortcon.Perform(r)
 	w.WriteHeader(status)
 	w.Write(jsonBody)
 }

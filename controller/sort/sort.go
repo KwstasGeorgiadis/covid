@@ -1,4 +1,4 @@
-package sortCon
+package sortcon
 
 import (
 	"encoding/json"
@@ -9,10 +9,56 @@ import (
 	structs "../../lib/structs"
 )
 
+//SortRequest used for the https request's body
 type SortRequest struct {
 	Type string `json:"type"`
 }
 
+//Perform used in the /sort endpoint's handle to return
+//	the structs.Countries struct as a json response by calling
+//	stats.SortByDeaths() or tats.GetAllCountries() or stats.GetAllCountries()
+//  or stats.SortByCasesPerOneMillion() or stats.SortByCritical() or
+//  stats.SortByActive() or stats.SortByRecovered() or stats.SortByTodayDeaths()
+//  or stats.SortByTodayCases() or stats.SortByCases()
+//  which get and return sorted by field data: array
+//
+//	CompareRequest used as the struct for the request
+//		example:
+//			{
+//				"type" : "deaths"
+//			}
+//
+//	In this JSON format
+//	{
+//		"data": [{
+//			"country": "Italy",
+//			"cases": 124632,
+//			"todayCases": 4805,
+//			"deaths": 15362,
+//			"todayDeaths": 681,
+//			"recovered": 20996,
+//			"active": 88274,
+//			"critical": 3994,
+//			"casesPerOneMillion": 2061
+//		},
+//		{
+//			"country": "Spain",
+//			"cases": 124736,
+//			"todayCases": 5537,
+//			"deaths": 11744,
+//			"todayDeaths": 546,
+//			"recovered": 34219,
+//			"active": 78773,
+//			"critical": 6416,
+//			"casesPerOneMillion": 2668
+//		}]
+//	}
+//
+//
+//	@param r *http.Request used to get http request's body
+//
+//	@return array of bytes of the json object
+//	@return int http code status
 func Perform(r *http.Request) ([]byte, int) {
 	var sortRequest SortRequest
 
