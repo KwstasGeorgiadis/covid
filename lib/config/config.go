@@ -25,7 +25,8 @@ import (
 		"redis" : {
 			"namespace" 	: "resque:",
 			"concurrency"	: 2,
-			"uri" 			: "redis://localhost:6379/",
+			"uri" 			: "redis://localhost",
+			"port"			: ":6379",
 			"queues" 		: ["myqueue","delimited","queues"]
 		}
 	}
@@ -56,6 +57,7 @@ type RedisConfig struct {
 	Concurrency int      `json:"concurrency"`
 	Queues      []string `json:"queues"`
 	Name        string   `json:"name"`
+	Port        string   `json:"port"`
 }
 
 //GetAppConfig reads a spefic file and return the json format of it

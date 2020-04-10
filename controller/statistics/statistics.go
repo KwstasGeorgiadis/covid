@@ -51,7 +51,7 @@ func Perform(r *http.Request) ([]byte, int) {
 		return statsErrJSONBody, 400
 	}
 
-	country, err := stats.StatsPerCountry(countryRequest.Name)
+	country, err := stats.PercentancePerCountry(countryRequest.Name)
 	if err != nil {
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
 		return statsErrJSONBody, 500

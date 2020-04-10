@@ -15,6 +15,9 @@ var (
 	serverConf = pconf.GetAppConfig("./config/covid.json")
 )
 
+// requestData does an HTTP GET request to the third party API that 
+// contains covid-9 stats
+// It returns []structs.Country and any write error encountered.
 func requestData() ([]structs.Country, error) {
 
 	client := &http.Client{}
@@ -42,11 +45,16 @@ func requestData() ([]structs.Country, error) {
 	return keys, nil
 }
 
+// GetAllCountries get n array of all countries that have
+// Covid-19 stats (data starts from date 22/01/2020)
+// Check if there are cached data if not does a HTTP
+// request to the 3rd party API (check requestData())
+// It returns structs.Countries ([] Country) and any write error encountered.
 func GetAllCountries() (structs.Countries, error) {
 	pool := caching.NewPool()
 	conn := pool.Get()
 	defer conn.Close()
-
+	
 	cachedData, cacheGetError := caching.Get(conn, "total")
 	if cacheGetError != nil {
 		return structs.Countries{}, cacheGetError
@@ -71,6 +79,9 @@ func GetAllCountries() (structs.Countries, error) {
 	return s, nil
 }
 
+// GetCountry seach through an array of structs.Country and
+// gets COVID-19 stats for that specific country
+// It returns structs.Country and any write error encountered.
 func GetCountry(name string) (structs.Country, error) {
 	allCountries, allCountriesError := GetAllCountries()
 	if allCountriesError != nil {
@@ -100,9 +111,8 @@ func SortByCases() (structs.Countries, error) {
 	sort.Slice(allCountries, func(i, j int) bool {
 		if allCountries[i].Cases != allCountries[j].Cases {
 			return allCountries[i].Cases > allCountries[j].Cases
-		} else {
-			return allCountries[i].Deaths > allCountries[j].Deaths
 		}
+		return allCountries[i].Deaths > allCountries[j].Deaths
 	})
 
 	s := structs.Countries{Data: allCountries}
@@ -122,9 +132,8 @@ func SortByDeaths() (structs.Countries, error) {
 	sort.Slice(allCountries, func(i, j int) bool {
 		if allCountries[i].Deaths != allCountries[j].Deaths {
 			return allCountries[i].Deaths > allCountries[j].Deaths
-		} else {
-			return allCountries[i].Cases > allCountries[j].Cases
 		}
+		return allCountries[i].Cases > allCountries[j].Cases
 	})
 
 	s := structs.Countries{Data: allCountries}
@@ -239,7 +248,10 @@ func SortByCasesPerOneMillion() (structs.Countries, error) {
 	return s, nil
 }
 
-func StatsPerCountry(name string) (structs.CountryStats, error) {
+// PercentancePerCountry gets a country's COVID-19 stats (getting the from GetCountry)
+// and calculate today's total cases percentance and today's death percentance
+// It returns structs.CountryStats and any write error encountered.
+func PercentancePerCountry(name string) (structs.CountryStats, error) {
 	country, countryError := GetCountry(name)
 	if countryError != nil {
 		return structs.CountryStats{}, nil
@@ -255,6 +267,10 @@ func StatsPerCountry(name string) (structs.CountryStats, error) {
 	return countryStats, nil
 }
 
+// GetTotalStats gets worlds COVID-19 total statistics.
+// The statistics are total cases, total deaths today's total deaths
+// totltoal cases, percentace totay increase in deaths and cases
+// It returns structs.TotalStats and any write error encountered.
 func GetTotalStats() (structs.TotalStats, error) {
 	var totalDeaths = 0
 	var totalCases = 0
@@ -293,6 +309,8 @@ func GetTotalStats() (structs.TotalStats, error) {
 	return totalStatsStuct, nil
 }
 
+// GetAllCountriesName get names of the countries that we have Covid-19 stats
+// It returns structs.AllCountriesName and any write error encountered.
 func GetAllCountriesName() (structs.AllCountriesName, error) {
 	allCountriesArr, allCountriesError := GetAllCountries()
 	if allCountriesError != nil {

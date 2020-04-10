@@ -5,9 +5,9 @@ package curve
 import (
 	"sort"
 
+	caching "../caching"
 	pconf "../config"
 	structs "../structs"
-	//caching "../caching"
 
 	"encoding/json"
 	"fmt"
@@ -37,7 +37,6 @@ func requestData() ([]structs.CountryCurve, error) {
 		return []structs.CountryCurve{}, errorReadAll
 	}
 
-	//var obj Countries
 	keys := make([]structs.CountryCurve, 0)
 	if errUnmarshal := json.Unmarshal(b, &keys); errUnmarshal != nil {
 		return []structs.CountryCurve{}, errUnmarshal
@@ -47,11 +46,27 @@ func requestData() ([]structs.CountryCurve, error) {
 }
 
 func GetAllCountries() ([]structs.CountryCurve, error) {
-	data, err := requestData()
-	if err != nil {
-		return []structs.CountryCurve{}, err
+
+	pool := caching.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
+
+	cachedData, cacheGetError := caching.GetCurveData(conn)
+	if cacheGetError != nil {
+		return []structs.CountryCurve{}, cacheGetError
 	}
-	return data, nil
+
+	if len(cachedData) == 0 {
+		data, err := requestData()
+		if err != nil {
+			return []structs.CountryCurve{}, err
+		}
+		caching.SetCurveData(conn, data)
+
+		return data, err
+	}
+
+	return cachedData, nil
 }
 
 func GetCountry(name string) (structs.CountryCurve, error) {
