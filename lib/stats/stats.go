@@ -1,7 +1,5 @@
 package stats
 
-//TODO add expiration time
-
 import (
 	"encoding/json"
 	"io/ioutil"
@@ -88,6 +86,8 @@ func GetCountry(name string) (structs.Country, error) {
 	return structs.Country{}, nil
 }
 
+// SortByCases sorts an array of Country structs by Country.Cases
+// It returns structs.Countries ([] Country) and any write error encountered.
 func SortByCases() (structs.Countries, error) {
 
 	allCountriesArr, allCountriesError := GetAllCountries()
@@ -109,6 +109,8 @@ func SortByCases() (structs.Countries, error) {
 	return s, nil
 }
 
+// SortByDeaths sorts an array of Country structs by Country.Deaths
+// It returns structs.Countries ([] Country) and any write error encountered.
 func SortByDeaths() (structs.Countries, error) {
 	allCountriesArr, allCountriesError := GetAllCountries()
 	if allCountriesError != nil {
@@ -129,6 +131,8 @@ func SortByDeaths() (structs.Countries, error) {
 	return s, nil
 }
 
+// SortByTodayCases sorts an array of Country structs by Country.TodayCases
+// It returns structs.Countries ([] Country) and any write error encountered.
 func SortByTodayCases() (structs.Countries, error) {
 	allCountriesArr, allCountriesError := GetAllCountries()
 	if allCountriesError != nil {
@@ -145,6 +149,8 @@ func SortByTodayCases() (structs.Countries, error) {
 	return s, nil
 }
 
+// SortByTodayDeaths sorts an array of Country structs by Country.TodayDeaths
+// It returns structs.Countries ([] Country) and any write error encountered.
 func SortByTodayDeaths() (structs.Countries, error) {
 	allCountriesArr, allCountriesError := GetAllCountries()
 	if allCountriesError != nil {
@@ -161,6 +167,8 @@ func SortByTodayDeaths() (structs.Countries, error) {
 	return s, nil
 }
 
+// SortByRecovered sorts an array of Country structs by Country.Recovered
+// It returns structs.Countries ([] Country) and any write error encountered.
 func SortByRecovered() (structs.Countries, error) {
 	allCountriesArr, allCountriesError := GetAllCountries()
 	if allCountriesError != nil {
@@ -177,6 +185,8 @@ func SortByRecovered() (structs.Countries, error) {
 	return s, nil
 }
 
+// SortByActive sorts an array of Country structs by Country.Active
+// It returns structs.Countries ([] Country) and any write error encountered.
 func SortByActive() (structs.Countries, error) {
 	allCountriesArr, allCountriesError := GetAllCountries()
 	if allCountriesError != nil {
@@ -193,6 +203,8 @@ func SortByActive() (structs.Countries, error) {
 	return s, nil
 }
 
+// SortByCritical sorts an array of Country structs by Country.Critical
+// It returns structs.Countries ([] Country) and any write error encountered.
 func SortByCritical() (structs.Countries, error) {
 	allCountriesArr, allCountriesError := GetAllCountries()
 	if allCountriesError != nil {
@@ -209,6 +221,8 @@ func SortByCritical() (structs.Countries, error) {
 	return s, nil
 }
 
+// SortByCasesPerOneMillion sorts an array of Country structs by Country.CasesPerOneMillion
+// It returns structs.Countries ([] Country) and any write error encountered.
 func SortByCasesPerOneMillion() (structs.Countries, error) {
 	allCountriesArr, allCountriesError := GetAllCountries()
 	if allCountriesError != nil {

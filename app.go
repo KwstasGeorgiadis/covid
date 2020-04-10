@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"net/http"
 
-	statisticsCon "./controller/statistics"
+	statisticscon "./controller/statistics"
 
 	allcountries "./controller/allcountries"
 	compare "./controller/compare"
@@ -155,7 +155,7 @@ func statistics(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
-	jsonBody, status := statisticsCon.Perform(r)
+	jsonBody, status := statisticscon.Perform(r)
 	w.WriteHeader(status)
 	w.Write(jsonBody)
 }

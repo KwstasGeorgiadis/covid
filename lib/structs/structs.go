@@ -39,6 +39,7 @@ type CompareData struct {
 type CountryCurve struct {
 	Country  string         `json:"country"`
 	Timeline TimelineStruct `json:"timeline"`
+	Province string         `json:"province"`
 }
 
 // TimelineStruct is being used in lib/curve/curve.go

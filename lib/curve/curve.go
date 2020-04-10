@@ -60,6 +60,14 @@ func GetCountry(name string) (structs.CountryCurve, error) {
 		return structs.CountryCurve{}, errGetAllCountries
 	}
 
+	if name == "UK" {
+		for _, v := range allCountries {
+			if v.Country == name && len(v.Province) == 0 {
+				return v, nil
+			}
+		}
+	}
+
 	for _, v := range allCountries {
 		if v.Country == name {
 			return v, nil

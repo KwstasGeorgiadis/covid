@@ -1,6 +1,7 @@
 package caching
 
 //TODO adding expiration time - need to be more dynamic
+//TODO add expiration time on requestDat for redis
 
 /*
 	Caching the results of the external API request for covid-19 data

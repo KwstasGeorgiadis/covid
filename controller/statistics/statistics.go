@@ -1,5 +1,6 @@
-package statisticsCon
+package statisticscon
 
+// THIS oNE NEEDS ATTENTION
 import (
 	"encoding/json"
 
@@ -10,10 +11,31 @@ import (
 	"net/http"
 )
 
+//CountryRequest used for the https request's body
 type CountryRequest struct {
 	Name string `json:"country"`
 }
 
+//Perform used in the /stats endpoint's handle to return
+//	the structs.Countries struct as a json response by calling
+//	stats.SortByDeaths() or tats.GetAllCountries() or stats.GetAllCountries()
+//  or stats.SortByCasesPerOneMillion() or stats.SortByCritical() or
+//  which get and return sorted by field data: array
+//
+//	CompareRequest used as the struct for the request
+//		example:
+//			{
+//				"country" : "deaths"
+//			}
+//
+//	In this JSON format
+//
+//
+//
+//	@param r *http.Request used to get http request's body
+//
+//	@return array of bytes of the json object
+//	@return int http code status
 func Perform(r *http.Request) ([]byte, int) {
 	var countryRequest CountryRequest
 
@@ -28,7 +50,7 @@ func Perform(r *http.Request) ([]byte, int) {
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: unmarshallError.Error(), Code: 400})
 		return statsErrJSONBody, 400
 	}
-	
+
 	country, err := stats.StatsPerCountry(countryRequest.Name)
 	if err != nil {
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
