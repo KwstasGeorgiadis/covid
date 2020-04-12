@@ -45,7 +45,7 @@ func requestData() ([]structs.Country, error) {
 	return keys, nil
 }
 
-// GetAllCountries get n array of all countries that have
+// GetAllCountries get an array of all countries that have
 // Covid-19 stats (data starts from date 22/01/2020)
 // Check if there are cached data if not does a HTTP
 // request to the 3rd party API (check requestData())

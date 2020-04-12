@@ -10,7 +10,6 @@ import (
 	structs "../structs"
 
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 )
@@ -19,7 +18,10 @@ var (
 	serverConf = pconf.GetAppConfig("./config/covid.json")
 )
 
-func requestData() ([]structs.CountryCurve, error) {
+// requestData does an HTTP GET request to the third party API that 
+// contains covid-9 stats ' history (per day from 22/01/2020)
+// It returns []structs.Country and any write error encountered.
+func requestHistoryData() ([]structs.CountryCurve, error) {
 	client := &http.Client{}
 	req, reqErr := http.NewRequest("GET", serverConf.API.URLHistory, nil)
 	if reqErr != nil {
@@ -45,6 +47,11 @@ func requestData() ([]structs.CountryCurve, error) {
 	return keys, nil
 }
 
+// GetAllCountries returns an array of all countries per day
+// Covid-19 stats (data starts from date 22/01/2020)
+// Check if there are cached data if not does a HTTP
+// request to the 3rd party API (check requestHistoryData())
+// It returns []structs.CountryCurve and any write error encountered.
 func GetAllCountries() ([]structs.CountryCurve, error) {
 
 	pool := caching.NewPool()
@@ -57,7 +64,7 @@ func GetAllCountries() ([]structs.CountryCurve, error) {
 	}
 
 	if len(cachedData) == 0 {
-		data, err := requestData()
+		data, err := requestHistoryData()
 		if err != nil {
 			return []structs.CountryCurve{}, err
 		}
@@ -69,99 +76,29 @@ func GetAllCountries() ([]structs.CountryCurve, error) {
 	return cachedData, nil
 }
 
+// GetCountry seach through an array of structs.CountryCurve and
+// gets COVID-19 per day stats for that specific country
+// It returns structs.CountryCurve
+ and any write error encountered.
 func GetCountry(name string) (structs.CountryCurve, error) {
 	allCountries, errGetAllCountries := GetAllCountries()
 	if errGetAllCountries != nil {
 		return structs.CountryCurve{}, errGetAllCountries
 	}
 
-	if name == "UK" {
-		for _, v := range allCountries {
-			if v.Country == name && len(v.Province) == 0 {
+	for _, v := range allCountries {
+		if v.Country == "UK" {
+			if len(v.Province) == 0 {
 				return v, nil
 			}
+			continue
 		}
-	}
-
-	for _, v := range allCountries {
 		if v.Country == name {
 			return v, nil
 		}
 	}
 
 	return structs.CountryCurve{}, nil
-}
-
-func GetDataByDate(date string) (map[string]interface{}, error) {
-	dic := make(map[string]interface{})
-	allCountries, errGetAllCountries := GetAllCountries()
-	if errGetAllCountries != nil {
-		return nil, errGetAllCountries
-	}
-
-	var cases float64
-	var deaths float64
-	var recovered float64
-
-	for _, v := range allCountries {
-
-		for kk, vv := range v.Timeline.Cases.(map[string]interface{}) {
-			if kk == date {
-				cases = vv.(float64)
-			}
-		}
-
-		for kk, vv := range v.Timeline.Deaths.(map[string]interface{}) {
-			if kk == date {
-				deaths = vv.(float64)
-			}
-		}
-
-		for kk, vv := range v.Timeline.Recovered.(map[string]interface{}) {
-			if kk == date {
-				recovered = vv.(float64)
-			}
-		}
-		dic[v.Country] = map[string]interface{}{
-			"cases":     cases,
-			"deaths":    deaths,
-			"recovered": recovered,
-		}
-	}
-	return dic, nil
-
-}
-
-//something weird here look into that
-func DeathsPercentByDay(name string) {
-
-	country, errGetCountry := GetCountry(name)
-	if errGetCountry != nil {
-		fmt.Println(errGetCountry)
-	}
-
-	var xs []float64
-
-	for _, v := range country.Timeline.Deaths.(map[string]interface{}) {
-		xs = append(xs, v.(float64))
-	}
-	sort.Float64s(xs) //sort keys alphabetically
-
-	for _, v := range xs {
-		if v == 0 {
-			continue
-		}
-
-	}
-
-	for i := 0; i < len(xs); i++ {
-		if xs[i] == 0 {
-			continue
-		}
-		if i < (len(xs)-1) && xs[i-1] > 0 {
-			fmt.Println(100 * ((float64(xs[i]) - float64(xs[i-1])) / float64(xs[i-1])))
-		}
-	}
 }
 
 func CompareDeathsCountries(nameOne string, nameTwo string) (structs.Compare, error) {
