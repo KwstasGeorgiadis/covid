@@ -17,8 +17,8 @@ import (
 	"net/http"
 )
 
-//CompareRequest used for the https request's body
-type CompareRequest struct {
+//Request used for the https request's body
+type Request struct {
 	NameOne string `json:"countryOne"`
 	NameTwo string `json:"countryTwo"`
 }
@@ -27,7 +27,7 @@ type CompareRequest struct {
 //	the Compare struct as a json response by calling
 //	curve.CompareDeathsCountries which get and return grobal statistics
 //
-//	CompareRequest used as the struct for the request
+//	Request used as the struct for the request
 //		example:
 //			{
 //				"countryOne" : "Italy",
@@ -63,7 +63,7 @@ type CompareRequest struct {
 //	@return array of bytes of the json object
 //	@return int http code status
 func Perform(r *http.Request) ([]byte, int) {
-	var compareRequest CompareRequest
+	var compareRequest Request
 	b, errIoutilReadAll := ioutil.ReadAll(r.Body)
 	if errIoutilReadAll != nil {
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: errIoutilReadAll.Error(), Code: 500})
@@ -96,7 +96,7 @@ func Perform(r *http.Request) ([]byte, int) {
 //	curve.CompareDeathsFromFirstDeathCountries which get
 //	and return grobal statistics
 //
-//	CompareRequest used as the struct for the request
+//	Request used as the struct for the request
 //		example:
 //			{
 //				"countryOne" : "Italy",
@@ -133,7 +133,7 @@ func Perform(r *http.Request) ([]byte, int) {
 //	@return array of bytes of the json object
 //	@return int http code status
 func PerformFromFirstDeath(r *http.Request) ([]byte, int) {
-	var compareRequest CompareRequest
+	var compareRequest Request
 	b, errIoutilReadAll := ioutil.ReadAll(r.Body)
 	if errIoutilReadAll != nil {
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: errIoutilReadAll.Error(), Code: 500})
@@ -166,7 +166,7 @@ func PerformFromFirstDeath(r *http.Request) ([]byte, int) {
 //	curve.ComparePerDayDeathsCountries which get
 //	and return grobal statistics
 //
-//	CompareRequest used as the struct for the request
+//	Request used as the struct for the request
 //		example:
 //			{
 //				"countryOne" : "Italy",
@@ -203,7 +203,7 @@ func PerformFromFirstDeath(r *http.Request) ([]byte, int) {
 //	@return array of bytes of the json object
 //	@return int http code status
 func PerformPerDayDeath(r *http.Request) ([]byte, int) {
-	var compareRequest CompareRequest
+	var compareRequest Request
 
 	b, errIoutilReadAll := ioutil.ReadAll(r.Body)
 	if errIoutilReadAll != nil {
@@ -218,6 +218,77 @@ func PerformPerDayDeath(r *http.Request) ([]byte, int) {
 	}
 
 	country, err := curve.ComparePerDayDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	if err != nil {
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
+		return statsErrJSONBody, 500
+	}
+
+	jsonBody, jsonBodyErr := json.Marshal(country)
+	if jsonBodyErr != nil {
+		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
+		return errorJSONBody, 500
+	}
+
+	return jsonBody, 200
+}
+
+//PerformPercentangePerDayDeath used in the /compare/firstdeath endpoint's handle to return
+//	the Compare struct as a json response by calling
+//	curve.ComparePerCentDeathsCountries which get
+//	and return grobal statistics
+//
+//	Request used as the struct for the request
+//		example:
+//			{
+//				"countryOne" : "Italy",
+//				"countryTwo" : "Spain"
+//			}
+//
+//	Data structure that returns for two countries the names
+//  and an array that contains incremental percentage per day. It is sorted
+//  and the first element is for the date when the country
+//  had their first death
+//
+//	In this JSON format
+//  {
+//    "countryOne": {
+//        "country": "Spain",
+//        "data": [
+//            5,
+//            10,
+//		   	  17
+//		   ]
+//		},
+//		"countryTwo": {
+//      	"country": "Italy",
+//       	"data": [
+//            	197,
+//            	233,
+//				366
+//			]
+//		}
+//	}
+//
+//	@param r *http.Request used to get http request's body
+//
+//	@return array of bytes of the json object
+//	@return int http code status
+func PerformPercentangePerDayDeath(r *http.Request) ([]byte, int) {
+	var compareRequest Request
+
+	b, errIoutilReadAll := ioutil.ReadAll(r.Body)
+	if errIoutilReadAll != nil {
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: errIoutilReadAll.Error(), Code: 500})
+		return statsErrJSONBody, 500
+	}
+
+	unmarshallError := json.Unmarshal(b, &compareRequest)
+	if unmarshallError != nil {
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: unmarshallError.Error(), Code: 400})
+		return statsErrJSONBody, 400
+	}
+
+	country, err := curve.ComparePerCentDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo)
 	if err != nil {
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
 		return statsErrJSONBody, 500

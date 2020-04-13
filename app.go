@@ -372,6 +372,56 @@ func comparPerDayDeathHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
+	POST request to /compare/percent endpoint
+
+	Request:
+
+	{
+		"countryOne" : "Spain",
+		"countryTwo" : "Italy"
+	}
+
+	Response
+
+	{
+    "countryOne": {
+        "country": "Spain",
+        "data": [
+            1,
+            2,
+            3,
+            7,
+            12428,
+            13155,
+            13915,
+            14681
+        ]
+    },
+    "countryTwo": {
+        "country": "Italy",
+        "data": [
+            1,
+            2,
+            3,
+            7,
+            12428,
+            13155,
+            13915,
+            14681
+        ]
+    }
+}
+
+*/
+func comparePercantagePerDayDeathHandle(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	jsonBody, status := compare.PerformPercentangePerDayDeath(r)
+	w.WriteHeader(status)
+	w.Write(jsonBody)
+}
+
+/*
 	Running the server in port 9080 (getting the value from ./config/covid.json )
 
 	"server" : {
@@ -407,6 +457,7 @@ func main() {
 	router.HandleFunc("/compare", compareHandle).Methods("POST")
 	router.HandleFunc("/compare/firstdeath", compareFromFirstDeathHandle).Methods("POST")
 	router.HandleFunc("/compare/perday", comparPerDayDeathHandle).Methods("POST")
+	router.HandleFunc("/compare/percent", comparePercantagePerDayDeathHandle).Methods("POST")
 
 	c := cors.New(cors.Options{
 		AllowCredentials: true,
