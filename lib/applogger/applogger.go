@@ -12,6 +12,7 @@ import (
 	"github.com/gofrs/uuid"
 )
 
+// logNDJOSNHTTP json format for logs in lib and controller packages
 type logNDJOSN struct {
 	PID        string    `json:"pid"`
 	Level      string    `json:"level"`
@@ -21,6 +22,7 @@ type logNDJOSN struct {
 	DOB        time.Time `json:"time"`
 }
 
+// logNDJOSNHTTP json format for logs in the main package
 type logNDJOSNHTTP struct {
 	PID        string    `json:"pid"`
 	Level      string    `json:"level"`
@@ -48,6 +50,7 @@ func init() {
 	errorLogger = log.New(generalLog, "", 0)
 }
 
+// Log writting to a ndjson file logs for lib and controller packages
 func Log(level string, logPackage string, logFunc string, message string) {
 
 	s1 := time.Now()
@@ -58,6 +61,9 @@ func Log(level string, logPackage string, logFunc string, message string) {
 	generalLogger.Println(string(res2B))
 }
 
+// LogHTTP writting to a ndjson file logs for the main package
+// the difference is that we are recording the http status
+// and the duration of the request
 func LogHTTP(level string, logPackage string, logFunc string, message string, code int, duration float64) {
 
 	s1 := time.Now()
