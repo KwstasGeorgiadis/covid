@@ -8,7 +8,7 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"strconv"
+	"time"
 
 	statisticscon "./controller/statistics"
 	"./lib/applogger"
@@ -54,14 +54,15 @@ var (
 
 */
 func country(w http.ResponseWriter, r *http.Request) {
-
+	start := time.Now()
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	jsonBody, status := countrycon.Perform(r)
 	w.WriteHeader(status)
 	w.Write(jsonBody)
-	applogger.Log("INFO", "main", "country",
-		"Endpoint /country called with response status: "+strconv.Itoa(status)+" with JSON body "+string(jsonBody))
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "main", "country",
+		"Endpoint /country called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 /*
@@ -95,17 +96,17 @@ func country(w http.ResponseWriter, r *http.Request) {
 			}
 		]
 	}
-
 */
 func countries(w http.ResponseWriter, r *http.Request) {
-
+	start := time.Now()
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	jsonBody, status := countriescon.Perform()
 	w.WriteHeader(status)
 	w.Write(jsonBody)
-	applogger.Log("INFO", "main", "countries",
-		"Endpoint /countries called with response status: "+strconv.Itoa(status)+" with JSON body "+string(jsonBody))
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "main", "countries",
+		"Endpoint /countries called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 /*
@@ -146,13 +147,15 @@ func countries(w http.ResponseWriter, r *http.Request) {
 
 */
 func sort(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	jsonBody, status := sortcon.Perform(r)
 	w.WriteHeader(status)
 	w.Write(jsonBody)
-	applogger.Log("INFO", "main", "sort",
-		"Endpoint /sort called with response status: "+strconv.Itoa(status)+" with JSON body "+string(jsonBody))
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "main", "sort",
+		"Endpoint /sort called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 /*
@@ -160,14 +163,15 @@ func sort(w http.ResponseWriter, r *http.Request) {
 
 */
 func statistics(w http.ResponseWriter, r *http.Request) {
-
+	start := time.Now()
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	jsonBody, status := statisticscon.Perform(r)
 	w.WriteHeader(status)
 	w.Write(jsonBody)
-	applogger.Log("INFO", "main", "statistics",
-		"Endpoint /stats called with response status: "+strconv.Itoa(status)+" with JSON body "+string(jsonBody))
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "main", "statistics",
+		"Endpoint /stats called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 /*
@@ -185,13 +189,15 @@ func statistics(w http.ResponseWriter, r *http.Request) {
 	}
 */
 func totalStatistics(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	jsonBody, status := totalcon.Perform()
 	w.WriteHeader(status)
 	w.Write(jsonBody)
-	applogger.Log("INFO", "main", "totalStatistics",
-		"Endpoint /total called with response status: "+strconv.Itoa(status)+" with JSON body "+string(jsonBody))
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "main", "totalStatistics",
+		"Endpoint /total called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 /*
@@ -226,13 +232,15 @@ func totalStatistics(w http.ResponseWriter, r *http.Request) {
 
 */
 func allCountriesHandle(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	jsonBody, status := allcountries.Perform()
 	w.WriteHeader(status)
 	w.Write(jsonBody)
-	applogger.Log("INFO", "main", "allCountriesHandle",
-		"Endpoint /countries called with response status: "+strconv.Itoa(status)+" with JSON body "+string(jsonBody))
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "main", "allCountriesHandle",
+		"Endpoint /countries called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 /*
@@ -278,13 +286,15 @@ func allCountriesHandle(w http.ResponseWriter, r *http.Request) {
 
 */
 func compareHandle(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	jsonBody, status := compare.Perform(r)
 	w.WriteHeader(status)
 	w.Write(jsonBody)
-	applogger.Log("INFO", "main", "compareHandle",
-		"Endpoint /compare called with response status: "+strconv.Itoa(status)+" with JSON body "+string(jsonBody))
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "main", "compareHandle",
+		"Endpoint /compare called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 /*
@@ -327,16 +337,17 @@ func compareHandle(w http.ResponseWriter, r *http.Request) {
         ]
     }
 }
-
 */
 func compareFromFirstDeathHandle(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	jsonBody, status := compare.PerformFromFirstDeath(r)
 	w.WriteHeader(status)
 	w.Write(jsonBody)
-	applogger.Log("INFO", "main", "compareFromFirstDeathHandle",
-		"Endpoint /compare/firstdeath called with response status: "+strconv.Itoa(status)+" with JSON body "+string(jsonBody))
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "main", "compareFromFirstDeathHandle",
+		"Endpoint /compare/firstdeath called with response JSON body "+string(jsonBody), status, elapsed)
 
 }
 
@@ -380,17 +391,17 @@ func compareFromFirstDeathHandle(w http.ResponseWriter, r *http.Request) {
         ]
     }
 }
-
 */
 func comparePerDayDeathHandle(w http.ResponseWriter, r *http.Request) {
-
+	start := time.Now()
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	jsonBody, status := compare.PerformPerDayDeath(r)
 	w.WriteHeader(status)
 	w.Write(jsonBody)
-	applogger.Log("INFO", "main", "comparePerDayDeathHandle",
-		"Endpoint /compare/perday called with response status: "+strconv.Itoa(status)+" with JSON body "+string(jsonBody))
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "main", "comparePerDayDeathHandle",
+		"Endpoint /compare/perday called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 /*
@@ -433,16 +444,17 @@ func comparePerDayDeathHandle(w http.ResponseWriter, r *http.Request) {
         ]
     }
 }
-
 */
 func comparePercantagePerDayDeathHandle(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	jsonBody, status := compare.PerformPercentangePerDayDeath(r)
 	w.WriteHeader(status)
 	w.Write(jsonBody)
-	applogger.Log("INFO", "main", "comparePercantagePerDayDeathHandle",
-		"Endpoint /compare/percent called with response status: "+strconv.Itoa(status)+" with JSON body "+string(jsonBody))
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "main", "comparePercantagePerDayDeathHandle",
+		"Endpoint /compare/percent called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 /*

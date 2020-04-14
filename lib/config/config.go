@@ -16,7 +16,8 @@ import (
 
 	{
 		"server" : {
-			"port" : ":6660"
+			"port" : ":6660",
+			"log" : "/var/log/covid/app.ndjson"
 		},
 		"API" : {
 			"url" : "https://corona.lmao.ninja/countries?sort=country"
@@ -48,6 +49,7 @@ type APIConfig struct {
 //ServerConfig contains the data for the server like port
 type ServerConfig struct {
 	Port string `json:"port"`
+	Log  string `json:"log"`
 }
 
 //RedisConfig contains the data for the redis server

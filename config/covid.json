@@ -1,6 +1,7 @@
 {
 	"server" : {
-		"port" : ":9080"
+		"port" : ":9080",
+		"log" : "/var/log/covid/app.ndjson"
 	},
 	"API" : {
 		"url" : "https://corona.lmao.ninja/countries?sort=country",
