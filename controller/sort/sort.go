@@ -2,9 +2,11 @@ package sortcon
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
+	applogger "../../lib/applogger"
 	stats "../../lib/stats"
 	structs "../../lib/structs"
 )
@@ -66,9 +68,13 @@ func Perform(r *http.Request) ([]byte, int) {
 
 	unmarshallError := json.Unmarshal(b, &sortRequest)
 	if unmarshallError != nil {
+		applogger.Log("ERROR", "sortcon", "Perform", unmarshallError.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: unmarshallError.Error(), Code: 400})
 		return statsErrJSONBody, 400
 	}
+
+	applogger.Log("INFO", "sortcon", "Perform",
+		fmt.Sprintf("Getting this request %v", sortRequest))
 
 	sortType := sortRequest.Type
 	var countries structs.Countries
@@ -78,54 +84,63 @@ func Perform(r *http.Request) ([]byte, int) {
 	case "deaths":
 		countries, countriesError = stats.SortByDeaths()
 		if countriesError != nil {
+			applogger.Log("ERROR", "sortcon", "Perform", "Deaths sorting error: "+countriesError.Error())
 			statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: countriesError.Error(), Code: 500})
 			return statsErrJSONBody, 500
 		}
 	case "cases":
 		countries, countriesError = stats.SortByCases()
 		if errIoutilReadAll != nil {
+			applogger.Log("ERROR", "sortcon", "Perform", "Cases sorting error: "+countriesError.Error())
 			statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: countriesError.Error(), Code: 500})
 			return statsErrJSONBody, 500
 		}
 	case "todayCases":
 		countries, countriesError = stats.SortByTodayCases()
 		if countriesError != nil {
+			applogger.Log("ERROR", "sortcon", "Perform", "Today cases sorting error: "+countriesError.Error())
 			statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: countriesError.Error(), Code: 500})
 			return statsErrJSONBody, 500
 		}
 	case "todayDeaths":
 		countries, countriesError = stats.SortByTodayDeaths()
 		if countriesError != nil {
+			applogger.Log("ERROR", "sortcon", "Perform", "Today deaths sorting error: "+countriesError.Error())
 			statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: countriesError.Error(), Code: 500})
 			return statsErrJSONBody, 500
 		}
 	case "recovered":
 		countries, countriesError = stats.SortByRecovered()
 		if errIoutilReadAll != nil {
+			applogger.Log("ERROR", "sortcon", "Perform", "Recovered sorting error: "+countriesError.Error())
 			statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: countriesError.Error(), Code: 500})
 			return statsErrJSONBody, 500
 		}
 	case "active":
 		countries, countriesError = stats.SortByActive()
 		if errIoutilReadAll != nil {
+			applogger.Log("ERROR", "sortcon", "Perform", "Active sorting error: "+countriesError.Error())
 			statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: countriesError.Error(), Code: 500})
 			return statsErrJSONBody, 500
 		}
 	case "critical":
 		countries, countriesError = stats.SortByCritical()
 		if countriesError != nil {
+			applogger.Log("ERROR", "sortcon", "Perform", "Critical sorting error: "+countriesError.Error())
 			statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: countriesError.Error(), Code: 500})
 			return statsErrJSONBody, 500
 		}
 	case "casesPerOneMillion":
 		countries, countriesError = stats.SortByCasesPerOneMillion()
 		if countriesError != nil {
+			applogger.Log("ERROR", "sortcon", "Perform", "Cases per one million sorting error: "+countriesError.Error())
 			statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: countriesError.Error(), Code: 500})
 			return statsErrJSONBody, 500
 		}
 	default:
 		countries, countriesError = stats.GetAllCountries()
 		if countriesError != nil {
+			applogger.Log("ERROR", "sortcon", "Perform", "Default sorting error: "+countriesError.Error())
 			statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: countriesError.Error(), Code: 500})
 			return statsErrJSONBody, 500
 		}
@@ -133,8 +148,12 @@ func Perform(r *http.Request) ([]byte, int) {
 
 	jsonBody, err := json.Marshal(countries)
 	if err != nil {
+		applogger.Log("ERROR", "sortcon", "Perform", err.Error())
 		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
 		return errorJSONBody, 500
 	}
+
+	applogger.Log("INFO", "sortcon", "Perform",
+		"Returning status: 200 with JSONbody "+string(jsonBody))
 	return jsonBody, 200
 }

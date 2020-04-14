@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"sort"
 
+	applogger "../applogger"
 	caching "../caching"
 	pconf "../config"
 	structs "../structs"
@@ -24,27 +25,35 @@ var (
 // It returns []structs.Country and any write error encountered.
 func requestHistoryData() ([]structs.CountryCurve, error) {
 	client := &http.Client{}
-	req, reqErr := http.NewRequest("GET", serverConf.API.URLHistory, nil)
+	requestURL := serverConf.API.URLHistory
+
+	req, reqErr := http.NewRequest("GET", requestURL, nil)
 	if reqErr != nil {
+		applogger.Log("ERROR", "curve", "requestHistoryData", reqErr.Error())
 		return []structs.CountryCurve{}, reqErr
 	}
 
 	res, resError := client.Do(req)
 	if resError != nil {
+		applogger.Log("ERROR", "curve", "requestHistoryData", resError.Error())
 		return []structs.CountryCurve{}, resError
 	}
 	defer res.Body.Close()
 
 	b, errorReadAll := ioutil.ReadAll(res.Body)
 	if errorReadAll != nil {
+		applogger.Log("ERROR", "curve", "requestHistoryData", errorReadAll.Error())
 		return []structs.CountryCurve{}, errorReadAll
 	}
 
 	keys := make([]structs.CountryCurve, 0)
 	if errUnmarshal := json.Unmarshal(b, &keys); errUnmarshal != nil {
+		applogger.Log("ERROR", "curve", "requestHistoryData", errUnmarshal.Error())
 		return []structs.CountryCurve{}, errUnmarshal
 	}
 
+	applogger.Log("INFO", "curve", "requestHistoryData",
+		fmt.Sprintf("Get reqeust to %s and getting response %v", requestURL, keys))
 	return keys, nil
 }
 
@@ -61,17 +70,21 @@ func GetAllCountries() ([]structs.CountryCurve, error) {
 
 	cachedData, cacheGetError := caching.GetCurveData(conn)
 	if cacheGetError != nil {
+		applogger.Log("ERROR", "curve", "GetAllCountries", cacheGetError.Error())
 		return []structs.CountryCurve{}, cacheGetError
 	}
 
 	if len(cachedData) == 0 {
+		applogger.Log("INFO", "stats", "GetAllCountries", "Request data instead of getting cached data")
 		data, err := requestHistoryData()
 		if err != nil {
+			applogger.Log("ERROR", "curve", "GetAllCountries", err.Error())
 			return []structs.CountryCurve{}, err
 		}
+		applogger.Log("INFO", "curve", "GetAllCountries", fmt.Sprintf("Setting cache data %v for key total", data))
 		caching.SetCurveData(conn, data)
-
-		return data, err
+		applogger.Log("INFO", "curve", "GetAllCountries", fmt.Sprintf("Getting cache data %v instead of requesting it", cachedData))
+		return data, nil
 	}
 
 	return cachedData, nil
@@ -83,19 +96,26 @@ func GetAllCountries() ([]structs.CountryCurve, error) {
 func GetCountry(name string) (structs.CountryCurve, error) {
 	allCountries, errGetAllCountries := GetAllCountries()
 	if errGetAllCountries != nil {
+		applogger.Log("ERROR", "curve", "GetCountry", errGetAllCountries.Error())
 		return structs.CountryCurve{}, errGetAllCountries
 	}
+
 	for _, v := range allCountries {
 		if name == "UK" && v.Country == "UK" {
 			if len(v.Province) == 0 {
+				applogger.Log("INFO", "curve", "GetCountry", fmt.Sprintf("Returning country %v", v))
 				return v, nil
 			}
 			continue
 		}
+
 		if v.Country == name {
+			applogger.Log("INFO", "curve", "GetCountry", fmt.Sprintf("Returning country %v", v))
 			return v, nil
 		}
 	}
+
+	applogger.Log("WARN", "curve", "GetCountry", "Returning empty country")
 	return structs.CountryCurve{}, nil
 }
 
@@ -106,11 +126,13 @@ func CompareDeathsCountries(nameOne string, nameTwo string) (structs.Compare, er
 
 	country, errGetCountryOne := GetCountry(nameOne)
 	if errGetCountryOne != nil {
+		applogger.Log("ERROR", "curve", "CompareDeathsCountries", errGetCountryOne.Error())
 		return structs.Compare{}, errGetCountryOne
 	}
 
 	countryTwo, errGetCountryTwo := GetCountry(nameTwo)
 	if errGetCountryTwo != nil {
+		applogger.Log("ERROR", "curve", "CompareDeathsCountries", errGetCountryTwo.Error())
 		return structs.Compare{}, errGetCountryTwo
 	}
 
@@ -134,7 +156,10 @@ func CompareDeathsCountries(nameOne string, nameTwo string) (structs.Compare, er
 	countryTwoStruct.Country = nameTwo
 	countryTwoStruct.Data = countryTwoSortedDeath
 
-	return structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}, nil
+	compareStructs := structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
+
+	applogger.Log("INFO", "curve", "CompareDeathsCountries", fmt.Sprintf("Returning country comperation %v", compareStructs))
+	return compareStructs, nil
 }
 
 // CompareDeathsFromFirstDeathCountries returns two integer arrays (one per country passed
@@ -144,11 +169,13 @@ func CompareDeathsFromFirstDeathCountries(nameOne string, nameTwo string) (struc
 
 	country, errGetCountryOne := GetCountry(nameOne)
 	if errGetCountryOne != nil {
+		applogger.Log("ERROR", "curve", "CompareDeathsFromFirstDeathCountries", errGetCountryOne.Error())
 		return structs.Compare{}, errGetCountryOne
 	}
 
 	countryTwo, errGetCountryTwo := GetCountry(nameTwo)
 	if errGetCountryTwo != nil {
+		applogger.Log("ERROR", "curve", "CompareDeathsFromFirstDeathCountries", errGetCountryTwo.Error())
 		return structs.Compare{}, errGetCountryTwo
 	}
 
@@ -178,21 +205,25 @@ func CompareDeathsFromFirstDeathCountries(nameOne string, nameTwo string) (struc
 	countryTwoStruct.Country = nameTwo
 	countryTwoStruct.Data = countryTwoSortedDeath
 
-	return structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}, nil
+	compareStructs := structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
+
+	applogger.Log("INFO", "curve", "CompareDeathsFromFirstDeathCountries", fmt.Sprintf("Returning country comperation %v", compareStructs))
+	return compareStructs, nil
 }
 
 // ComparePerCentDeathsCountries returns two integer arrays (one per country passed
 // in parameter) which contain incremental percentage of deaths from  the first confirm death.
 // It returns structs.Compare and any write error encountered.
 func ComparePerCentDeathsCountries(nameOne string, nameTwo string) (structs.Compare, error) {
-
 	country, errGetCountryOne := GetCountry(nameOne)
 	if errGetCountryOne != nil {
+		applogger.Log("ERROR", "curve", "ComparePerCentDeathsCountries", errGetCountryOne.Error())
 		return structs.Compare{}, errGetCountryOne
 	}
 
 	countryTwo, errGetCountryTwo := GetCountry(nameTwo)
 	if errGetCountryTwo != nil {
+		applogger.Log("ERROR", "curve", "ComparePerCentDeathsCountries", errGetCountryTwo.Error())
 		return structs.Compare{}, errGetCountryTwo
 	}
 
@@ -200,6 +231,7 @@ func ComparePerCentDeathsCountries(nameOne string, nameTwo string) (structs.Comp
 	var countryTwoSortedDeath []float64
 
 	for _, v := range country.Timeline.Deaths.(map[string]interface{}) {
+
 		if v.(float64) == 0 {
 			continue
 		}
@@ -211,6 +243,7 @@ func ComparePerCentDeathsCountries(nameOne string, nameTwo string) (structs.Comp
 		}
 		countryTwoSortedDeath = append(countryTwoSortedDeath, v.(float64))
 	}
+
 	sort.Float64s(countrySortedDeath)
 	sort.Float64s(countryTwoSortedDeath)
 
@@ -222,8 +255,6 @@ func ComparePerCentDeathsCountries(nameOne string, nameTwo string) (structs.Comp
 		countrySortedDeath = append(countrySortedDeath, v.(float64))
 	}
 	for _, v := range countryTwo.Timeline.Deaths.(map[string]interface{}) {
-
-		fmt.Println(v)
 		countryTwoSortedDeath = append(countryTwoSortedDeath, v.(float64))
 	}
 
@@ -232,7 +263,10 @@ func ComparePerCentDeathsCountries(nameOne string, nameTwo string) (structs.Comp
 	countryTwoStruct.Country = nameTwo
 	countryTwoStruct.Data = countryTwoSortedDeath
 
-	return structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}, nil
+	compareStructs := structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
+	applogger.Log("INFO", "curve", "CompareDeathsFromFirstDeathCountries", fmt.Sprintf("Returning country comperation %v", compareStructs))
+
+	return compareStructs, nil
 }
 
 // ComparePerDayDeathsCountries returns two integer arrays (one per country passed
@@ -242,11 +276,14 @@ func ComparePerDayDeathsCountries(nameOne string, nameTwo string) (structs.Compa
 
 	country, errGetCountryOne := GetCountry(nameOne)
 	if errGetCountryOne != nil {
+		applogger.Log("ERROR", "curve", "ComparePerDayDeathsCountries", errGetCountryOne.Error())
+		fmt.Println(errGetCountryOne.Error())
 		return structs.Compare{}, errGetCountryOne
 	}
 
 	countryTwo, errGetCountryTwo := GetCountry(nameTwo)
 	if errGetCountryTwo != nil {
+		applogger.Log("ERROR", "curve", "ComparePerDayDeathsCountries", errGetCountryTwo.Error())
 		return structs.Compare{}, errGetCountryTwo
 	}
 
@@ -296,5 +333,7 @@ func ComparePerDayDeathsCountries(nameOne string, nameTwo string) (structs.Compa
 	countryTwoStruct.Country = nameTwo
 	countryTwoStruct.Data = countryTwoSortedDeath
 
-	return structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}, nil
+	compareStructs := structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
+	applogger.Log("INFO", "curve", "CompareDeathsFromFirstDeathCountries", fmt.Sprintf("Returning country comperation %v", compareStructs))
+	return compareStructs, nil
 }

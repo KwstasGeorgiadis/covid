@@ -8,8 +8,10 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	statisticscon "./controller/statistics"
+	"./lib/applogger"
 
 	allcountries "./controller/allcountries"
 	compare "./controller/compare"
@@ -58,6 +60,8 @@ func country(w http.ResponseWriter, r *http.Request) {
 	jsonBody, status := countrycon.Perform(r)
 	w.WriteHeader(status)
 	w.Write(jsonBody)
+	applogger.Log("INFO", "main", "country",
+		"Endpoint /country called with response status: "+strconv.Itoa(status)+" with JSON body "+string(jsonBody))
 }
 
 /*
@@ -100,6 +104,8 @@ func countries(w http.ResponseWriter, r *http.Request) {
 	jsonBody, status := countriescon.Perform()
 	w.WriteHeader(status)
 	w.Write(jsonBody)
+	applogger.Log("INFO", "main", "countries",
+		"Endpoint /countries called with response status: "+strconv.Itoa(status)+" with JSON body "+string(jsonBody))
 }
 
 /*
@@ -145,6 +151,8 @@ func sort(w http.ResponseWriter, r *http.Request) {
 	jsonBody, status := sortcon.Perform(r)
 	w.WriteHeader(status)
 	w.Write(jsonBody)
+	applogger.Log("INFO", "main", "sort",
+		"Endpoint /sort called with response status: "+strconv.Itoa(status)+" with JSON body "+string(jsonBody))
 }
 
 /*
@@ -158,6 +166,8 @@ func statistics(w http.ResponseWriter, r *http.Request) {
 	jsonBody, status := statisticscon.Perform(r)
 	w.WriteHeader(status)
 	w.Write(jsonBody)
+	applogger.Log("INFO", "main", "statistics",
+		"Endpoint /stats called with response status: "+strconv.Itoa(status)+" with JSON body "+string(jsonBody))
 }
 
 /*
@@ -180,6 +190,8 @@ func totalStatistics(w http.ResponseWriter, r *http.Request) {
 	jsonBody, status := totalcon.Perform()
 	w.WriteHeader(status)
 	w.Write(jsonBody)
+	applogger.Log("INFO", "main", "totalStatistics",
+		"Endpoint /total called with response status: "+strconv.Itoa(status)+" with JSON body "+string(jsonBody))
 }
 
 /*
@@ -219,6 +231,8 @@ func allCountriesHandle(w http.ResponseWriter, r *http.Request) {
 	jsonBody, status := allcountries.Perform()
 	w.WriteHeader(status)
 	w.Write(jsonBody)
+	applogger.Log("INFO", "main", "allCountriesHandle",
+		"Endpoint /countries called with response status: "+strconv.Itoa(status)+" with JSON body "+string(jsonBody))
 }
 
 /*
@@ -269,6 +283,8 @@ func compareHandle(w http.ResponseWriter, r *http.Request) {
 	jsonBody, status := compare.Perform(r)
 	w.WriteHeader(status)
 	w.Write(jsonBody)
+	applogger.Log("INFO", "main", "compareHandle",
+		"Endpoint /compare called with response status: "+strconv.Itoa(status)+" with JSON body "+string(jsonBody))
 }
 
 /*
@@ -319,6 +335,9 @@ func compareFromFirstDeathHandle(w http.ResponseWriter, r *http.Request) {
 	jsonBody, status := compare.PerformFromFirstDeath(r)
 	w.WriteHeader(status)
 	w.Write(jsonBody)
+	applogger.Log("INFO", "main", "compareFromFirstDeathHandle",
+		"Endpoint /compare/firstdeath called with response status: "+strconv.Itoa(status)+" with JSON body "+string(jsonBody))
+
 }
 
 /*
@@ -363,12 +382,15 @@ func compareFromFirstDeathHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 */
-func comparPerDayDeathHandle(w http.ResponseWriter, r *http.Request) {
+func comparePerDayDeathHandle(w http.ResponseWriter, r *http.Request) {
+
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	jsonBody, status := compare.PerformPerDayDeath(r)
 	w.WriteHeader(status)
 	w.Write(jsonBody)
+	applogger.Log("INFO", "main", "comparePerDayDeathHandle",
+		"Endpoint /compare/perday called with response status: "+strconv.Itoa(status)+" with JSON body "+string(jsonBody))
 }
 
 /*
@@ -419,6 +441,8 @@ func comparePercantagePerDayDeathHandle(w http.ResponseWriter, r *http.Request) 
 	jsonBody, status := compare.PerformPercentangePerDayDeath(r)
 	w.WriteHeader(status)
 	w.Write(jsonBody)
+	applogger.Log("INFO", "main", "comparePercantagePerDayDeathHandle",
+		"Endpoint /compare/percent called with response status: "+strconv.Itoa(status)+" with JSON body "+string(jsonBody))
 }
 
 /*
@@ -456,7 +480,7 @@ func main() {
 	router.HandleFunc("/total", totalStatistics).Methods("GET")
 	router.HandleFunc("/compare", compareHandle).Methods("POST")
 	router.HandleFunc("/compare/firstdeath", compareFromFirstDeathHandle).Methods("POST")
-	router.HandleFunc("/compare/perday", comparPerDayDeathHandle).Methods("POST")
+	router.HandleFunc("/compare/perday", comparePerDayDeathHandle).Methods("POST")
 	router.HandleFunc("/compare/percent", comparePercantagePerDayDeathHandle).Methods("POST")
 
 	c := cors.New(cors.Options{

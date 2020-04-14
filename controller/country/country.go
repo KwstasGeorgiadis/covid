@@ -2,7 +2,9 @@ package countrycon
 
 import (
 	"encoding/json"
+	"fmt"
 
+	applogger "../../lib/applogger"
 	stats "../../lib/stats"
 	structs "../../lib/structs"
 
@@ -55,22 +57,30 @@ func Perform(r *http.Request) ([]byte, int) {
 
 	b, errIoutilReadAll := ioutil.ReadAll(r.Body)
 	if errIoutilReadAll != nil {
+		applogger.Log("ERROR", "countrycon", "Perform", errIoutilReadAll.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: errIoutilReadAll.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	json.Unmarshal(b, &countryRequest)
+	applogger.Log("INFO", "countrycon", "Perform",
+		fmt.Sprintf("Getting this request %v", countryRequest))
 
 	country, err := stats.GetCountry(countryRequest.Name)
 	if err != nil {
+		applogger.Log("ERROR", "countrycon", "Perform", err.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
+
 	jsonBody, jsonBodyErr := json.Marshal(country)
 	if jsonBodyErr != nil {
+		applogger.Log("ERROR", "countrycon", "Perform", jsonBodyErr.Error())
 		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}
 
+	applogger.Log("INFO", "countrycon", "Perform",
+		"Returning status: 200 with JSONbody "+string(jsonBody))
 	return jsonBody, 200
 }

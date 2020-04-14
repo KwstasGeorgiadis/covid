@@ -3,6 +3,7 @@ package totalcon
 import (
 	"encoding/json"
 
+	applogger "../../lib/applogger"
 	stats "../../lib/stats"
 	structs "../../lib/structs"
 )
@@ -29,17 +30,21 @@ import (
 //	@return int http code status
 func Perform() ([]byte, int) {
 
-	totalStats,statsErr := stats.GetTotalStats()
+	totalStats, statsErr := stats.GetTotalStats()
 	if statsErr != nil {
+		applogger.Log("ERROR", "totalcon", "Perform", statsErr.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: statsErr.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	jsonBody, err := json.Marshal(totalStats)
 	if err != nil {
+		applogger.Log("ERROR", "totalcon", "Perform", err.Error())
 		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
 		return errorJSONBody, 500
 	}
 
+	applogger.Log("INFO", "totalcon", "Perform",
+		"Returning status: 200 with JSONbody "+string(jsonBody))
 	return jsonBody, 200
 }

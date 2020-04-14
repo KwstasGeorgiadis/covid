@@ -3,6 +3,7 @@ package allcountries
 import (
 	"encoding/json"
 
+	applogger "../../lib/applogger"
 	stats "../../lib/stats"
 	structs "../../lib/structs"
 )
@@ -28,15 +29,20 @@ func Perform() ([]byte, int) {
 
 	totalStats, err := stats.GetAllCountriesName()
 	if err != nil {
+		applogger.Log("ERROR", "allcountries", "Perform", err.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	jsonBody, jsonBodyErr := json.Marshal(totalStats)
 	if jsonBodyErr != nil {
+		applogger.Log("ERROR", "allcountries", "Perform", err.Error())
 		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}
+
+	applogger.Log("INFO", "allcountries", "Perform",
+		"Returning status: 200 with JSONbody "+string(jsonBody))
 
 	return jsonBody, 200
 }

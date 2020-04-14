@@ -9,7 +9,9 @@ package compare
 
 import (
 	"encoding/json"
+	"fmt"
 
+	applogger "../../lib/applogger"
 	curve "../../lib/curve"
 	structs "../../lib/structs"
 
@@ -64,30 +66,40 @@ type Request struct {
 //	@return int http code status
 func Perform(r *http.Request) ([]byte, int) {
 	var compareRequest Request
+
 	b, errIoutilReadAll := ioutil.ReadAll(r.Body)
 	if errIoutilReadAll != nil {
+		applogger.Log("ERROR", "compare", "Perform", errIoutilReadAll.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: errIoutilReadAll.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	unmarshallError := json.Unmarshal(b, &compareRequest)
 	if unmarshallError != nil {
+		applogger.Log("ERROR", "compare", "Perform", unmarshallError.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: unmarshallError.Error(), Code: 400})
 		return statsErrJSONBody, 400
 	}
 
+	applogger.Log("INFO", "compare", "Perform",
+		fmt.Sprintf("Getting this request %v", compareRequest))
+
 	country, err := curve.CompareDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo)
 	if err != nil {
+		applogger.Log("ERROR", "compare", "Perform", err.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	jsonBody, jsonBodyErr := json.Marshal(country)
 	if jsonBodyErr != nil {
+		applogger.Log("ERROR", "compare", "Perform", jsonBodyErr.Error())
 		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}
 
+	applogger.Log("INFO", "compare", "Perform",
+		"Returning status: 200 with JSONbody "+string(jsonBody))
 	return jsonBody, 200
 }
 
@@ -133,31 +145,41 @@ func Perform(r *http.Request) ([]byte, int) {
 //	@return array of bytes of the json object
 //	@return int http code status
 func PerformFromFirstDeath(r *http.Request) ([]byte, int) {
+
 	var compareRequest Request
 	b, errIoutilReadAll := ioutil.ReadAll(r.Body)
 	if errIoutilReadAll != nil {
+		applogger.Log("ERROR", "compare", "PerformFromFirstDeath", errIoutilReadAll.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: errIoutilReadAll.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	unmarshallError := json.Unmarshal(b, &compareRequest)
 	if unmarshallError != nil {
+		applogger.Log("ERROR", "compare", "PerformFromFirstDeath", unmarshallError.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: unmarshallError.Error(), Code: 400})
 		return statsErrJSONBody, 400
 	}
 
+	applogger.Log("INFO", "compare", "PerformFromFirstDeath",
+		fmt.Sprintf("Getting this request %v", compareRequest))
+
 	country, err := curve.CompareDeathsFromFirstDeathCountries(compareRequest.NameOne, compareRequest.NameTwo)
 	if err != nil {
+		applogger.Log("ERROR", "compare", "PerformFromFirstDeath", err.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	jsonBody, jsonBodyErr := json.Marshal(country)
 	if jsonBodyErr != nil {
+		applogger.Log("ERROR", "compare", "PerformFromFirstDeath", jsonBodyErr.Error())
 		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}
 
+	applogger.Log("INFO", "compare", "PerformFromFirstDeath",
+		"Returning status: 200 with JSONbody "+string(jsonBody))
 	return jsonBody, 200
 }
 
@@ -207,28 +229,37 @@ func PerformPerDayDeath(r *http.Request) ([]byte, int) {
 
 	b, errIoutilReadAll := ioutil.ReadAll(r.Body)
 	if errIoutilReadAll != nil {
+		applogger.Log("ERROR", "compare", "PerformFromFirstDeath", errIoutilReadAll.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: errIoutilReadAll.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	unmarshallError := json.Unmarshal(b, &compareRequest)
 	if unmarshallError != nil {
+		applogger.Log("ERROR", "compare", "PerformPerDayDeath", unmarshallError.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: unmarshallError.Error(), Code: 400})
 		return statsErrJSONBody, 400
 	}
 
+	applogger.Log("INFO", "compare", "PerformPerDayDeath",
+		fmt.Sprintf("Getting this request %v", compareRequest))
+
 	country, err := curve.ComparePerDayDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo)
 	if err != nil {
+		applogger.Log("ERROR", "compare", "PerformPerDayDeath", err.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	jsonBody, jsonBodyErr := json.Marshal(country)
 	if jsonBodyErr != nil {
+		applogger.Log("ERROR", "compare", "PerformPerDayDeath", jsonBodyErr.Error())
 		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}
 
+	applogger.Log("INFO", "compare", "PerformPerDayDeath",
+		"Returning status: 200 with JSONbody "+string(jsonBody))
 	return jsonBody, 200
 }
 
@@ -278,27 +309,36 @@ func PerformPercentangePerDayDeath(r *http.Request) ([]byte, int) {
 
 	b, errIoutilReadAll := ioutil.ReadAll(r.Body)
 	if errIoutilReadAll != nil {
+		applogger.Log("ERROR", "compare", "PerformPercentangePerDayDeath", errIoutilReadAll.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: errIoutilReadAll.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	unmarshallError := json.Unmarshal(b, &compareRequest)
 	if unmarshallError != nil {
+		applogger.Log("ERROR", "compare", "PerformPercentangePerDayDeath", unmarshallError.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: unmarshallError.Error(), Code: 400})
 		return statsErrJSONBody, 400
 	}
 
+	applogger.Log("INFO", "compare", "PerformPercentangePerDayDeath",
+		fmt.Sprintf("Getting this request %v", compareRequest))
+
 	country, err := curve.ComparePerCentDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo)
 	if err != nil {
+		applogger.Log("ERROR", "compare", "PerformPercentangePerDayDeath", err.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	jsonBody, jsonBodyErr := json.Marshal(country)
 	if jsonBodyErr != nil {
+		applogger.Log("ERROR", "compare", "PerformPercentangePerDayDeath", jsonBodyErr.Error())
 		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}
 
+	applogger.Log("INFO", "compare", "PerformPercentangePerDayDeath",
+		"Returning status: 200 with JSONbody "+string(jsonBody))
 	return jsonBody, 200
 }
