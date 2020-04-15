@@ -3,9 +3,9 @@ package countriescon
 import (
 	"encoding/json"
 
-	applogger "../../lib/applogger"
-	stats "../../lib/stats"
-	structs "../../lib/structs"
+	applogger "github.com/junkd0g/covid/lib/applogger"
+	stats "github.com/junkd0g/covid/lib/stats"
+	structs "github.com/junkd0g/covid/lib/structs"
 )
 
 //Perform used in the /countries endpoint's handle to return

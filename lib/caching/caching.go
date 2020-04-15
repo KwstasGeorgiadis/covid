@@ -10,8 +10,8 @@ package caching
 import (
 	"encoding/json"
 
-	pconf "../config"
-	structs "../structs"
+	pconf "github.com/junkd0g/covid/lib/config"
+	structs "github.com/junkd0g/covid/lib/structs"
 
 	"github.com/gomodule/redigo/redis"
 )

@@ -6,9 +6,9 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	applogger "../../lib/applogger"
-	stats "../../lib/stats"
-	structs "../../lib/structs"
+	applogger "github.com/junkd0g/covid/lib/applogger"
+	stats "github.com/junkd0g/covid/lib/stats"
+	structs "github.com/junkd0g/covid/lib/structs"
 )
 
 //SortRequest used for the https request's body

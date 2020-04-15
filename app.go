@@ -10,18 +10,18 @@ import (
 	"net/http"
 	"time"
 
-	statisticscon "./controller/statistics"
-	"./lib/applogger"
+	statisticscon "github.com/junkd0g/covid/controller/statistics"
+	"github.com/junkd0g/covid/lib/applogger"
 
-	allcountries "./controller/allcountries"
-	compare "./controller/compare"
-	countriescon "./controller/countries"
-	countrycon "./controller/country"
-	totalcon "./controller/totalcon"
+	allcountries "github.com/junkd0g/covid/controller/allcountries"
+	compare "github.com/junkd0g/covid/controller/compare"
+	countriescon "github.com/junkd0g/covid/controller/countries"
+	countrycon "github.com/junkd0g/covid/controller/country"
+	totalcon "github.com/junkd0g/covid/controller/totalcon"
 
-	sortcon "./controller/sort"
-	pconf "./lib/config"
 	"github.com/gorilla/mux"
+	sortcon "github.com/junkd0g/covid/controller/sort"
+	pconf "github.com/junkd0g/covid/lib/config"
 	"github.com/rs/cors"
 )
 

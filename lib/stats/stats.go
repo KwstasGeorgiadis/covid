@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"sort"
 
-	applogger "../applogger"
-	caching "../caching"
-	pconf "../config"
-	structs "../structs"
+	applogger "github.com/junkd0g/covid/lib/applogger"
+	caching "github.com/junkd0g/covid/lib/caching"
+	pconf "github.com/junkd0g/covid/lib/config"
+	structs "github.com/junkd0g/covid/lib/structs"
 )
 
 var (

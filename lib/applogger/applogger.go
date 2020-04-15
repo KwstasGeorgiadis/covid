@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	pconf "../config"
+	pconf "github.com/junkd0g/covid/lib/config"
 
 	"github.com/gofrs/uuid"
 )

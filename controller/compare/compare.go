@@ -11,9 +11,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	applogger "../../lib/applogger"
-	curve "../../lib/curve"
-	structs "../../lib/structs"
+	applogger "github.com/junkd0g/covid/lib/applogger"
+	curve "github.com/junkd0g/covid/lib/curve"
+	structs "github.com/junkd0g/covid/lib/structs"
 
 	"io/ioutil"
 	"net/http"
