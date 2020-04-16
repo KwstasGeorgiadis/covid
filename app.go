@@ -27,7 +27,7 @@ import (
 
 var (
 	//reads the config and creates a AppConf struct
-	serverConf = pconf.GetAppConfig("./config/covid.json")
+	serverConf = pconf.GetAppConfig()
 )
 
 /*

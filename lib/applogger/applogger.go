@@ -37,7 +37,7 @@ type logNDJOSNHTTP struct {
 var (
 	generalLogger *log.Logger
 	errorLogger   *log.Logger
-	serverConf    = pconf.GetAppConfig("./config/covid.json")
+	serverConf    = pconf.GetAppConfig()
 )
 
 func init() {

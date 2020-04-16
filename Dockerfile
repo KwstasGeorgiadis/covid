@@ -11,6 +11,8 @@ RUN apk add git
 
 RUN git clone https://github.com/junkd0g/covid.git
 
+
+
 RUN go build -o main .
 RUN adduser -S -D -H -h /app appuser
 USER appuser

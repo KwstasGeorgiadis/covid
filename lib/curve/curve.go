@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	serverConf = pconf.GetAppConfig("./config/covid.json")
+	serverConf = pconf.GetAppConfig()
 )
 
 // requestData does an HTTP GET request to the third party API that

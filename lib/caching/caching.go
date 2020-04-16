@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	serverConf = pconf.GetAppConfig("./config/covid.json")
+	serverConf = pconf.GetAppConfig()
 )
 
 //NewPool() connects to redis

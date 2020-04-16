@@ -10,7 +10,7 @@
 	"redis" : {
 		"namespace" 	: "resque:",
 		"concurrency"	: 2,
-		"uri" 			: "redis://localhost",
+		"uri" 			: "redis://172.18.0.1",
 		"port"			: ":6379",
 		"queues" 		: ["myqueue","delimited","queues"]
 	}

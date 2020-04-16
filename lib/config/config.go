@@ -62,10 +62,21 @@ type RedisConfig struct {
 	Port        string   `json:"port"`
 }
 
+var (
+	enviroment = os.Getenv("env19")
+)
+
+func init() {
+	if len(enviroment) == 0 {
+		enviroment = "development"
+	}
+	fmt.Println(fmt.Sprintf("Running in %s mode", enviroment))
+}
+
 //GetAppConfig reads a spefic file and return the json format of it
-//@param configLocation string configs location
 //@return ServerConfig struct json format of the config file
-func GetAppConfig(configLocation string) AppConf {
+func GetAppConfig() AppConf {
+	configLocation := fmt.Sprintf("./config/covid.%s.json", enviroment)
 	jsonFile, openfileError := os.Open(configLocation)
 	if openfileError != nil {
 		fmt.Println("Cannot open server config file, filename: " + configLocation)
