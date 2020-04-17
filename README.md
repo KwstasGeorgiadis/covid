@@ -11,7 +11,7 @@ For macos and linux users
 &nbsp; c. chmod -R 0777 /var/log/covid/app.ndjson  <br />
 &nbsp; Reminder that you can change the log's path by updating the config file  <br />
 2. You need to run redis for this app to work  <br />
-&nbsp; a. Check https://redis.io to download  <br />
+&nbsp; a. Check https://redis.io to download  it<br />
 &nbsp; b. redis-server  <br />
 3. Build app  <br />
 &nbsp; a. go build app.go  <br />
