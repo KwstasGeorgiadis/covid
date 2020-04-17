@@ -1,5 +1,7 @@
 FROM golang:alpine
 
+RUN export env19="docker"
+
 RUN mkdir /var/log/covid
 RUN touch /var/log/covid/app.ndjson
 RUN chmod -R 0777 /var/log/covid/app.ndjson

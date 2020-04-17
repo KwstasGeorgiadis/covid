@@ -4,7 +4,7 @@
 		"log" : "/var/log/covid/app.ndjson"
 	},
 	"API" : {
-		"url" : "https://corona.lmao.ninja/countries?sort=country",
+		"url" : "https://corona.lmao.ninja/v2/countries",
 		"url_historical" : "https://corona.lmao.ninja/v2/historical/?lastdays=all"
 	},
 	"redis" : {
