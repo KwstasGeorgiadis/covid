@@ -18,6 +18,6 @@ For macos and linux users
 &nbsp; b. ./app  <br />
 
 Feel free to import the postman collection in the directory ./postman  <br />
-Or you can use curl request like this one
 
-curl --location --request GET 'localhost:9080/countries'
+Or you can use curl request like this one
+&nbsp; curl --location --request GET 'localhost:9080/countries'
