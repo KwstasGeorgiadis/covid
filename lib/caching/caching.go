@@ -9,6 +9,7 @@ package caching
 
 import (
 	"encoding/json"
+	"fmt"
 
 	pconf "github.com/junkd0g/covid/lib/config"
 	structs "github.com/junkd0g/covid/lib/structs"
@@ -43,8 +44,9 @@ func NewPool() *redis.Pool {
 // Set executes the redis SET command
 // @param c redis.Conn redis connection
 func Set(c redis.Conn, countries structs.Countries, key string) error {
+	out, _ := json.Marshal(countries)
 
-	_, err := c.Do("SET", key, countries)
+	_, err := c.Do("SET", key, string(out))
 	if err != nil {
 		return err
 	}
@@ -58,13 +60,19 @@ func Get(c redis.Conn, key string) (structs.Countries, error) {
 
 	s, err := redis.String(c.Do("GET", key))
 	if err != nil {
+		fmt.Println(err.Error())
 		return structs.Countries{}, nil
 	}
 
-	data := structs.Countries{}
-	json.Unmarshal([]byte(s), &data)
+	bytStr := []byte(s)
+	datsa := structs.Countries{}
 
-	return data, nil
+	erra := json.Unmarshal(bytStr, &datsa)
+	if erra != nil {
+		fmt.Println(erra.Error())
+		return structs.Countries{}, nil
+	}
+	return datsa, nil
 }
 
 // SetCurveData executes the redis SET command

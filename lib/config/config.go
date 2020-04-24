@@ -66,6 +66,10 @@ var (
 	enviroment = os.Getenv("env19")
 )
 
+type conPath struct {
+	path string
+}
+
 func init() {
 	if len(enviroment) == 0 {
 		enviroment = "development"
@@ -76,7 +80,9 @@ func init() {
 //GetAppConfig reads a spefic file and return the json format of it
 //@return ServerConfig struct json format of the config file
 func GetAppConfig() AppConf {
-	configLocation := fmt.Sprintf("./config/covid.%s.json", enviroment)
+	cp := conPath{fmt.Sprintf("./config/covid.%s.json", enviroment)}
+	configLocation := cp.path
+
 	jsonFile, openfileError := os.Open(configLocation)
 	if openfileError != nil {
 		fmt.Println("Cannot open server config file, filename: " + configLocation)

@@ -75,13 +75,13 @@ func GetAllCountries() (structs.Countries, error) {
 	if len(cachedData.Data) == 0 {
 		applogger.Log("INFO", "stats", "GetAllCountries", "Request data instead of getting cached data")
 		response, responseError := requestData()
-
 		if responseError != nil {
 			applogger.Log("ERROR", "stats", "GetAllCountries", responseError.Error())
 			return structs.Countries{}, responseError
 		}
 
 		s = structs.Countries{Data: response}
+
 		caching.Set(conn, s, "total")
 		applogger.Log("INFO", "stats", "GetAllCountries", fmt.Sprintf("Setting cache data %v for key total", s))
 

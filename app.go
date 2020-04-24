@@ -464,7 +464,7 @@ func comparePercantagePerDayDeathHandle(w http.ResponseWriter, r *http.Request) 
                 "port" : ":9080"
     },
 
-	Endpoint:
+	Endpoints:
 		GET:
 			/total
 			/countries
