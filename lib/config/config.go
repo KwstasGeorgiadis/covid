@@ -64,6 +64,7 @@ type RedisConfig struct {
 
 var (
 	enviroment = os.Getenv("env19")
+	cp         = conPath{}
 )
 
 type conPath struct {
@@ -74,13 +75,13 @@ func init() {
 	if len(enviroment) == 0 {
 		enviroment = "development"
 	}
+	cp = conPath{fmt.Sprintf("./config/covid.%s.json", enviroment)}
 	fmt.Println(fmt.Sprintf("Running in %s mode", enviroment))
 }
 
 //GetAppConfig reads a spefic file and return the json format of it
 //@return ServerConfig struct json format of the config file
 func GetAppConfig() AppConf {
-	cp := conPath{fmt.Sprintf("./config/covid.%s.json", enviroment)}
 	configLocation := cp.path
 
 	jsonFile, openfileError := os.Open(configLocation)

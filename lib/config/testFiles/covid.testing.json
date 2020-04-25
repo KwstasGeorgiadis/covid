@@ -1,0 +1,17 @@
+{
+	"server" : {
+		"port" : ":9080",
+		"log" : "/var/log/covid/app.ndjson"
+	},
+	"API" : {
+		"url" : "https://corona.lmao.ninja/v2/countries",
+		"url_historical" : "https://corona.lmao.ninja/v2/historical/?lastdays=all"
+	},
+	"redis" : {
+		"namespace"     : "resque:",
+		"concurrency"   : 2,
+		"uri"                   : "redis://172.18.0.1",
+		"port"                  : ":6379",
+		"queues"                : ["myqueue","delimited","queues"]
+	}
+}
