@@ -1,0 +1,177 @@
+{
+	"info": {
+		"_postman_id": "47776770-bbd4-4d5a-b242-57ff38a81d59",
+		"name": "Covid-19",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "localhost:9080/countries/all",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:9080/countries/all",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"countries",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9080/compare",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/javascript",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"countryOne\" : \"Spain\",\n\t\"countryTwo\" : \"Italy\"\n}"
+				},
+				"url": {
+					"raw": "localhost:9080/compare",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"compare"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9080/total",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:9080/total",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"total"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9080/stats",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"country\" : \"Greece\"\n}"
+				},
+				"url": {
+					"raw": "localhost:9080/stats",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"stats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9080/sort",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"type\" : \"deaths\"\n}"
+				},
+				"url": {
+					"raw": "localhost:9080/sort",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"sort"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9080/countries",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:9080/countries",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"countries"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9080/country",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"country\" : \"USA\"\n}"
+				},
+				"url": {
+					"raw": "localhost:9080/country",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"country"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
