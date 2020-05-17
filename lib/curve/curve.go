@@ -17,8 +17,12 @@ import (
 )
 
 var (
-	serverConf = pconf.GetAppConfig()
+	serverConf pconf.AppConf
 )
+
+func init() {
+	serverConf = pconf.GetAppConfig()
+}
 
 // requestData does an HTTP GET request to the third party API that
 // contains covid-9 stats ' history (per day from 22/01/2020)
@@ -54,6 +58,7 @@ func requestHistoryData() ([]structs.CountryCurve, error) {
 
 	applogger.Log("INFO", "curve", "requestHistoryData",
 		fmt.Sprintf("Get reqeust to %s and getting response %v", requestURL, keys))
+	fmt.Println(keys)
 	return keys, nil
 }
 

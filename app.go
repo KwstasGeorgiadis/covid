@@ -12,6 +12,7 @@ import (
 
 	statisticscon "github.com/junkd0g/covid/controller/statistics"
 	"github.com/junkd0g/covid/lib/applogger"
+	"github.com/junkd0g/covid/lib/news"
 
 	allcountries "github.com/junkd0g/covid/controller/allcountries"
 	compare "github.com/junkd0g/covid/controller/compare"
@@ -479,6 +480,7 @@ func comparePercantagePerDayDeathHandle(w http.ResponseWriter, r *http.Request) 
 */
 
 func main() {
+	news.News()
 	router := mux.NewRouter().StrictSlash(true)
 	port := serverConf.Server.Port
 
