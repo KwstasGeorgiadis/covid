@@ -348,3 +348,45 @@ func ComparePerDayDeathsCountries(nameOne string, nameTwo string) (structs.Compa
 	applogger.Log("INFO", "curve", "CompareDeathsFromFirstDeathCountries", fmt.Sprintf("Returning country comperation %v", compareStructs))
 	return compareStructs, nil
 }
+
+// CompareRecoveryCountries returns two integer arrays (one per country passed
+// in parameter) which contain total number of recovery patients from  22/01/2020
+// It returns structs.Compare and any write error encountered.
+func CompareRecoveryCountries(nameOne string, nameTwo string) (structs.Compare, error) {
+	country, errGetCountryOne := GetCountry(nameOne)
+	if errGetCountryOne != nil {
+		applogger.Log("ERROR", "curve", "CompareRecoveryCountries", errGetCountryOne.Error())
+		return structs.Compare{}, errGetCountryOne
+	}
+
+	countryTwo, errGetCountryTwo := GetCountry(nameTwo)
+	if errGetCountryTwo != nil {
+		applogger.Log("ERROR", "curve", "CompareRecoveryCountries", errGetCountryTwo.Error())
+		return structs.Compare{}, errGetCountryTwo
+	}
+
+	var countrySortedRecovery []float64
+	var countryTwoSortedRecovery []float64
+
+	for _, v := range country.Timeline.Recovered.(map[string]interface{}) {
+		countrySortedRecovery = append(countrySortedRecovery, v.(float64))
+	}
+	for _, v := range countryTwo.Timeline.Recovered.(map[string]interface{}) {
+		countryTwoSortedRecovery = append(countryTwoSortedRecovery, v.(float64))
+	}
+	sort.Float64s(countrySortedRecovery)
+	sort.Float64s(countryTwoSortedRecovery)
+
+	var countryOneStruct structs.CompareData
+	var countryTwoStruct structs.CompareData
+
+	countryOneStruct.Country = nameOne
+	countryOneStruct.Data = countrySortedRecovery
+	countryTwoStruct.Country = nameTwo
+	countryTwoStruct.Data = countryTwoSortedRecovery
+
+	compareStructs := structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
+
+	applogger.Log("INFO", "curve", "CompareRecoveryCountries", fmt.Sprintf("Returning country comperation %v", compareStructs))
+	return compareStructs, nil
+}

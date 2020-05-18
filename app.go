@@ -459,6 +459,59 @@ func comparePercantagePerDayDeathHandle(w http.ResponseWriter, r *http.Request) 
 }
 
 /*
+	POST request to /compare/recovery endpoint
+
+	Request:
+
+	{
+		"countryOne" : "Spain",
+		"countryTwo" : "Italy"
+	}
+
+	Response
+
+	{
+    "countryOne": {
+        "country": "Spain",
+        "data": [
+            1,
+            2,
+            3,
+            7,
+            12428,
+            13155,
+            13915,
+            14681
+        ]
+    },
+    "countryTwo": {
+        "country": "Italy",
+        "data": [
+            1,
+            2,
+            3,
+            7,
+            12428,
+            13155,
+            13915,
+            14681
+        ]
+    }
+}
+*/
+func compareRecoveryHandle(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	jsonBody, status := compare.PerformCompareRecorey(r)
+	w.WriteHeader(status)
+	w.Write(jsonBody)
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "main", "comparePercantagePerDayDeathHandle",
+		"Endpoint /compare/percent called with response JSON body "+string(jsonBody), status, elapsed)
+}
+
+/*
 	Running the server in port 9080 (getting the value from ./config/covid.json )
 
 	"server" : {
@@ -477,6 +530,7 @@ func comparePercantagePerDayDeathHandle(w http.ResponseWriter, r *http.Request) 
 			/compare
 			/compare/firstdeath
 			/compare/perday
+			/compare/recovery
 */
 
 func main() {
@@ -496,6 +550,7 @@ func main() {
 	router.HandleFunc("/compare/firstdeath", compareFromFirstDeathHandle).Methods("POST")
 	router.HandleFunc("/compare/perday", comparePerDayDeathHandle).Methods("POST")
 	router.HandleFunc("/compare/percent", comparePercantagePerDayDeathHandle).Methods("POST")
+	router.HandleFunc("/compare/recovery", compareRecoveryHandle).Methods("POST")
 
 	c := cors.New(cors.Options{
 		AllowCredentials: true,
