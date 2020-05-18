@@ -390,3 +390,114 @@ func CompareRecoveryCountries(nameOne string, nameTwo string) (structs.Compare, 
 	applogger.Log("INFO", "curve", "CompareRecoveryCountries", fmt.Sprintf("Returning country comperation %v", compareStructs))
 	return compareStructs, nil
 }
+
+// CompareCasesCountries returns two integer arrays (one per country passed
+// in parameter) which contain total number of cases from  22/01/2020
+// It returns structs.Compare and any write error encountered.
+func CompareCasesCountries(nameOne string, nameTwo string) (structs.Compare, error) {
+	country, errGetCountryOne := GetCountry(nameOne)
+	if errGetCountryOne != nil {
+		applogger.Log("ERROR", "curve", "CompareCasesCountries", errGetCountryOne.Error())
+		return structs.Compare{}, errGetCountryOne
+	}
+
+	countryTwo, errGetCountryTwo := GetCountry(nameTwo)
+	if errGetCountryTwo != nil {
+		applogger.Log("ERROR", "curve", "CompareCasesCountries", errGetCountryTwo.Error())
+		return structs.Compare{}, errGetCountryTwo
+	}
+
+	var countrySortedCases []float64
+	var countryTwoSortedCases []float64
+
+	for _, v := range country.Timeline.Cases.(map[string]interface{}) {
+		countrySortedCases = append(countrySortedCases, v.(float64))
+	}
+	for _, v := range countryTwo.Timeline.Cases.(map[string]interface{}) {
+		countryTwoSortedCases = append(countryTwoSortedCases, v.(float64))
+	}
+	sort.Float64s(countrySortedCases)
+	sort.Float64s(countryTwoSortedCases)
+
+	var countryOneStruct structs.CompareData
+	var countryTwoStruct structs.CompareData
+
+	countryOneStruct.Country = nameOne
+	countryOneStruct.Data = countrySortedCases
+	countryTwoStruct.Country = nameTwo
+	countryTwoStruct.Data = countryTwoSortedCases
+
+	compareStructs := structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
+
+	applogger.Log("INFO", "curve", "CompareCasesCountries", fmt.Sprintf("Returning country comperation %v", compareStructs))
+	return compareStructs, nil
+}
+
+// ComparePerDayCasesCountries returns two integer arrays (one per country passed
+// in parameter) which contain unique per day number of case from first confrim case
+// It returns structs.Compare and any write error encountered.
+func ComparePerDayCasesCountries(nameOne string, nameTwo string) (structs.Compare, error) {
+
+	country, errGetCountryOne := GetCountry(nameOne)
+	if errGetCountryOne != nil {
+		applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", errGetCountryOne.Error())
+		fmt.Println(errGetCountryOne.Error())
+		return structs.Compare{}, errGetCountryOne
+	}
+
+	countryTwo, errGetCountryTwo := GetCountry(nameTwo)
+	if errGetCountryTwo != nil {
+		applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", errGetCountryTwo.Error())
+		return structs.Compare{}, errGetCountryTwo
+	}
+
+	var countrySortedCases []float64
+	var countryTwoSortedCases []float64
+
+	for _, v := range country.Timeline.Cases.(map[string]interface{}) {
+		if v.(float64) == 0 {
+			continue
+		}
+		countrySortedCases = append(countrySortedCases, v.(float64))
+	}
+	for _, v := range countryTwo.Timeline.Cases.(map[string]interface{}) {
+		if v.(float64) == 0 {
+			continue
+		}
+		countryTwoSortedCases = append(countryTwoSortedCases, v.(float64))
+	}
+	sort.Float64s(countrySortedCases)
+	sort.Float64s(countryTwoSortedCases)
+
+	var tempCountryOneSortedCases []float64
+	for i := 0; i < len(countrySortedCases); i++ {
+		tempCountryOneSortedCases = append(tempCountryOneSortedCases, countrySortedCases[i])
+		if i == 0 {
+			continue
+		}
+
+		countrySortedCases[i] = countrySortedCases[i] - tempCountryOneSortedCases[i-1]
+	}
+
+	var tempCountryTwoSortedCases []float64
+	for i := 0; i < len(countryTwoSortedCases); i++ {
+		tempCountryTwoSortedCases = append(tempCountryTwoSortedCases, countryTwoSortedCases[i])
+
+		if i == 0 {
+			continue
+		}
+		countryTwoSortedCases[i] = countryTwoSortedCases[i] - tempCountryTwoSortedCases[i-1]
+	}
+
+	var countryOneStruct structs.CompareData
+	var countryTwoStruct structs.CompareData
+
+	countryOneStruct.Country = nameOne
+	countryOneStruct.Data = countrySortedCases
+	countryTwoStruct.Country = nameTwo
+	countryTwoStruct.Data = countryTwoSortedCases
+
+	compareStructs := structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
+	applogger.Log("INFO", "curve", "ComparePerDayCasesCountries", fmt.Sprintf("Returning country comperation %v", compareStructs))
+	return compareStructs, nil
+}

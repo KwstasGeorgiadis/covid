@@ -420,3 +420,159 @@ func PerformCompareRecorey(r *http.Request) ([]byte, int) {
 		"Returning status: 200 with JSONbody "+string(jsonBody))
 	return jsonBody, 200
 }
+
+//PerformCompareCases used in the /compare/cases endpoint's handle to return
+//	the Compare struct as a json response by calling
+//	curve.CompareCasesCountries which get and return grobal statistics
+//
+//	Request used as the struct for the request
+//		example:
+//			{
+//				"countryOne" : "Italy",
+//				"countryTwo" : "Spain"
+//			}
+//
+//	Data structure that returns for two countries the names
+//  and an array that contains total cases per day. It is sorted
+//  and the first element is for the date 22/01/2020
+//
+//	In this JSON format
+//  {
+//    "countryOne": {
+//        "country": "Spain",
+//        "data": [
+//            5,
+//            10,
+//		   	  17
+//		   ]
+//		},
+//		"countryTwo": {
+//      	"country": "Italy",
+//       	"data": [
+//            	197,
+//            	233,
+//				366
+//			]
+//		}
+//	}
+//
+//	@param r *http.Request used to get http request's body
+//
+//	@return array of bytes of the json object
+//	@return int http code status
+func PerformCompareCases(r *http.Request) ([]byte, int) {
+	var compareRequest Request
+
+	b, errIoutilReadAll := ioutil.ReadAll(r.Body)
+	if errIoutilReadAll != nil {
+		applogger.Log("ERROR", "compare", "Perform", errIoutilReadAll.Error())
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: errIoutilReadAll.Error(), Code: 500})
+		return statsErrJSONBody, 500
+	}
+
+	unmarshallError := json.Unmarshal(b, &compareRequest)
+	if unmarshallError != nil {
+		applogger.Log("ERROR", "compare", "Perform", unmarshallError.Error())
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: unmarshallError.Error(), Code: 400})
+		return statsErrJSONBody, 400
+	}
+
+	applogger.Log("INFO", "compare", "Perform",
+		fmt.Sprintf("Getting this request %v", compareRequest))
+
+	country, err := curve.CompareCasesCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	if err != nil {
+		applogger.Log("ERROR", "compare", "Perform", err.Error())
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
+		return statsErrJSONBody, 500
+	}
+
+	jsonBody, jsonBodyErr := json.Marshal(country)
+	if jsonBodyErr != nil {
+		applogger.Log("ERROR", "compare", "Perform", jsonBodyErr.Error())
+		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
+		return errorJSONBody, 500
+	}
+
+	applogger.Log("INFO", "compare", "Perform",
+		"Returning status: 200 with JSONbody "+string(jsonBody))
+	return jsonBody, 200
+}
+
+//PerformCompareUniquePerDayCases used in the /compare/cases/unique endpoint's handle to return
+//	the Compare struct as a json response by calling
+//	curve.CompareCasesCountries which get and return grobal statistics
+//
+//	Request used as the struct for the request
+//		example:
+//			{
+//				"countryOne" : "Italy",
+//				"countryTwo" : "Spain"
+//			}
+//
+//	Data structure that returns for two countries the names
+//  and an array that contains unique cases per day. It is sorted
+//  and the first element is for the date 22/01/2020
+//
+//	In this JSON format
+//  {
+//    "countryOne": {
+//        "country": "Spain",
+//        "data": [
+//            5,
+//            10,
+//		   	  17
+//		   ]
+//		},
+//		"countryTwo": {
+//      	"country": "Italy",
+//       	"data": [
+//            	197,
+//            	233,
+//				366
+//			]
+//		}
+//	}
+//
+//	@param r *http.Request used to get http request's body
+//
+//	@return array of bytes of the json object
+//	@return int http code status
+func PerformCompareUniquePerDayCases(r *http.Request) ([]byte, int) {
+	var compareRequest Request
+
+	b, errIoutilReadAll := ioutil.ReadAll(r.Body)
+	if errIoutilReadAll != nil {
+		applogger.Log("ERROR", "compare", "Perform", errIoutilReadAll.Error())
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: errIoutilReadAll.Error(), Code: 500})
+		return statsErrJSONBody, 500
+	}
+
+	unmarshallError := json.Unmarshal(b, &compareRequest)
+	if unmarshallError != nil {
+		applogger.Log("ERROR", "compare", "Perform", unmarshallError.Error())
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: unmarshallError.Error(), Code: 400})
+		return statsErrJSONBody, 400
+	}
+
+	applogger.Log("INFO", "compare", "Perform",
+		fmt.Sprintf("Getting this request %v", compareRequest))
+
+	country, err := curve.ComparePerDayCasesCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	if err != nil {
+		applogger.Log("ERROR", "compare", "Perform", err.Error())
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
+		return statsErrJSONBody, 500
+	}
+
+	jsonBody, jsonBodyErr := json.Marshal(country)
+	if jsonBodyErr != nil {
+		applogger.Log("ERROR", "compare", "Perform", jsonBodyErr.Error())
+		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
+		return errorJSONBody, 500
+	}
+
+	applogger.Log("INFO", "compare", "Perform",
+		"Returning status: 200 with JSONbody "+string(jsonBody))
+	return jsonBody, 200
+}
