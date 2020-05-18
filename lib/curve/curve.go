@@ -56,8 +56,6 @@ func requestHistoryData() ([]structs.CountryCurve, error) {
 		return []structs.CountryCurve{}, errUnmarshal
 	}
 
-	applogger.Log("INFO", "curve", "requestHistoryData",
-		fmt.Sprintf("Get reqeust to %s and getting response %v", requestURL, keys))
 	return keys, nil
 }
 
@@ -85,9 +83,7 @@ func GetAllCountries() ([]structs.CountryCurve, error) {
 			applogger.Log("ERROR", "curve", "GetAllCountries", err.Error())
 			return []structs.CountryCurve{}, err
 		}
-		applogger.Log("INFO", "curve", "GetAllCountries", fmt.Sprintf("Setting cache data %v for key total", data))
 		caching.SetCurveData(conn, data)
-		applogger.Log("INFO", "curve", "GetAllCountries", fmt.Sprintf("Getting cache data %v instead of requesting it", cachedData))
 		return data, nil
 	}
 
@@ -107,21 +103,18 @@ func GetCountry(name string) (structs.CountryCurve, error) {
 	for _, v := range allCountries {
 		if name == "UK" && v.Country == "UK" {
 			if len(v.Province) == 0 {
-				applogger.Log("INFO", "curve", "GetCountry", fmt.Sprintf("Returning country %v", v))
 				return v, nil
 			}
 			continue
 		}
 		if name == "France" && v.Country == "France" {
 			if v.Province == "" {
-				applogger.Log("INFO", "curve", "GetCountry", fmt.Sprintf("Returning country %v", v))
 				return v, nil
 			}
 			continue
 		}
 
 		if v.Country == name {
-			applogger.Log("INFO", "curve", "GetCountry", fmt.Sprintf("Returning country %v", v))
 			return v, nil
 		}
 	}
@@ -169,7 +162,6 @@ func CompareDeathsCountries(nameOne string, nameTwo string) (structs.Compare, er
 
 	compareStructs := structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
 
-	applogger.Log("INFO", "curve", "CompareDeathsCountries", fmt.Sprintf("Returning country comperation %v", compareStructs))
 	return compareStructs, nil
 }
 
@@ -218,7 +210,6 @@ func CompareDeathsFromFirstDeathCountries(nameOne string, nameTwo string) (struc
 
 	compareStructs := structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
 
-	applogger.Log("INFO", "curve", "CompareDeathsFromFirstDeathCountries", fmt.Sprintf("Returning country comperation %v", compareStructs))
 	return compareStructs, nil
 }
 
@@ -275,8 +266,6 @@ func ComparePerCentDeathsCountries(nameOne string, nameTwo string) (structs.Comp
 	countryTwoStruct.Data = countryTwoSortedDeath
 
 	compareStructs := structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
-	applogger.Log("INFO", "curve", "CompareDeathsFromFirstDeathCountries", fmt.Sprintf("Returning country comperation %v", compareStructs))
-
 	return compareStructs, nil
 }
 
@@ -345,7 +334,6 @@ func ComparePerDayDeathsCountries(nameOne string, nameTwo string) (structs.Compa
 	countryTwoStruct.Data = countryTwoSortedDeath
 
 	compareStructs := structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
-	applogger.Log("INFO", "curve", "CompareDeathsFromFirstDeathCountries", fmt.Sprintf("Returning country comperation %v", compareStructs))
 	return compareStructs, nil
 }
 
@@ -387,7 +375,6 @@ func CompareRecoveryCountries(nameOne string, nameTwo string) (structs.Compare, 
 
 	compareStructs := structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
 
-	applogger.Log("INFO", "curve", "CompareRecoveryCountries", fmt.Sprintf("Returning country comperation %v", compareStructs))
 	return compareStructs, nil
 }
 
@@ -429,7 +416,6 @@ func CompareCasesCountries(nameOne string, nameTwo string) (structs.Compare, err
 
 	compareStructs := structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
 
-	applogger.Log("INFO", "curve", "CompareCasesCountries", fmt.Sprintf("Returning country comperation %v", compareStructs))
 	return compareStructs, nil
 }
 
@@ -498,6 +484,5 @@ func ComparePerDayCasesCountries(nameOne string, nameTwo string) (structs.Compar
 	countryTwoStruct.Data = countryTwoSortedCases
 
 	compareStructs := structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
-	applogger.Log("INFO", "curve", "ComparePerDayCasesCountries", fmt.Sprintf("Returning country comperation %v", compareStructs))
 	return compareStructs, nil
 }

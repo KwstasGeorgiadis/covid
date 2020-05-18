@@ -1,10 +1,10 @@
-package allcountries
+package crnews
 
 import (
 	"encoding/json"
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
-	stats "github.com/junkd0g/covid/lib/stats"
+	news "github.com/junkd0g/covid/lib/news"
 	structs "github.com/junkd0g/covid/lib/structs"
 )
 
@@ -27,16 +27,16 @@ import (
 //	@return int http code status
 func Perform() ([]byte, int) {
 
-	totalStats, err := stats.GetAllCountriesName()
+	newsDashboard, err := news.GetNews()
 	if err != nil {
-		applogger.Log("ERROR", "allcountries", "Perform", err.Error())
+		applogger.Log("ERROR", "crnews", "Perform", err.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
-	jsonBody, jsonBodyErr := json.Marshal(totalStats)
+	jsonBody, jsonBodyErr := json.Marshal(newsDashboard)
 	if jsonBodyErr != nil {
-		applogger.Log("ERROR", "allcountries", "Perform", err.Error())
+		applogger.Log("ERROR", "crnews", "Perform", err.Error())
 		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}

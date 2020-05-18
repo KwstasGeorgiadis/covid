@@ -55,7 +55,5 @@ func Perform() ([]byte, int) {
 		return errorJSONBody, 500
 	}
 
-	applogger.Log("INFO", "compare", "Perform",
-		"Returning status: 200 with JSONbody "+string(jsonBody))
 	return jsonBody, 200
 }

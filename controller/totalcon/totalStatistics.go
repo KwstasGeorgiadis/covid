@@ -43,8 +43,5 @@ func Perform() ([]byte, int) {
 		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
 		return errorJSONBody, 500
 	}
-
-	applogger.Log("INFO", "totalcon", "Perform",
-		"Returning status: 200 with JSONbody "+string(jsonBody))
 	return jsonBody, 200
 }

@@ -1,5 +1,7 @@
 package structs
 
+import "time"
+
 /*
 	structs that are used across the service
 */
@@ -77,4 +79,35 @@ type AllCountriesName struct {
 type ErrorMessage struct {
 	ErrorMessage string `json:"message"`
 	Code         int    `json:"code"`
+}
+
+type ReponseNews struct {
+	Status       string `json:"status"`
+	TotalResults int    `json:"totalResults"`
+	Articles     []struct {
+		Source struct {
+			ID   string `json:"id"`
+			Name string `json:"name"`
+		} `json:"source"`
+		Author      string    `json:"author"`
+		Title       string    `json:"title"`
+		Description string    `json:"description"`
+		URL         string    `json:"url"`
+		URLToImage  string    `json:"urlToImage"`
+		PublishedAt time.Time `json:"publishedAt"`
+		Content     string    `json:"content"`
+	} `json:"articles"`
+}
+
+type ArticlesData struct {
+	Articles []Article `json:"data"`
+}
+
+type Article struct {
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	URL         string    `json:"url"`
+	URLToImage  string    `json:"urlToImage"`
+	PublishedAt time.Time `json:"publishedAt"`
+	Content     string    `json:"content"`
 }

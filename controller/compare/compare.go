@@ -477,9 +477,6 @@ func PerformCompareCases(r *http.Request) ([]byte, int) {
 		return statsErrJSONBody, 400
 	}
 
-	applogger.Log("INFO", "compare", "Perform",
-		fmt.Sprintf("Getting this request %v", compareRequest))
-
 	country, err := curve.CompareCasesCountries(compareRequest.NameOne, compareRequest.NameTwo)
 	if err != nil {
 		applogger.Log("ERROR", "compare", "Perform", err.Error())
@@ -494,8 +491,6 @@ func PerformCompareCases(r *http.Request) ([]byte, int) {
 		return errorJSONBody, 500
 	}
 
-	applogger.Log("INFO", "compare", "Perform",
-		"Returning status: 200 with JSONbody "+string(jsonBody))
 	return jsonBody, 200
 }
 

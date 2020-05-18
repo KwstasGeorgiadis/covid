@@ -2,7 +2,6 @@ package sortcon
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -72,9 +71,6 @@ func Perform(r *http.Request) ([]byte, int) {
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: unmarshallError.Error(), Code: 400})
 		return statsErrJSONBody, 400
 	}
-
-	applogger.Log("INFO", "sortcon", "Perform",
-		fmt.Sprintf("Getting this request %v", sortRequest))
 
 	sortType := sortRequest.Type
 	var countries structs.Countries
@@ -153,7 +149,5 @@ func Perform(r *http.Request) ([]byte, int) {
 		return errorJSONBody, 500
 	}
 
-	applogger.Log("INFO", "sortcon", "Perform",
-		"Returning status: 200 with JSONbody "+string(jsonBody))
 	return jsonBody, 200
 }

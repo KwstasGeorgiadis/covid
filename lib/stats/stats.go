@@ -2,7 +2,6 @@ package stats
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"sort"
@@ -49,8 +48,6 @@ func requestData() ([]structs.Country, error) {
 		return []structs.Country{}, errUnmarshal
 	}
 
-	applogger.Log("INFO", "stats", "requestData",
-		fmt.Sprintf("Get reqeust to %s and getting response %v", requestURL, keys))
 	return keys, nil
 }
 
@@ -83,10 +80,9 @@ func GetAllCountries() (structs.Countries, error) {
 		s = structs.Countries{Data: response}
 
 		caching.Set(conn, s, "total")
-		applogger.Log("INFO", "stats", "GetAllCountries", fmt.Sprintf("Setting cache data %v for key total", s))
 
 	} else {
-		applogger.Log("INFO", "stats", "GetAllCountries", fmt.Sprintf("Getting cache data %v instead of requesting it", cachedData))
+		applogger.Log("INFO", "stats", "GetAllCountries", "Getting cache data %v instead of requesting it")
 		return cachedData, nil
 	}
 
@@ -105,7 +101,6 @@ func GetCountry(name string) (structs.Country, error) {
 
 	for _, v := range allCountries.Data {
 		if v.Country == name {
-			applogger.Log("INFO", "stats", "GetCountry", fmt.Sprintf("Returning country %v", v))
 			return v, nil
 		}
 	}
@@ -134,7 +129,7 @@ func SortByCases() (structs.Countries, error) {
 	})
 
 	s := structs.Countries{Data: allCountries}
-	applogger.Log("INFO", "stats", "SortByCases", fmt.Sprintf("Returning sorted countries %v", s))
+
 	return s, nil
 }
 
@@ -157,7 +152,7 @@ func SortByDeaths() (structs.Countries, error) {
 	})
 
 	s := structs.Countries{Data: allCountries}
-	applogger.Log("INFO", "stats", "SortByDeaths", fmt.Sprintf("Returning sorted countries %v", s))
+
 	return s, nil
 }
 
@@ -177,7 +172,6 @@ func SortByTodayCases() (structs.Countries, error) {
 	})
 
 	s := structs.Countries{Data: allCountries}
-	applogger.Log("INFO", "stats", "SortByTodayCases", fmt.Sprintf("Returning sorted countries %v", s))
 	return s, nil
 }
 
@@ -197,7 +191,6 @@ func SortByTodayDeaths() (structs.Countries, error) {
 	})
 
 	s := structs.Countries{Data: allCountries}
-	applogger.Log("INFO", "stats", "SortByTodayDeaths", fmt.Sprintf("Returning sorted countries %v", s))
 	return s, nil
 }
 
@@ -217,7 +210,6 @@ func SortByRecovered() (structs.Countries, error) {
 	})
 
 	s := structs.Countries{Data: allCountries}
-	applogger.Log("INFO", "stats", "SortByRecovered", fmt.Sprintf("Returning sorted countries %v", s))
 	return s, nil
 }
 
@@ -237,7 +229,6 @@ func SortByActive() (structs.Countries, error) {
 	})
 
 	s := structs.Countries{Data: allCountries}
-	applogger.Log("INFO", "stats", "SortByActive", fmt.Sprintf("Returning sorted countries %v", s))
 	return s, nil
 }
 
@@ -257,7 +248,6 @@ func SortByCritical() (structs.Countries, error) {
 	})
 
 	s := structs.Countries{Data: allCountries}
-	applogger.Log("INFO", "stats", "SortByCritical", fmt.Sprintf("Returning sorted countries %v", s))
 	return s, nil
 }
 
@@ -277,7 +267,6 @@ func SortByCasesPerOneMillion() (structs.Countries, error) {
 	})
 
 	s := structs.Countries{Data: allCountries}
-	applogger.Log("INFO", "stats", "SortByCasesPerOneMillion", fmt.Sprintf("Returning sorted countries %v", s))
 	return s, nil
 }
 
@@ -298,7 +287,6 @@ func PercentancePerCountry(name string) (structs.CountryStats, error) {
 		TodayPerCentOfTotalCases:  todayPerCentOfTotalCases,
 		TodayPerCentOfTotalDeaths: todayPerCentOfTotalDeaths}
 
-	applogger.Log("INFO", "stats", "PercentancePerCountry", fmt.Sprintf("Percentanceper country  %v", countryStats))
 	return countryStats, nil
 }
 
@@ -342,7 +330,6 @@ func GetTotalStats() (structs.TotalStats, error) {
 		TodayTotalDeaths:          todayTotalDeaths,
 	}
 
-	applogger.Log("INFO", "stats", "GetTotalStats", fmt.Sprintf("Total stats  %v", totalStatsStuct))
 	return totalStatsStuct, nil
 }
 
@@ -365,6 +352,5 @@ func GetAllCountriesName() (structs.AllCountriesName, error) {
 
 	allCountriesStruct := structs.AllCountriesName{Countries: counties}
 
-	applogger.Log("INFO", "stats", "GetAllCountriesName", fmt.Sprintf("Total stats  %v", allCountriesStruct))
 	return allCountriesStruct, nil
 }

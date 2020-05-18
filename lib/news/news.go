@@ -1,14 +1,14 @@
 package news
 
 import (
-	"fmt"
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"time"
 
 	pconf "github.com/junkd0g/covid/lib/config"
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
+	structs "github.com/junkd0g/covid/lib/structs"
 )
 
 var (
@@ -19,34 +19,7 @@ func init() {
 	serverConf = pconf.GetAppConfig()
 }
 
-type ReponseNews struct {
-	Status       string `json:"status"`
-	TotalResults int    `json:"totalResults"`
-	Articles     []struct {
-		Source struct {
-			ID   string `json:"id"`
-			Name string `json:"name"`
-		} `json:"source"`
-		Author      string    `json:"author"`
-		Title       string    `json:"title"`
-		Description string    `json:"description"`
-		URL         string    `json:"url"`
-		URLToImage  string    `json:"urlToImage"`
-		PublishedAt time.Time `json:"publishedAt"`
-		Content     string    `json:"content"`
-	} `json:"articles"`
-}
-
-type ArticleData struct {
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	URL         string    `json:"url"`
-	URLToImage  string    `json:"urlToImage"`
-	PublishedAt time.Time `json:"publishedAt"`
-	Content     string    `json:"content"`
-}
-
-func requestNewsData() (ArticleData, error) {
+func requestNewsData() (structs.ArticlesData, error) {
 	url := "https://newsapi.org/v2/everything?q=COVID19&sortBy=publishedAt&apiKey=e37f283ddec24c3fb9dcf26eb59601e9&pageSize=100&page=1%0A"
 
 	client := &http.Client{}
@@ -54,13 +27,13 @@ func requestNewsData() (ArticleData, error) {
 
 	if reqError != nil {
 		applogger.Log("ERROR", "news", "requestNewsData", reqError.Error())
-		return ArticleData{}, reqError
+		return structs.ArticlesData{}, reqError
 	}
 
 	res, resError := client.Do(req)
 	if resError != nil {
 		applogger.Log("ERROR", "news", "requestNewsData", resError.Error())
-		return ArticleData{}, resError
+		return structs.ArticlesData{}, resError
 
 	}
 
@@ -68,16 +41,35 @@ func requestNewsData() (ArticleData, error) {
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		applogger.Log("ERROR", "news", "requestNewsData", err.Error())
-		return ArticleData{}, err
+		return structs.ArticlesData{}, err
 
 	}
-	fmt.Println(string(body))
 
-	return ArticleData{}, nil
+	var reponseNews structs.ReponseNews
+
+	unmarshallError := json.Unmarshal(body, &reponseNews)
+	if unmarshallError != nil {
+		applogger.Log("ERROR", "news", "requestNewsData", unmarshallError.Error())
+	}
+
+	keys := make([]structs.Article, 0)
+
+	for _, v := range reponseNews.Articles {
+		var article structs.Article
+		article.Title = v.Title
+		article.Description = v.Description
+		article.URL = v.URL
+		article.URLToImage = v.URLToImage
+		article.PublishedAt = v.PublishedAt
+		article.Content = v.Content
+		keys = append(keys, article)
+	}
+
+	return structs.ArticlesData{keys}, nil
 
 }
 
-func News() {
-	requestNewsData()
-	fmt.Println("hello")
+func GetNews() (structs.ArticlesData, error) {
+	dashboard, err := requestNewsData()
+	return dashboard, err
 }

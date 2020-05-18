@@ -19,6 +19,7 @@ import (
 	countriescon "github.com/junkd0g/covid/controller/countries"
 	countrycon "github.com/junkd0g/covid/controller/country"
 	totalcon "github.com/junkd0g/covid/controller/totalcon"
+	crnews "github.com/junkd0g/covid/controller/crnews"
 
 	"github.com/gorilla/mux"
 	sortcon "github.com/junkd0g/covid/controller/sort"
@@ -617,6 +618,18 @@ func compareUniqueCasesHandle(w http.ResponseWriter, r *http.Request) {
 		"Endpoint /compare/percent called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
+func newsHandle(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	jsonBody, status := crnews.Perform()
+	w.WriteHeader(status)
+	w.Write(jsonBody)
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "main", "comparePercantagePerDayDeathHandle",
+		"Endpoint /compare/percent called with response JSON body "+string(jsonBody), status, elapsed)
+
+
 /*
 	Running the server in port 9080 (getting the value from ./config/covid.json )
 
@@ -629,6 +642,7 @@ func compareUniqueCasesHandle(w http.ResponseWriter, r *http.Request) {
 			/total
 			/countries
 			/countries/all
+			/news
 		POST
 			/country
 			/sort
@@ -642,12 +656,13 @@ func compareUniqueCasesHandle(w http.ResponseWriter, r *http.Request) {
 */
 
 func main() {
-	news.News()
+	news.GetNews()
 	router := mux.NewRouter().StrictSlash(true)
 	port := serverConf.Server.Port
 
 	fmt.Println("server running at port " + port)
 
+	router.HandleFunc("/news", newsHandle).Methods("GET")
 	router.HandleFunc("/country", country).Methods("POST")
 	router.HandleFunc("/countries", countries).Methods("GET")
 	router.HandleFunc("/countries/all", allCountriesHandle).Methods("GET")

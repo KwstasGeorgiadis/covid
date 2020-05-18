@@ -72,7 +72,5 @@ func Perform(r *http.Request) ([]byte, int) {
 		return errorJSONBody, 500
 	}
 
-	applogger.Log("INFO", "statisticscon", "Perform",
-		"Returning status: 200 with JSONbody "+string(jsonBody))
 	return jsonBody, 200
 }

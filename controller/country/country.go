@@ -2,7 +2,6 @@ package countrycon
 
 import (
 	"encoding/json"
-	"fmt"
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
 	stats "github.com/junkd0g/covid/lib/stats"
@@ -63,8 +62,6 @@ func Perform(r *http.Request) ([]byte, int) {
 	}
 
 	json.Unmarshal(b, &countryRequest)
-	applogger.Log("INFO", "countrycon", "Perform",
-		fmt.Sprintf("Getting this request %v", countryRequest))
 
 	country, err := stats.GetCountry(countryRequest.Name)
 	if err != nil {
@@ -80,7 +77,5 @@ func Perform(r *http.Request) ([]byte, int) {
 		return errorJSONBody, 500
 	}
 
-	applogger.Log("INFO", "countrycon", "Perform",
-		"Returning status: 200 with JSONbody "+string(jsonBody))
 	return jsonBody, 200
 }
