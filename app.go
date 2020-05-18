@@ -18,8 +18,8 @@ import (
 	compare "github.com/junkd0g/covid/controller/compare"
 	countriescon "github.com/junkd0g/covid/controller/countries"
 	countrycon "github.com/junkd0g/covid/controller/country"
+	crnews "github.com/junkd0g/covid/controller/news"
 	totalcon "github.com/junkd0g/covid/controller/totalcon"
-	crnews "github.com/junkd0g/covid/controller/crnews"
 
 	"github.com/gorilla/mux"
 	sortcon "github.com/junkd0g/covid/controller/sort"
@@ -618,6 +618,32 @@ func compareUniqueCasesHandle(w http.ResponseWriter, r *http.Request) {
 		"Endpoint /compare/percent called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
+/*
+	Get request to /news with no parameters
+
+	Response:
+
+	{
+    "data": [
+        {
+            "title": "UGC ने जारी किए नंबर, पूछ सकते हैं एडमिशन से लेकर एग्जाम तक अपने सवाल",
+            "description": "कोरोना संक्रमण के चलते देश भर में  लॉकडाउन को एक बार फिर बढ़ा दिया गया है.",
+            "url": "https://aajtak.intoday.in/education/story/ugc-direct-numbers-for-queries-helpline-for-ug-pg-students-tedu-1-1192009.html",
+            "urlToImage": "https://smedia2.intoday.in/aajtak/images/stories/092019/3_1589811689_618x347.jpeg",
+            "publishedAt": "2020-05-18T15:14:14Z",
+            "content": "UGC helpline:"
+        },
+        {
+            "title": "Karen who can't believe she has to wear a mask to enter a supermarket confronts store manager",
+            "description": "A woman who called herself Shelley Lewis acted rude and arrogant toward Gelson's supermarket employees",
+            "url": "https://boingboing.net/2020/05/18/karen-who-cant-believe-she-h.html",
+            "urlToImage": "https://i1.wp.com/media.boingboing.net/wp-content/uploads/2020/05/mask-1.jpg?fit=700%2C503&ssl=1",
+            "publishedAt": "2020-05-18T15:12:19Z",
+            "content": ""
+        }
+		]
+	}
+*/
 func newsHandle(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -628,7 +654,7 @@ func newsHandle(w http.ResponseWriter, r *http.Request) {
 	elapsed := time.Since(start).Seconds()
 	applogger.LogHTTP("INFO", "main", "comparePercantagePerDayDeathHandle",
 		"Endpoint /compare/percent called with response JSON body "+string(jsonBody), status, elapsed)
-
+}
 
 /*
 	Running the server in port 9080 (getting the value from ./config/covid.json )

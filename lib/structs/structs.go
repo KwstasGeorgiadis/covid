@@ -81,6 +81,7 @@ type ErrorMessage struct {
 	Code         int    `json:"code"`
 }
 
+// ReponseNews response we are getting for the news api, being used in lib/news/news.go
 type ReponseNews struct {
 	Status       string `json:"status"`
 	TotalResults int    `json:"totalResults"`
@@ -99,10 +100,12 @@ type ReponseNews struct {
 	} `json:"articles"`
 }
 
+// ArticlesData is being used in lib/news/news.go
 type ArticlesData struct {
 	Articles []Article `json:"data"`
 }
 
+// Article is being used in lib/news/news.go
 type Article struct {
 	Title       string    `json:"title"`
 	Description string    `json:"description"`

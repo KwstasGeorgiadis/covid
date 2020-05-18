@@ -19,6 +19,9 @@ func init() {
 	serverConf = pconf.GetAppConfig()
 }
 
+// requestNewsData does an HTTP GET request to the third party API that
+// contains covid-9 news article
+// It returns structs.ArticlesData and any write error encountered.
 func requestNewsData() (structs.ArticlesData, error) {
 	url := "https://newsapi.org/v2/everything?q=COVID19&sortBy=publishedAt&apiKey=e37f283ddec24c3fb9dcf26eb59601e9&pageSize=100&page=1%0A"
 
@@ -69,6 +72,8 @@ func requestNewsData() (structs.ArticlesData, error) {
 
 }
 
+// GetNews returns an array of articles for covid-19
+// It returns structs.ArticlesData and any write error encountered.
 func GetNews() (structs.ArticlesData, error) {
 	dashboard, err := requestNewsData()
 	return dashboard, err
