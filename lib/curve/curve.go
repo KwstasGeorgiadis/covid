@@ -58,7 +58,6 @@ func requestHistoryData() ([]structs.CountryCurve, error) {
 
 	applogger.Log("INFO", "curve", "requestHistoryData",
 		fmt.Sprintf("Get reqeust to %s and getting response %v", requestURL, keys))
-	fmt.Println(keys)
 	return keys, nil
 }
 
@@ -108,6 +107,13 @@ func GetCountry(name string) (structs.CountryCurve, error) {
 	for _, v := range allCountries {
 		if name == "UK" && v.Country == "UK" {
 			if len(v.Province) == 0 {
+				applogger.Log("INFO", "curve", "GetCountry", fmt.Sprintf("Returning country %v", v))
+				return v, nil
+			}
+			continue
+		}
+		if name == "France" && v.Country == "France" {
+			if v.Province == "" {
 				applogger.Log("INFO", "curve", "GetCountry", fmt.Sprintf("Returning country %v", v))
 				return v, nil
 			}

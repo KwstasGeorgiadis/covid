@@ -21,6 +21,8 @@ type Country struct {
 	Active             int     `json:"active"`
 	Critical           int     `json:"critical"`
 	CasesPerOneMillion float64 `json:"casesPerOneMillion"`
+	Test               int     `json:"tests"`
+	TestPerOneMillion  int     `json:"testsPerOneMillion"`
 }
 
 // Compare is being used in lib/curve/curve.go
