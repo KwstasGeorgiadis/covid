@@ -1,7 +1,7 @@
 package news
 
 import (
-	"encoding/json"
+	"encoding/xml"
 	"io/ioutil"
 	"net/http"
 
@@ -23,7 +23,7 @@ func init() {
 // contains covid-9 news article
 // It returns structs.ArticlesData and any write error encountered.
 func requestNewsData() (structs.ArticlesData, error) {
-	url := "https://newsapi.org/v2/everything?q=COVID19&sortBy=publishedAt&apiKey=e37f283ddec24c3fb9dcf26eb59601e9&pageSize=100&page=1%0A"
+	url := "http://news.google.com/news?q=covid-19&hl=en-US&sort=date&gl=US&num=100&output=rss"
 
 	client := &http.Client{}
 	req, reqError := http.NewRequest("GET", url, nil)
@@ -50,21 +50,23 @@ func requestNewsData() (structs.ArticlesData, error) {
 
 	var reponseNews structs.ReponseNews
 
-	unmarshallError := json.Unmarshal(body, &reponseNews)
+	unmarshallError := xml.Unmarshal(body, &reponseNews)
 	if unmarshallError != nil {
 		applogger.Log("ERROR", "news", "requestNewsData", unmarshallError.Error())
 	}
 
 	keys := make([]structs.Article, 0)
 
-	for _, v := range reponseNews.Articles {
+	for _, v := range reponseNews.Channel.Item {
+
 		var article structs.Article
 		article.Title = v.Title
 		article.Description = v.Description
-		article.URL = v.URL
-		article.URLToImage = v.URLToImage
-		article.PublishedAt = v.PublishedAt
-		article.Content = v.Content
+		article.URL = v.Link
+		//article.URLToImage = v.URLToImage
+		article.PublishedAt = v.PubDate
+		article.Source = v.Source.Text
+		article.SourceURL = v.Source.URL
 		keys = append(keys, article)
 	}
 

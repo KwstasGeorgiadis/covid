@@ -1,6 +1,8 @@
 package structs
 
-import "time"
+import (
+	"encoding/xml"
+)
 
 /*
 	structs that are used across the service
@@ -83,21 +85,36 @@ type ErrorMessage struct {
 
 // ReponseNews response we are getting for the news api, being used in lib/news/news.go
 type ReponseNews struct {
-	Status       string `json:"status"`
-	TotalResults int    `json:"totalResults"`
-	Articles     []struct {
-		Source struct {
-			ID   string `json:"id"`
-			Name string `json:"name"`
-		} `json:"source"`
-		Author      string    `json:"author"`
-		Title       string    `json:"title"`
-		Description string    `json:"description"`
-		URL         string    `json:"url"`
-		URLToImage  string    `json:"urlToImage"`
-		PublishedAt time.Time `json:"publishedAt"`
-		Content     string    `json:"content"`
-	} `json:"articles"`
+	XMLName xml.Name `xml:"rss"`
+	Text    string   `xml:",chardata"`
+	Version string   `xml:"version,attr"`
+	Media   string   `xml:"media,attr"`
+	Channel struct {
+		Text          string `xml:",chardata"`
+		Generator     string `xml:"generator"`
+		Title         string `xml:"title"`
+		Link          string `xml:"link"`
+		Language      string `xml:"language"`
+		WebMaster     string `xml:"webMaster"`
+		Copyright     string `xml:"copyright"`
+		LastBuildDate string `xml:"lastBuildDate"`
+		Description   string `xml:"description"`
+		Item          []struct {
+			Text  string `xml:",chardata"`
+			Title string `xml:"title"`
+			Link  string `xml:"link"`
+			GUUID struct {
+				Text        string `xml:",chardata"`
+				IsPermaLink string `xml:"isPermaLink,attr"`
+			} `xml:"guid"`
+			PubDate     string `xml:"pubDate"`
+			Description string `xml:"description"`
+			Source      struct {
+				Text string `xml:",chardata"`
+				URL  string `xml:"url,attr"`
+			} `xml:"source"`
+		} `xml:"item"`
+	} `xml:"channel"`
 }
 
 // ArticlesData is being used in lib/news/news.go
@@ -107,10 +124,11 @@ type ArticlesData struct {
 
 // Article is being used in lib/news/news.go
 type Article struct {
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	URL         string    `json:"url"`
-	URLToImage  string    `json:"urlToImage"`
-	PublishedAt time.Time `json:"publishedAt"`
-	Content     string    `json:"content"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	URL         string `json:"url"`
+	URLToImage  string `json:"urlToImage"`
+	PublishedAt string `json:"publishedAt"`
+	Source      string `json:"source"`
+	SourceURL   string `json:"sourceURL"`
 }
