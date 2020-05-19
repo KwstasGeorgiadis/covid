@@ -41,6 +41,23 @@ type CompareData struct {
 	Data    []float64 `json:"data"`
 }
 
+// CompareAll is being used in lib/curve/curve.go
+type CompareAll struct {
+	CountryOne CompareAllData `json:"countryOne"`
+	CountryTwo CompareAllData `json:"countryTwo"`
+}
+
+// CompareAllData is being used in lib/curve/curve.go
+type CompareAllData struct {
+	Country             string    `json:"country"`
+	DataDeaths          []float64 `json:"dataDeaths"`
+	DataDeathsFromFirst []float64 `json:"dataDeathsFromFirst"`
+	DataDeathsPerDay    []float64 `json:"dataDeathsPerDay"`
+	DataRecovered       []float64 `json:"dataRecoverd"`
+	DataCases           []float64 `json:"dataCases"`
+	DataCasesFromFist   []float64 `json:"dataCasesFromFirst"`
+}
+
 // CountryCurve is being used in lib/curve/curve.go
 type CountryCurve struct {
 	Country  string         `json:"country"`

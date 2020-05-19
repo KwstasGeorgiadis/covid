@@ -571,3 +571,95 @@ func PerformCompareUniquePerDayCases(r *http.Request) ([]byte, int) {
 		"Returning status: 200 with JSONbody "+string(jsonBody))
 	return jsonBody, 200
 }
+
+func PerformAll(r *http.Request) ([]byte, int) {
+	var compareRequest Request
+
+	b, errIoutilReadAll := ioutil.ReadAll(r.Body)
+	if errIoutilReadAll != nil {
+		applogger.Log("ERROR", "compare", "Perform", errIoutilReadAll.Error())
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: errIoutilReadAll.Error(), Code: 500})
+		return statsErrJSONBody, 500
+	}
+
+	unmarshallError := json.Unmarshal(b, &compareRequest)
+	if unmarshallError != nil {
+		applogger.Log("ERROR", "compare", "Perform", unmarshallError.Error())
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: unmarshallError.Error(), Code: 400})
+		return statsErrJSONBody, 400
+	}
+
+	applogger.Log("INFO", "compare", "Perform",
+		fmt.Sprintf("Getting this request %v", compareRequest))
+
+	compareDeathsCountries, compareDeathsCountriesErr := curve.CompareDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	if compareDeathsCountriesErr != nil {
+		applogger.Log("ERROR", "compare", "Perform", compareDeathsCountriesErr.Error())
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: compareDeathsCountriesErr.Error(), Code: 500})
+		return statsErrJSONBody, 500
+	}
+
+	compareRecoveryCountries, compareRecoveryCountriesErr := curve.CompareRecoveryCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	if compareDeathsCountriesErr != nil {
+		applogger.Log("ERROR", "compare", "Perform", compareRecoveryCountriesErr.Error())
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: compareRecoveryCountriesErr.Error(), Code: 500})
+		return statsErrJSONBody, 500
+	}
+
+	compareCasesCountries, compareCasesCountriesErr := curve.CompareCasesCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	if compareDeathsCountriesErr != nil {
+		applogger.Log("ERROR", "compare", "Perform", compareCasesCountriesErr.Error())
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: compareCasesCountriesErr.Error(), Code: 500})
+		return statsErrJSONBody, 500
+	}
+
+	comparePerDayCasesCountries, comparePerDayCasesCountriesErr := curve.ComparePerDayCasesCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	if compareDeathsCountriesErr != nil {
+		applogger.Log("ERROR", "compare", "Perform", comparePerDayCasesCountriesErr.Error())
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: comparePerDayCasesCountriesErr.Error(), Code: 500})
+		return statsErrJSONBody, 500
+	}
+
+	comparePerDayDeathsCountries, comparePerDayDeathsCountriesErr := curve.ComparePerDayDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	if compareDeathsCountriesErr != nil {
+		applogger.Log("ERROR", "compare", "Perform", comparePerDayDeathsCountriesErr.Error())
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: comparePerDayDeathsCountriesErr.Error(), Code: 500})
+		return statsErrJSONBody, 500
+	}
+
+	compareDeathsFromFirstDeathCountries, compareDeathsFromFirstDeathCountriesErr := curve.CompareDeathsFromFirstDeathCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	if compareDeathsCountriesErr != nil {
+		applogger.Log("ERROR", "compare", "Perform", compareDeathsFromFirstDeathCountriesErr.Error())
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: compareDeathsFromFirstDeathCountriesErr.Error(), Code: 500})
+		return statsErrJSONBody, 500
+	}
+	var countryOneAllData structs.CompareAllData
+	var countryTwoAllData structs.CompareAllData
+
+	countryOneAllData.Country = compareRequest.NameOne
+	countryOneAllData.DataDeaths = compareDeathsCountries.CountryOne.Data
+	countryOneAllData.DataDeathsFromFirst = compareDeathsFromFirstDeathCountries.CountryOne.Data
+	countryOneAllData.DataDeathsPerDay = comparePerDayDeathsCountries.CountryOne.Data
+	countryOneAllData.DataRecovered = compareRecoveryCountries.CountryOne.Data
+	countryOneAllData.DataCases = compareCasesCountries.CountryOne.Data
+	countryOneAllData.DataCasesFromFist = comparePerDayCasesCountries.CountryOne.Data
+
+	countryTwoAllData.Country = compareRequest.NameOne
+	countryTwoAllData.DataDeaths = compareDeathsCountries.CountryTwo.Data
+	countryTwoAllData.DataDeathsFromFirst = compareDeathsFromFirstDeathCountries.CountryTwo.Data
+	countryTwoAllData.DataDeathsPerDay = comparePerDayDeathsCountries.CountryTwo.Data
+	countryTwoAllData.DataRecovered = compareRecoveryCountries.CountryTwo.Data
+	countryTwoAllData.DataCases = compareCasesCountries.CountryTwo.Data
+	countryTwoAllData.DataCasesFromFist = comparePerDayCasesCountries.CountryTwo.Data
+
+	jsonBody, jsonBodyErr := json.Marshal(structs.CompareAll{countryOneAllData, countryTwoAllData})
+	if jsonBodyErr != nil {
+		applogger.Log("ERROR", "compare", "Perform", jsonBodyErr.Error())
+		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
+		return errorJSONBody, 500
+	}
+
+	applogger.Log("INFO", "compare", "Perform",
+		"Returning status: 200 with JSONbody "+string(jsonBody))
+	return jsonBody, 200
+}

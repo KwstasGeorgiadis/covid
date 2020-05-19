@@ -618,6 +618,18 @@ func compareUniqueCasesHandle(w http.ResponseWriter, r *http.Request) {
 		"Endpoint /compare/percent called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
+func compareAllHandle(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	jsonBody, status := compare.PerformAll(r)
+	w.WriteHeader(status)
+	w.Write(jsonBody)
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "main", "comparePercantagePerDayDeathHandle",
+		"Endpoint /compare/percent called with response JSON body "+string(jsonBody), status, elapsed)
+}
+
 /*
 	Get request to /news with no parameters
 
@@ -678,7 +690,9 @@ func newsHandle(w http.ResponseWriter, r *http.Request) {
 			/compare/perday
 			/compare/recovery
 			/compare/cases
-			/compare/unique
+			/compare/cases/unique
+			/compare/all
+
 */
 
 func main() {
@@ -702,6 +716,7 @@ func main() {
 	router.HandleFunc("/compare/recovery", compareRecoveryHandle).Methods("POST")
 	router.HandleFunc("/compare/cases", compareCasesHandle).Methods("POST")
 	router.HandleFunc("/compare/cases/unique", compareUniqueCasesHandle).Methods("POST")
+	router.HandleFunc("/compare/all", compareAllHandle).Methods("POST")
 
 	c := cors.New(cors.Options{
 		AllowCredentials: true,
