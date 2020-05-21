@@ -3,7 +3,6 @@ package curve
 //TODO add fucking caching you piece of shit and add expiration time
 
 import (
-	"fmt"
 	"sort"
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
@@ -126,18 +125,31 @@ func GetCountry(name string) (structs.CountryCurve, error) {
 // CompareDeathsCountries returns two integer arrays (one per country passed
 // in parameter) which contain total number of deaths from  22/01/2020
 // It returns structs.Compare and any write error encountered.
-func CompareDeathsCountries(nameOne string, nameTwo string) (structs.Compare, error) {
+func CompareDeathsCountries(nameOne string, nameTwo string, getCountryST structs.CountryCurve, getCountryStTwo structs.CountryCurve) (structs.Compare, error) {
+	var country structs.CountryCurve
+	var errGetCountryOne error
 
-	country, errGetCountryOne := GetCountry(nameOne)
-	if errGetCountryOne != nil {
-		applogger.Log("ERROR", "curve", "CompareDeathsCountries", errGetCountryOne.Error())
-		return structs.Compare{}, errGetCountryOne
+	if (getCountryST == structs.CountryCurve{}) {
+		country, errGetCountryOne = GetCountry(nameOne)
+		if errGetCountryOne != nil {
+			applogger.Log("ERROR", "curve", "CompareDeathsCountries", errGetCountryOne.Error())
+			return structs.Compare{}, errGetCountryOne
+		}
+	} else {
+		country = getCountryST
 	}
 
-	countryTwo, errGetCountryTwo := GetCountry(nameTwo)
-	if errGetCountryTwo != nil {
-		applogger.Log("ERROR", "curve", "CompareDeathsCountries", errGetCountryTwo.Error())
-		return structs.Compare{}, errGetCountryTwo
+	var countryTwo structs.CountryCurve
+	var errGetCountryTwo error
+
+	if (getCountryStTwo == structs.CountryCurve{}) {
+		countryTwo, errGetCountryTwo = GetCountry(nameTwo)
+		if errGetCountryTwo != nil {
+			applogger.Log("ERROR", "curve", "CompareDeathsCountries", errGetCountryTwo.Error())
+			return structs.Compare{}, errGetCountryTwo
+		}
+	} else {
+		countryTwo = getCountryStTwo
 	}
 
 	var countrySortedDeath []float64
@@ -168,18 +180,32 @@ func CompareDeathsCountries(nameOne string, nameTwo string) (structs.Compare, er
 // CompareDeathsFromFirstDeathCountries returns two integer arrays (one per country passed
 // in parameter) which contain total number of deaths from  the first confirm death.
 // It returns structs.Compare and any write error encountered.
-func CompareDeathsFromFirstDeathCountries(nameOne string, nameTwo string) (structs.Compare, error) {
+func CompareDeathsFromFirstDeathCountries(nameOne string, nameTwo string, getCountryST structs.CountryCurve, getCountryStTwo structs.CountryCurve) (structs.Compare, error) {
 
-	country, errGetCountryOne := GetCountry(nameOne)
-	if errGetCountryOne != nil {
-		applogger.Log("ERROR", "curve", "CompareDeathsFromFirstDeathCountries", errGetCountryOne.Error())
-		return structs.Compare{}, errGetCountryOne
+	var country structs.CountryCurve
+	var errGetCountryOne error
+
+	if (getCountryST == structs.CountryCurve{}) {
+		country, errGetCountryOne = GetCountry(nameOne)
+		if errGetCountryOne != nil {
+			applogger.Log("ERROR", "curve", "CompareDeathsFromFirstDeathCountries", errGetCountryOne.Error())
+			return structs.Compare{}, errGetCountryOne
+		}
+	} else {
+		country = getCountryST
 	}
 
-	countryTwo, errGetCountryTwo := GetCountry(nameTwo)
-	if errGetCountryTwo != nil {
-		applogger.Log("ERROR", "curve", "CompareDeathsFromFirstDeathCountries", errGetCountryTwo.Error())
-		return structs.Compare{}, errGetCountryTwo
+	var countryTwo structs.CountryCurve
+	var errGetCountryTwo error
+
+	if (getCountryStTwo == structs.CountryCurve{}) {
+		countryTwo, errGetCountryTwo = GetCountry(nameTwo)
+		if errGetCountryTwo != nil {
+			applogger.Log("ERROR", "curve", "CompareDeathsFromFirstDeathCountries", errGetCountryTwo.Error())
+			return structs.Compare{}, errGetCountryTwo
+		}
+	} else {
+		countryTwo = getCountryStTwo
 	}
 
 	var countrySortedDeath []float64
@@ -272,19 +298,32 @@ func ComparePerCentDeathsCountries(nameOne string, nameTwo string) (structs.Comp
 // ComparePerDayDeathsCountries returns two integer arrays (one per country passed
 // in parameter) which contain unique per day number of deaths from first confrim death
 // It returns structs.Compare and any write error encountered.
-func ComparePerDayDeathsCountries(nameOne string, nameTwo string) (structs.Compare, error) {
+func ComparePerDayDeathsCountries(nameOne string, nameTwo string, getCountryST structs.CountryCurve, getCountryStTwo structs.CountryCurve) (structs.Compare, error) {
 
-	country, errGetCountryOne := GetCountry(nameOne)
-	if errGetCountryOne != nil {
-		applogger.Log("ERROR", "curve", "ComparePerDayDeathsCountries", errGetCountryOne.Error())
-		fmt.Println(errGetCountryOne.Error())
-		return structs.Compare{}, errGetCountryOne
+	var country structs.CountryCurve
+	var errGetCountryOne error
+
+	if (getCountryST == structs.CountryCurve{}) {
+		country, errGetCountryOne = GetCountry(nameOne)
+		if errGetCountryOne != nil {
+			applogger.Log("ERROR", "curve", "ComparePerDayDeathsCountries", errGetCountryOne.Error())
+			return structs.Compare{}, errGetCountryOne
+		}
+	} else {
+		country = getCountryST
 	}
 
-	countryTwo, errGetCountryTwo := GetCountry(nameTwo)
-	if errGetCountryTwo != nil {
-		applogger.Log("ERROR", "curve", "ComparePerDayDeathsCountries", errGetCountryTwo.Error())
-		return structs.Compare{}, errGetCountryTwo
+	var countryTwo structs.CountryCurve
+	var errGetCountryTwo error
+
+	if (getCountryStTwo == structs.CountryCurve{}) {
+		countryTwo, errGetCountryTwo = GetCountry(nameTwo)
+		if errGetCountryTwo != nil {
+			applogger.Log("ERROR", "curve", "ComparePerDayDeathsCountries", errGetCountryTwo.Error())
+			return structs.Compare{}, errGetCountryTwo
+		}
+	} else {
+		countryTwo = getCountryStTwo
 	}
 
 	var countrySortedDeath []float64
@@ -340,17 +379,31 @@ func ComparePerDayDeathsCountries(nameOne string, nameTwo string) (structs.Compa
 // CompareRecoveryCountries returns two integer arrays (one per country passed
 // in parameter) which contain total number of recovery patients from  22/01/2020
 // It returns structs.Compare and any write error encountered.
-func CompareRecoveryCountries(nameOne string, nameTwo string) (structs.Compare, error) {
-	country, errGetCountryOne := GetCountry(nameOne)
-	if errGetCountryOne != nil {
-		applogger.Log("ERROR", "curve", "CompareRecoveryCountries", errGetCountryOne.Error())
-		return structs.Compare{}, errGetCountryOne
+func CompareRecoveryCountries(nameOne string, nameTwo string, getCountryST structs.CountryCurve, getCountryStTwo structs.CountryCurve) (structs.Compare, error) {
+	var country structs.CountryCurve
+	var errGetCountryOne error
+
+	if (getCountryST == structs.CountryCurve{}) {
+		country, errGetCountryOne = GetCountry(nameOne)
+		if errGetCountryOne != nil {
+			applogger.Log("ERROR", "curve", "CompareRecoveryCountries", errGetCountryOne.Error())
+			return structs.Compare{}, errGetCountryOne
+		}
+	} else {
+		country = getCountryST
 	}
 
-	countryTwo, errGetCountryTwo := GetCountry(nameTwo)
-	if errGetCountryTwo != nil {
-		applogger.Log("ERROR", "curve", "CompareRecoveryCountries", errGetCountryTwo.Error())
-		return structs.Compare{}, errGetCountryTwo
+	var countryTwo structs.CountryCurve
+	var errGetCountryTwo error
+
+	if (getCountryStTwo == structs.CountryCurve{}) {
+		countryTwo, errGetCountryTwo = GetCountry(nameTwo)
+		if errGetCountryTwo != nil {
+			applogger.Log("ERROR", "curve", "CompareRecoveryCountries", errGetCountryTwo.Error())
+			return structs.Compare{}, errGetCountryTwo
+		}
+	} else {
+		countryTwo = getCountryStTwo
 	}
 
 	var countrySortedRecovery []float64
@@ -381,17 +434,31 @@ func CompareRecoveryCountries(nameOne string, nameTwo string) (structs.Compare, 
 // CompareCasesCountries returns two integer arrays (one per country passed
 // in parameter) which contain total number of cases from  22/01/2020
 // It returns structs.Compare and any write error encountered.
-func CompareCasesCountries(nameOne string, nameTwo string) (structs.Compare, error) {
-	country, errGetCountryOne := GetCountry(nameOne)
-	if errGetCountryOne != nil {
-		applogger.Log("ERROR", "curve", "CompareCasesCountries", errGetCountryOne.Error())
-		return structs.Compare{}, errGetCountryOne
+func CompareCasesCountries(nameOne string, nameTwo string, getCountryST structs.CountryCurve, getCountryStTwo structs.CountryCurve) (structs.Compare, error) {
+	var country structs.CountryCurve
+	var errGetCountryOne error
+
+	if (getCountryST == structs.CountryCurve{}) {
+		country, errGetCountryOne = GetCountry(nameOne)
+		if errGetCountryOne != nil {
+			applogger.Log("ERROR", "curve", "CompareCasesCountries", errGetCountryOne.Error())
+			return structs.Compare{}, errGetCountryOne
+		}
+	} else {
+		country = getCountryST
 	}
 
-	countryTwo, errGetCountryTwo := GetCountry(nameTwo)
-	if errGetCountryTwo != nil {
-		applogger.Log("ERROR", "curve", "CompareCasesCountries", errGetCountryTwo.Error())
-		return structs.Compare{}, errGetCountryTwo
+	var countryTwo structs.CountryCurve
+	var errGetCountryTwo error
+
+	if (getCountryStTwo == structs.CountryCurve{}) {
+		countryTwo, errGetCountryTwo = GetCountry(nameTwo)
+		if errGetCountryTwo != nil {
+			applogger.Log("ERROR", "curve", "CompareCasesCountries", errGetCountryTwo.Error())
+			return structs.Compare{}, errGetCountryTwo
+		}
+	} else {
+		countryTwo = getCountryStTwo
 	}
 
 	var countrySortedCases []float64
@@ -422,19 +489,32 @@ func CompareCasesCountries(nameOne string, nameTwo string) (structs.Compare, err
 // ComparePerDayCasesCountries returns two integer arrays (one per country passed
 // in parameter) which contain unique per day number of case from first confrim case
 // It returns structs.Compare and any write error encountered.
-func ComparePerDayCasesCountries(nameOne string, nameTwo string) (structs.Compare, error) {
+func ComparePerDayCasesCountries(nameOne string, nameTwo string, getCountryST structs.CountryCurve, getCountryStTwo structs.CountryCurve) (structs.Compare, error) {
 
-	country, errGetCountryOne := GetCountry(nameOne)
-	if errGetCountryOne != nil {
-		applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", errGetCountryOne.Error())
-		fmt.Println(errGetCountryOne.Error())
-		return structs.Compare{}, errGetCountryOne
+	var country structs.CountryCurve
+	var errGetCountryOne error
+
+	if (getCountryST == structs.CountryCurve{}) {
+		country, errGetCountryOne = GetCountry(nameOne)
+		if errGetCountryOne != nil {
+			applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", errGetCountryOne.Error())
+			return structs.Compare{}, errGetCountryOne
+		}
+	} else {
+		country = getCountryST
 	}
 
-	countryTwo, errGetCountryTwo := GetCountry(nameTwo)
-	if errGetCountryTwo != nil {
-		applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", errGetCountryTwo.Error())
-		return structs.Compare{}, errGetCountryTwo
+	var countryTwo structs.CountryCurve
+	var errGetCountryTwo error
+
+	if (getCountryStTwo == structs.CountryCurve{}) {
+		countryTwo, errGetCountryTwo = GetCountry(nameTwo)
+		if errGetCountryTwo != nil {
+			applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", errGetCountryTwo.Error())
+			return structs.Compare{}, errGetCountryTwo
+		}
+	} else {
+		countryTwo = getCountryStTwo
 	}
 
 	var countrySortedCases []float64

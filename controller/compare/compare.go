@@ -84,7 +84,7 @@ func Perform(r *http.Request) ([]byte, int) {
 	applogger.Log("INFO", "compare", "Perform",
 		fmt.Sprintf("Getting this request %v", compareRequest))
 
-	country, err := curve.CompareDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	country, err := curve.CompareDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo, structs.CountryCurve{}, structs.CountryCurve{})
 	if err != nil {
 		applogger.Log("ERROR", "compare", "Perform", err.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
@@ -164,7 +164,7 @@ func PerformFromFirstDeath(r *http.Request) ([]byte, int) {
 	applogger.Log("INFO", "compare", "PerformFromFirstDeath",
 		fmt.Sprintf("Getting this request %v", compareRequest))
 
-	country, err := curve.CompareDeathsFromFirstDeathCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	country, err := curve.CompareDeathsFromFirstDeathCountries(compareRequest.NameOne, compareRequest.NameTwo, structs.CountryCurve{}, structs.CountryCurve{})
 	if err != nil {
 		applogger.Log("ERROR", "compare", "PerformFromFirstDeath", err.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
@@ -244,7 +244,7 @@ func PerformPerDayDeath(r *http.Request) ([]byte, int) {
 	applogger.Log("INFO", "compare", "PerformPerDayDeath",
 		fmt.Sprintf("Getting this request %v", compareRequest))
 
-	country, err := curve.ComparePerDayDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	country, err := curve.ComparePerDayDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo, structs.CountryCurve{}, structs.CountryCurve{})
 	if err != nil {
 		applogger.Log("ERROR", "compare", "PerformPerDayDeath", err.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
@@ -402,7 +402,7 @@ func PerformCompareRecorey(r *http.Request) ([]byte, int) {
 	applogger.Log("INFO", "compare", "Perform",
 		fmt.Sprintf("Getting this request %v", compareRequest))
 
-	country, err := curve.CompareRecoveryCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	country, err := curve.CompareRecoveryCountries(compareRequest.NameOne, compareRequest.NameTwo, structs.CountryCurve{}, structs.CountryCurve{})
 	if err != nil {
 		applogger.Log("ERROR", "compare", "Perform", err.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
@@ -477,7 +477,7 @@ func PerformCompareCases(r *http.Request) ([]byte, int) {
 		return statsErrJSONBody, 400
 	}
 
-	country, err := curve.CompareCasesCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	country, err := curve.CompareCasesCountries(compareRequest.NameOne, compareRequest.NameTwo, structs.CountryCurve{}, structs.CountryCurve{})
 	if err != nil {
 		applogger.Log("ERROR", "compare", "Perform", err.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
@@ -553,7 +553,7 @@ func PerformCompareUniquePerDayCases(r *http.Request) ([]byte, int) {
 	applogger.Log("INFO", "compare", "Perform",
 		fmt.Sprintf("Getting this request %v", compareRequest))
 
-	country, err := curve.ComparePerDayCasesCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	country, err := curve.ComparePerDayCasesCountries(compareRequest.NameOne, compareRequest.NameTwo, structs.CountryCurve{}, structs.CountryCurve{})
 	if err != nil {
 		applogger.Log("ERROR", "compare", "Perform", err.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
@@ -592,44 +592,57 @@ func PerformAll(r *http.Request) ([]byte, int) {
 	applogger.Log("INFO", "compare", "Perform",
 		fmt.Sprintf("Getting this request %v", compareRequest))
 
-	compareDeathsCountries, compareDeathsCountriesErr := curve.CompareDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	getCountrySt, getCountryStErr := curve.GetCountry(compareRequest.NameOne)
+	if getCountryStErr != nil {
+		applogger.Log("ERROR", "compare", "PerformAll", getCountryStErr.Error())
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: getCountryStErr.Error(), Code: 500})
+		return statsErrJSONBody, 500
+	}
+	getCountryStTwo, getCountryStTwoErr := curve.GetCountry(compareRequest.NameTwo)
+	if getCountryStTwoErr != nil {
+		applogger.Log("ERROR", "compare", "PerformAll", getCountryStTwoErr.Error())
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: getCountryStTwoErr.Error(), Code: 500})
+		return statsErrJSONBody, 500
+	}
+
+	compareDeathsCountries, compareDeathsCountriesErr := curve.CompareDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo, getCountrySt, getCountryStTwo)
 	if compareDeathsCountriesErr != nil {
-		applogger.Log("ERROR", "compare", "Perform", compareDeathsCountriesErr.Error())
+		applogger.Log("ERROR", "compare", "PerformAll", compareDeathsCountriesErr.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: compareDeathsCountriesErr.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
-	compareRecoveryCountries, compareRecoveryCountriesErr := curve.CompareRecoveryCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	compareRecoveryCountries, compareRecoveryCountriesErr := curve.CompareRecoveryCountries(compareRequest.NameOne, compareRequest.NameTwo, getCountrySt, getCountryStTwo)
 	if compareDeathsCountriesErr != nil {
-		applogger.Log("ERROR", "compare", "Perform", compareRecoveryCountriesErr.Error())
+		applogger.Log("ERROR", "compare", "PerformAll", compareRecoveryCountriesErr.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: compareRecoveryCountriesErr.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
-	compareCasesCountries, compareCasesCountriesErr := curve.CompareCasesCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	compareCasesCountries, compareCasesCountriesErr := curve.CompareCasesCountries(compareRequest.NameOne, compareRequest.NameTwo, getCountrySt, getCountryStTwo)
 	if compareDeathsCountriesErr != nil {
-		applogger.Log("ERROR", "compare", "Perform", compareCasesCountriesErr.Error())
+		applogger.Log("ERROR", "compare", "PerformAll", compareCasesCountriesErr.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: compareCasesCountriesErr.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
-	comparePerDayCasesCountries, comparePerDayCasesCountriesErr := curve.ComparePerDayCasesCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	comparePerDayCasesCountries, comparePerDayCasesCountriesErr := curve.ComparePerDayCasesCountries(compareRequest.NameOne, compareRequest.NameTwo, getCountrySt, getCountryStTwo)
 	if compareDeathsCountriesErr != nil {
-		applogger.Log("ERROR", "compare", "Perform", comparePerDayCasesCountriesErr.Error())
+		applogger.Log("ERROR", "compare", "PerformAll", comparePerDayCasesCountriesErr.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: comparePerDayCasesCountriesErr.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
-	comparePerDayDeathsCountries, comparePerDayDeathsCountriesErr := curve.ComparePerDayDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	comparePerDayDeathsCountries, comparePerDayDeathsCountriesErr := curve.ComparePerDayDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo, getCountrySt, getCountryStTwo)
 	if compareDeathsCountriesErr != nil {
-		applogger.Log("ERROR", "compare", "Perform", comparePerDayDeathsCountriesErr.Error())
+		applogger.Log("ERROR", "compare", "PerformAll", comparePerDayDeathsCountriesErr.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: comparePerDayDeathsCountriesErr.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
-	compareDeathsFromFirstDeathCountries, compareDeathsFromFirstDeathCountriesErr := curve.CompareDeathsFromFirstDeathCountries(compareRequest.NameOne, compareRequest.NameTwo)
+	compareDeathsFromFirstDeathCountries, compareDeathsFromFirstDeathCountriesErr := curve.CompareDeathsFromFirstDeathCountries(compareRequest.NameOne, compareRequest.NameTwo, getCountrySt, getCountryStTwo)
 	if compareDeathsCountriesErr != nil {
-		applogger.Log("ERROR", "compare", "Perform", compareDeathsFromFirstDeathCountriesErr.Error())
+		applogger.Log("ERROR", "compare", "PerformAll", compareDeathsFromFirstDeathCountriesErr.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: compareDeathsFromFirstDeathCountriesErr.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
