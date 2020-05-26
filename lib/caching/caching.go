@@ -46,7 +46,7 @@ func NewPool() *redis.Pool {
 func Set(c redis.Conn, countries structs.Countries, key string) error {
 	out, _ := json.Marshal(countries)
 
-	_, err := c.Do("SETEX", key, 3, string(out))
+	_, err := c.Do("SETEX", key, 30, string(out))
 	if err != nil {
 		return err
 	}
@@ -79,7 +79,7 @@ func Get(c redis.Conn, key string) (structs.Countries, error) {
 // @param c redis.Conn redis connection
 func SetCurveData(c redis.Conn, countries []structs.CountryCurve) error {
 
-	_, err := c.Do("SETEX", "curve", 3, countries)
+	_, err := c.Do("SETEX", "curve", 30, countries)
 	if err != nil {
 		return err
 	}
