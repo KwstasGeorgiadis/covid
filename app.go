@@ -508,7 +508,7 @@ func compareRecoveryHandle(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(status)
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
-	applogger.LogHTTP("INFO", "main", "comparePercantagePerDayDeathHandle",
+	applogger.LogHTTP("INFO", "main", "compareRecoveryHandle",
 		"Endpoint /compare/percent called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
@@ -561,7 +561,7 @@ func compareCasesHandle(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(status)
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
-	applogger.LogHTTP("INFO", "main", "comparePercantagePerDayDeathHandle",
+	applogger.LogHTTP("INFO", "main", "compareCasesHandle",
 		"Endpoint /compare/percent called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
@@ -614,7 +614,7 @@ func compareUniqueCasesHandle(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(status)
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
-	applogger.LogHTTP("INFO", "main", "comparePercantagePerDayDeathHandle",
+	applogger.LogHTTP("INFO", "main", "compareUniqueCasesHandle",
 		"Endpoint /compare/percent called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
@@ -626,7 +626,7 @@ func compareAllHandle(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(status)
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
-	applogger.LogHTTP("INFO", "main", "comparePercantagePerDayDeathHandle",
+	applogger.LogHTTP("INFO", "main", "compareAllHandle",
 		"Endpoint /compare/percent called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
@@ -664,7 +664,95 @@ func newsHandle(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(status)
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
-	applogger.LogHTTP("INFO", "main", "comparePercantagePerDayDeathHandle",
+	applogger.LogHTTP("INFO", "main", "newsHandle",
+		"Endpoint /compare/percent called with response JSON body "+string(jsonBody), status, elapsed)
+}
+
+/*
+	Get request to /news/vaccine with no parameters
+
+	Response:
+
+	{
+    "data": [
+        {
+            "title": "UGC ने जारी किए नंबर, पूछ सकते हैं एडमिशन से लेकर एग्जाम तक अपने सवाल",
+            "description": "कोरोना संक्रमण के चलते देश भर में  लॉकडाउन को एक बार फिर बढ़ा दिया गया है.",
+            "url": "https://aajtak.intoday.in/education/story/ugc-direct-numbers-for-queries-helpline-for-ug-pg-students-tedu-1-1192009.html",
+            "urlToImage": "https://smedia2.intoday.in/aajtak/images/stories/092019/3_1589811689_618x347.jpeg",
+            "publishedAt": "2020-05-18T15:14:14Z",
+            "content": "UGC helpline:"
+        },
+        {
+            "title": "Karen who can't believe she has to wear a mask to enter a supermarket confronts store manager",
+            "description": "A woman who called herself Shelley Lewis acted rude and arrogant toward Gelson's supermarket employees",
+            "url": "https://boingboing.net/2020/05/18/karen-who-cant-believe-she-h.html",
+            "urlToImage": "https://i1.wp.com/media.boingboing.net/wp-content/uploads/2020/05/mask-1.jpg?fit=700%2C503&ssl=1",
+            "publishedAt": "2020-05-18T15:12:19Z",
+            "content": ""
+        }
+		]
+	}
+*/
+func newsVaccineHandle(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	jsonBody, status := crnews.PerformVaccineNews()
+	w.WriteHeader(status)
+	w.Write(jsonBody)
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "main", "newsVaccineHandle",
+		"Endpoint /compare/percent called with response JSON body "+string(jsonBody), status, elapsed)
+}
+
+/*
+	Get request to /news/treatment with no parameters
+
+	Response:
+
+	{
+    "data": [
+        {
+            "title": "UGC ने जारी किए नंबर, पूछ सकते हैं एडमिशन से लेकर एग्जाम तक अपने सवाल",
+            "description": "कोरोना संक्रमण के चलते देश भर में  लॉकडाउन को एक बार फिर बढ़ा दिया गया है.",
+            "url": "https://aajtak.intoday.in/education/story/ugc-direct-numbers-for-queries-helpline-for-ug-pg-students-tedu-1-1192009.html",
+            "urlToImage": "https://smedia2.intoday.in/aajtak/images/stories/092019/3_1589811689_618x347.jpeg",
+            "publishedAt": "2020-05-18T15:14:14Z",
+            "content": "UGC helpline:"
+        },
+        {
+            "title": "Karen who can't believe she has to wear a mask to enter a supermarket confronts store manager",
+            "description": "A woman who called herself Shelley Lewis acted rude and arrogant toward Gelson's supermarket employees",
+            "url": "https://boingboing.net/2020/05/18/karen-who-cant-believe-she-h.html",
+            "urlToImage": "https://i1.wp.com/media.boingboing.net/wp-content/uploads/2020/05/mask-1.jpg?fit=700%2C503&ssl=1",
+            "publishedAt": "2020-05-18T15:12:19Z",
+            "content": ""
+        }
+		]
+	}
+*/
+func newsTreatmentHandle(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	jsonBody, status := crnews.PerformTreatmentNews()
+	w.WriteHeader(status)
+	w.Write(jsonBody)
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "main", "newsTreatmentHandle",
+		"Endpoint /compare/percent called with response JSON body "+string(jsonBody), status, elapsed)
+}
+
+func newsAllHandle(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	jsonBody, status := crnews.PerformAll()
+	w.WriteHeader(status)
+	w.Write(jsonBody)
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "main", "newsAllHandle",
 		"Endpoint /compare/percent called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
@@ -677,21 +765,24 @@ func newsHandle(w http.ResponseWriter, r *http.Request) {
 
 	Endpoints:
 		GET:
-			/total
-			/countries
-			/countries/all
-			/news
+			/api/total
+			/api/countries
+			/api/countries/all
+			/api/news
+			/api/news/all
+			/api/news/vaccine
+			/api/news/treatment
 		POST
-			/country
-			/sort
-			/stats
-			/compare
-			/compare/firstdeath
-			/compare/perday
-			/compare/recovery
-			/compare/cases
-			/compare/cases/unique
-			/compare/all
+			/api/country
+			/api/sort
+			/api/stats
+			/api/compare
+			/api/compare/firstdeath
+			/api/compare/perday
+			/api/compare/recovery
+			/api/compare/cases
+			/api/compare/cases/unique
+			/api/compare/all
 
 */
 
@@ -703,6 +794,9 @@ func main() {
 	fmt.Println("server running at port " + port)
 
 	router.HandleFunc("/api/news", newsHandle).Methods("GET")
+	router.HandleFunc("/api/news/all", newsAllHandle).Methods("GET")
+	router.HandleFunc("/api/news/vaccine", newsVaccineHandle).Methods("GET")
+	router.HandleFunc("/api/news/treatment", newsTreatmentHandle).Methods("GET")
 	router.HandleFunc("/api/country", country).Methods("POST")
 	router.HandleFunc("/api/countries", countries).Methods("GET")
 	router.HandleFunc("/api/countries/all", allCountriesHandle).Methods("GET")

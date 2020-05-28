@@ -134,6 +134,13 @@ type ReponseNews struct {
 	} `xml:"channel"`
 }
 
+// AllArticlesData is being used in lib/news/news.go
+type AllArticlesData struct {
+	VaccineArticles   ArticlesData `json:"vaccine"`
+	TreatmentArticles ArticlesData `json:"treament"`
+	NewsArticles      ArticlesData `json:"news"`
+}
+
 // ArticlesData is being used in lib/news/news.go
 type ArticlesData struct {
 	Articles []Article `json:"data"`

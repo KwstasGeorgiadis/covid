@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	caching "github.com/junkd0g/covid/lib/caching"
 	pconf "github.com/junkd0g/covid/lib/config"
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
@@ -22,8 +23,7 @@ func init() {
 // requestNewsData does an HTTP GET request to the third party API that
 // contains covid-9 news article
 // It returns structs.ArticlesData and any write error encountered.
-func requestNewsData() (structs.ArticlesData, error) {
-	url := "http://news.google.com/news?q=covid-19&hl=en-US&sort=date&gl=US&num=100&output=rss"
+func requestNewsData(url string) (structs.ArticlesData, error) {
 
 	client := &http.Client{}
 	req, reqError := http.NewRequest("GET", url, nil)
@@ -77,6 +77,82 @@ func requestNewsData() (structs.ArticlesData, error) {
 // GetNews returns an array of articles for covid-19
 // It returns structs.ArticlesData and any write error encountered.
 func GetNews() (structs.ArticlesData, error) {
-	dashboard, err := requestNewsData()
-	return dashboard, err
+	pool := caching.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
+
+	cachedData, exist, cacheGetError := caching.GetNewsData(conn, "general")
+	if cacheGetError != nil {
+		applogger.Log("ERROR", "curve", "GetNews", cacheGetError.Error())
+		return structs.ArticlesData{}, cacheGetError
+	}
+
+	if !exist {
+		applogger.Log("INFO", "stats", "GetNews", "Request data instead of getting cached data")
+		data, err := requestNewsData(serverConf.API.News)
+		if err != nil {
+			applogger.Log("ERROR", "curve", "GetNews", err.Error())
+			return structs.ArticlesData{}, err
+		}
+		caching.SetNewsData(conn, "general", data)
+		return data, nil
+	}
+
+	return cachedData, nil
+}
+
+// GetVaccineNews returns an array of articles for covid-19
+// It returns structs.ArticlesData and any write error encountered.
+func GetVaccineNews() (structs.ArticlesData, error) {
+
+	pool := caching.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
+
+	cachedData, exist, cacheGetError := caching.GetNewsData(conn, "vaccine")
+	if cacheGetError != nil {
+		applogger.Log("ERROR", "curve", "GetVaccineNews", cacheGetError.Error())
+		return structs.ArticlesData{}, cacheGetError
+	}
+
+	if !exist {
+		applogger.Log("INFO", "stats", "GetVaccineNews", "Request data instead of getting cached data")
+		data, err := requestNewsData(serverConf.API.VaccineNews)
+		if err != nil {
+			applogger.Log("ERROR", "curve", "GetVaccineNews", err.Error())
+			return structs.ArticlesData{}, err
+		}
+		caching.SetNewsData(conn, "vaccine", data)
+		return data, nil
+	}
+
+	return cachedData, nil
+}
+
+// GetTreatmentNews returns an array of articles for covid-19
+// It returns structs.ArticlesData and any write error encountered.
+func GetTreatmentNews() (structs.ArticlesData, error) {
+
+	pool := caching.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
+
+	cachedData, exist, cacheGetError := caching.GetNewsData(conn, "treatment")
+	if cacheGetError != nil {
+		applogger.Log("ERROR", "curve", "GetTreatmentNews", cacheGetError.Error())
+		return structs.ArticlesData{}, cacheGetError
+	}
+
+	if !exist {
+		applogger.Log("INFO", "stats", "GetTreatmentNews", "Request data instead of getting cached data")
+		data, err := requestNewsData(serverConf.API.TreatmentNews)
+		if err != nil {
+			applogger.Log("ERROR", "curve", "GetTreatmentNews", err.Error())
+			return structs.ArticlesData{}, err
+		}
+		caching.SetNewsData(conn, "treatment", data)
+		return data, nil
+	}
+
+	return cachedData, nil
 }

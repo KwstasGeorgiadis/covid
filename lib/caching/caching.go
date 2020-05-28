@@ -9,7 +9,6 @@ package caching
 
 import (
 	"encoding/json"
-	"fmt"
 
 	pconf "github.com/junkd0g/covid/lib/config"
 	structs "github.com/junkd0g/covid/lib/structs"
@@ -46,7 +45,7 @@ func NewPool() *redis.Pool {
 func Set(c redis.Conn, countries structs.Countries, key string) error {
 	out, _ := json.Marshal(countries)
 
-	_, err := c.Do("SETEX", key, 120, string(out))
+	_, err := c.Do("SETEX", key, 900, string(out))
 	if err != nil {
 		return err
 	}
@@ -60,7 +59,6 @@ func Get(c redis.Conn, key string) (structs.Countries, error) {
 
 	s, err := redis.String(c.Do("GET", key))
 	if err != nil {
-		fmt.Println(err.Error())
 		return structs.Countries{}, nil
 	}
 
@@ -69,7 +67,6 @@ func Get(c redis.Conn, key string) (structs.Countries, error) {
 
 	erra := json.Unmarshal(bytStr, &datsa)
 	if erra != nil {
-		fmt.Println(erra.Error())
 		return structs.Countries{}, nil
 	}
 	return datsa, nil
@@ -79,7 +76,7 @@ func Get(c redis.Conn, key string) (structs.Countries, error) {
 // @param c redis.Conn redis connection
 func SetCurveData(c redis.Conn, countries []structs.CountryCurve) error {
 
-	_, err := c.Do("SETEX", "curve", 120, countries)
+	_, err := c.Do("SETEX", "curve", 900, countries)
 	if err != nil {
 		return err
 	}
@@ -98,4 +95,30 @@ func GetCurveData(c redis.Conn) ([]structs.CountryCurve, error) {
 	json.Unmarshal([]byte(s), &data)
 
 	return data, nil
+}
+
+// SetNewsData executes the redis SET command
+// @param c redis.Conn redis connection
+func SetNewsData(c redis.Conn, newsType string, news structs.ArticlesData) error {
+	vv, _ := json.Marshal(news)
+	_, err := c.Do("SETEX", newsType, 7200, vv)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// GetNewsData executes the redis GET command
+func GetNewsData(c redis.Conn, newsType string) (structs.ArticlesData, bool, error) {
+	s, err := redis.String(c.Do("GET", newsType))
+	if err != nil {
+
+		return structs.ArticlesData{}, false, nil
+	}
+
+	var data structs.ArticlesData
+	json.Unmarshal([]byte(s), &data)
+
+	return data, true, nil
 }
