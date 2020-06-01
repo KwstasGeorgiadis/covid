@@ -20,6 +20,7 @@ import (
 	countrycon "github.com/junkd0g/covid/controller/country"
 	crnews "github.com/junkd0g/covid/controller/news"
 	totalcon "github.com/junkd0g/covid/controller/totalcon"
+	worldct "github.com/junkd0g/covid/controller/world"
 
 	"github.com/gorilla/mux"
 	sortcon "github.com/junkd0g/covid/controller/sort"
@@ -756,6 +757,18 @@ func newsAllHandle(w http.ResponseWriter, r *http.Request) {
 		"Endpoint /compare/percent called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
+func worldHandle(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	jsonBody, status := worldct.Perform()
+	w.WriteHeader(status)
+	w.Write(jsonBody)
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "main", "worldHandle",
+		"Endpoint /compare/percent called with response JSON body "+string(jsonBody), status, elapsed)
+}
+
 /*
 	Running the server in port 9080 (getting the value from ./config/covid.json )
 
@@ -790,9 +803,9 @@ func main() {
 	news.GetNews()
 	router := mux.NewRouter().StrictSlash(true)
 	port := serverConf.Server.Port
-
 	fmt.Println("server running at port " + port)
 
+	router.HandleFunc("/api/world", worldHandle).Methods("GET")
 	router.HandleFunc("/api/news", newsHandle).Methods("GET")
 	router.HandleFunc("/api/news/all", newsAllHandle).Methods("GET")
 	router.HandleFunc("/api/news/vaccine", newsVaccineHandle).Methods("GET")

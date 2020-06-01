@@ -72,6 +72,15 @@ type TimelineStruct struct {
 	Recovered interface{} `json:"recovered"`
 }
 
+type WorldTimeline struct {
+	Cases          interface{} `json:"cases"`
+	Deaths         interface{} `json:"deaths"`
+	Recovered      interface{} `json:"recovered"`
+	CasesDaily     interface{} `json:"casesDaily"`
+	DeathsDaily    interface{} `json:"deathsDaily"`
+	RecoveredDaily interface{} `json:"recoveredDaily"`
+}
+
 // CountryStats is being used in lib/curve/stats.go
 type CountryStats struct {
 	Country                   string `json:"country"`

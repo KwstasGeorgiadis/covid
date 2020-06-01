@@ -42,11 +42,12 @@ type AppConf struct {
 
 //APIConfig contains the data for exernal API
 type APIConfig struct {
-	URL           string `json:"url"`
-	URLHistory    string `json:"url_historical"`
-	News          string `json:"news"`
-	VaccineNews   string `json:"vaccine_news"`
-	TreatmentNews string `json:"treatment_news"`
+	URL             string `json:"url"`
+	URLHistory      string `json:"url_historical"`
+	URLWorldHistory string `json:"url_world_historical"`
+	News            string `json:"news"`
+	VaccineNews     string `json:"vaccine_news"`
+	TreatmentNews   string `json:"treatment_news"`
 }
 
 //ServerConfig contains the data for the server like port

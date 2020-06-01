@@ -75,8 +75,8 @@ func Get(c redis.Conn, key string) (structs.Countries, error) {
 // SetCurveData executes the redis SET command
 // @param c redis.Conn redis connection
 func SetCurveData(c redis.Conn, countries []structs.CountryCurve) error {
-
-	_, err := c.Do("SETEX", "curve", 900, countries)
+	vv, _ := json.Marshal(countries)
+	_, err := c.Do("SETEX", "curve", 900, vv)
 	if err != nil {
 		return err
 	}
