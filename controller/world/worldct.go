@@ -19,29 +19,7 @@ import (
 //	the Compare struct as a json response by calling
 //	curve.CompareDeathsCountries which get and return grobal statistics
 //
-//	Data structure that returns for two countries the names
-//  and an array that contains deaths per day. It is sorted
-//  and the first element is for the date 22/01/2020
-//
-//	In this JSON format
-//  {
-//    "countryOne": {
-//        "country": "Spain",
-//        "data": [
-//            5,
-//            10,
-//		   	  17
-//		   ]
-//		},
-//		"countryTwo": {
-//      	"country": "Italy",
-//       	"data": [
-//            	197,
-//            	233,
-//				366
-//			]
-//		}
-//	}
+
 //
 //	@param r *http.Request used to get http request's body
 //
