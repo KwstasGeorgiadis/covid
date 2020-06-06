@@ -1,7 +1,5 @@
 package curve
 
-//TODO add fucking caching you piece of shit and add expiration time
-
 import (
 	"sort"
 
