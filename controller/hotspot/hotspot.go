@@ -1,10 +1,10 @@
-package worldct
+package hotspot
 
 import (
 	"encoding/json"
 
+	analytics "github.com/junkd0g/covid/lib/analytics"
 	applogger "github.com/junkd0g/covid/lib/applogger"
-	cworld "github.com/junkd0g/covid/lib/cworld"
 	structs "github.com/junkd0g/covid/lib/structs"
 )
 
@@ -13,21 +13,21 @@ import (
 //	@return int http code status
 func Perform() ([]byte, int) {
 
-	worldData, err := cworld.GetaWorldHistory()
+	worldData, err := analytics.MostCasesDeathsNearPast()
 	if err != nil {
-		applogger.Log("ERROR", "worldct", "Perform", err.Error())
+		applogger.Log("ERROR", "hotspot", "Perform", err.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	jsonBody, jsonBodyErr := json.Marshal(worldData)
 	if jsonBodyErr != nil {
-		applogger.Log("ERROR", "worldct", "Perform", jsonBodyErr.Error())
+		applogger.Log("ERROR", "hotspot", "Perform", jsonBodyErr.Error())
 		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}
 
-	applogger.Log("INFO", "worldct", "Perform",
+	applogger.Log("INFO", "hotspot", "Perform",
 		"Returning status: 200 with JSONbody "+string(jsonBody))
 	return jsonBody, 200
 }

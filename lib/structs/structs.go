@@ -165,3 +165,21 @@ type Article struct {
 	Source      string `json:"source"`
 	SourceURL   string `json:"sourceURL"`
 }
+
+type Hotspot struct {
+	MostCases    CompareData `json:"mostCases"`
+	SecondCases  CompareData `json:"secondCases"`
+	ThirdCases   CompareData `json:"thirdCases"`
+	MostDeaths   CompareData `json:"mostDeaths"`
+	SecondDeaths CompareData `json:"secondDeaths"`
+	ThirdDeaths  CompareData `json:"thirdDeaths"`
+}
+
+type MainCurveData struct {
+	Deaths          []float64
+	DeathsPerDay    []float64
+	Cases           []float64
+	CasesPerDay     []float64
+	Recovered       []float64
+	RecoveredPerDay []float64
+}

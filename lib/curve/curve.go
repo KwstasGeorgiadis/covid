@@ -120,6 +120,32 @@ func GetCountry(name string) (structs.CountryCurve, error) {
 	return structs.CountryCurve{}, nil
 }
 
+// GetCountryBP
+func GetCountryBP(name string, allCountries []structs.CountryCurve) (structs.CountryCurve, error) {
+
+	for _, v := range allCountries {
+		if name == "UK" && v.Country == "UK" {
+			if len(v.Province) == 0 {
+				return v, nil
+			}
+			continue
+		}
+		if name == "France" && v.Country == "France" {
+			if v.Province == "" {
+				return v, nil
+			}
+			continue
+		}
+
+		if v.Country == name {
+			return v, nil
+		}
+	}
+
+	applogger.Log("WARN", "curve", "GetCountry", "Returning empty country")
+	return structs.CountryCurve{}, nil
+}
+
 // CompareDeathsCountries returns two integer arrays (one per country passed
 // in parameter) which contain total number of deaths from  22/01/2020
 // It returns structs.Compare and any write error encountered.
@@ -563,4 +589,66 @@ func ComparePerDayCasesCountries(nameOne string, nameTwo string, getCountryST st
 
 	compareStructs := structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
 	return compareStructs, nil
+}
+
+func GetCountryData(countryName string, countries []structs.CountryCurve) (structs.MainCurveData, error) {
+	country, err := GetCountryBP(countryName, countries)
+	if err != nil {
+		return structs.MainCurveData{}, err
+	}
+
+	deaths := make([]float64, 0)
+	cases := make([]float64, 0)
+	recovered := make([]float64, 0)
+
+	for _, vv := range country.Timeline.Deaths.(map[string]interface{}) {
+		deaths = append(deaths, vv.(float64))
+	}
+
+	for _, vv := range country.Timeline.Cases.(map[string]interface{}) {
+		cases = append(cases, vv.(float64))
+	}
+
+	for _, v := range country.Timeline.Recovered.(map[string]interface{}) {
+		recovered = append(recovered, v.(float64))
+	}
+
+	sort.Float64s(deaths)
+	sort.Float64s(cases)
+	sort.Float64s(recovered)
+
+	var tempCountryOneSortedDeath []float64
+	deathsPerDay := make([]float64, 0)
+
+	for i := 0; i < len(deaths); i++ {
+		tempCountryOneSortedDeath = append(tempCountryOneSortedDeath, deaths[i])
+		if i == 0 {
+			continue
+		}
+		deathsPerDay = append(deathsPerDay, (deaths[i] - tempCountryOneSortedDeath[i-1]))
+	}
+
+	var tempCountryOneSortedCases []float64
+	casesPerDay := make([]float64, 0)
+	for i := 0; i < len(cases); i++ {
+		tempCountryOneSortedCases = append(tempCountryOneSortedCases, cases[i])
+		if i == 0 {
+			continue
+		}
+		casesPerDay = append(casesPerDay, (cases[i] - tempCountryOneSortedCases[i-1]))
+	}
+
+	var tempCountryOneSortedRecovered []float64
+	recoveredPerDay := make([]float64, 0)
+	for i := 0; i < len(deaths); i++ {
+		tempCountryOneSortedRecovered = append(tempCountryOneSortedRecovered, recovered[i])
+		if i == 0 {
+			continue
+		}
+
+		recoveredPerDay = append(recoveredPerDay, (recovered[i] - tempCountryOneSortedRecovered[i-1]))
+	}
+
+	return structs.MainCurveData{deaths, deathsPerDay, cases, casesPerDay, recovered, recoveredPerDay}, nil
+
 }
