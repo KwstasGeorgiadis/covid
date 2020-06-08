@@ -66,7 +66,7 @@ func country(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
 	applogger.LogHTTP("INFO", "main", "country",
-		"Endpoint /country called with response JSON body "+string(jsonBody), status, elapsed)
+		"Endpoint /api/country called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 /*
@@ -114,7 +114,7 @@ func countries(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
 	applogger.LogHTTP("INFO", "main", "countries",
-		"Endpoint /countries called with response JSON body "+string(jsonBody), status, elapsed)
+		"Endpoint /api/countries called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 /*
@@ -167,7 +167,7 @@ func sort(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
 	applogger.LogHTTP("INFO", "main", "sort",
-		"Endpoint /sort called with response JSON body "+string(jsonBody), status, elapsed)
+		"Endpoint /api/sort called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 /*
@@ -193,7 +193,7 @@ func totalStatistics(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
 	applogger.LogHTTP("INFO", "main", "totalStatistics",
-		"Endpoint /total called with response JSON body "+string(jsonBody), status, elapsed)
+		"Endpoint /api/total called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 /*
@@ -238,7 +238,7 @@ func allCountriesHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
 	applogger.LogHTTP("INFO", "main", "allCountriesHandle",
-		"Endpoint /countries called with response JSON body "+string(jsonBody), status, elapsed)
+		"Endpoint /api/countries/all called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 /*
@@ -292,7 +292,7 @@ func compareHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
 	applogger.LogHTTP("INFO", "main", "compareHandle",
-		"Endpoint /compare called with response JSON body "+string(jsonBody), status, elapsed)
+		"Endpoint /api/compare called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 /*
@@ -345,12 +345,12 @@ func compareFromFirstDeathHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
 	applogger.LogHTTP("INFO", "main", "compareFromFirstDeathHandle",
-		"Endpoint /compare/firstdeath called with response JSON body "+string(jsonBody), status, elapsed)
+		"Endpoint /api/compare/firstdeath called with response JSON body "+string(jsonBody), status, elapsed)
 
 }
 
 /*
-	POST request to /compare/perday endpoint
+	POST request to /api/compare/perday endpoint
 
 	Request:
 
@@ -399,11 +399,11 @@ func comparePerDayDeathHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
 	applogger.LogHTTP("INFO", "main", "comparePerDayDeathHandle",
-		"Endpoint /compare/perday called with response JSON body "+string(jsonBody), status, elapsed)
+		"Endpoint /api/compare/perday called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 /*
-	POST request to /compare/recovery endpoint
+	POST request to /api/compare/recovery endpoint
 
 	Request:
 
@@ -452,11 +452,11 @@ func compareRecoveryHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
 	applogger.LogHTTP("INFO", "main", "compareRecoveryHandle",
-		"Endpoint /compare/percent called with response JSON body "+string(jsonBody), status, elapsed)
+		"Endpoint /api/compare/recovery called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 /*
-	POST request to /compare/cases endpoint
+	POST request to /api/compare/cases endpoint
 
 	Request:
 
@@ -505,7 +505,7 @@ func compareCasesHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
 	applogger.LogHTTP("INFO", "main", "compareCasesHandle",
-		"Endpoint /compare/percent called with response JSON body "+string(jsonBody), status, elapsed)
+		"Endpoint /api/compare/cases called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 /*
@@ -558,9 +558,10 @@ func compareUniqueCasesHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
 	applogger.LogHTTP("INFO", "main", "compareUniqueCasesHandle",
-		"Endpoint /compare/percent called with response JSON body "+string(jsonBody), status, elapsed)
+		"Endpoint /compare/cases/unique called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
+//----------------------------------------------------------------------------------------
 func compareAllHandle(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	w.Header().Set("Access-Control-Allow-Origin", "*")
