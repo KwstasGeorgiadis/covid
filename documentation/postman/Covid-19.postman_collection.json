@@ -1,22 +1,23 @@
 {
 	"info": {
-		"_postman_id": "47776770-bbd4-4d5a-b242-57ff38a81d59",
+		"_postman_id": "a10d0f72-cb89-4538-9075-0e943bac2e6a",
 		"name": "Covid-19",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "localhost:9080/countries/all",
+			"name": "localhost:9080/api/countries/all",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:9080/countries/all",
+					"raw": "localhost:9080/api/countries/all",
 					"host": [
 						"localhost"
 					],
 					"port": "9080",
 					"path": [
+						"api",
 						"countries",
 						"all"
 					]
@@ -25,7 +26,7 @@
 			"response": []
 		},
 		{
-			"name": "localhost:9080/compare",
+			"name": "localhost:9080/api/compare",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -40,12 +41,13 @@
 					"raw": "{\n\t\"countryOne\" : \"Spain\",\n\t\"countryTwo\" : \"Italy\"\n}"
 				},
 				"url": {
-					"raw": "localhost:9080/compare",
+					"raw": "localhost:9080/api/compare",
 					"host": [
 						"localhost"
 					],
 					"port": "9080",
 					"path": [
+						"api",
 						"compare"
 					]
 				}
@@ -53,17 +55,18 @@
 			"response": []
 		},
 		{
-			"name": "localhost:9080/total",
+			"name": "localhost:9080/api/total",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:9080/total",
+					"raw": "localhost:9080/api/total",
 					"host": [
 						"localhost"
 					],
 					"port": "9080",
 					"path": [
+						"api",
 						"total"
 					]
 				}
@@ -99,14 +102,14 @@
 			"response": []
 		},
 		{
-			"name": "localhost:9080/sort",
+			"name": "localhost:9080/api/sort",
 			"request": {
 				"method": "POST",
 				"header": [
 					{
 						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
+						"type": "text",
+						"value": "application/json"
 					}
 				],
 				"body": {
@@ -114,12 +117,13 @@
 					"raw": "{\n\t\"type\" : \"deaths\"\n}"
 				},
 				"url": {
-					"raw": "localhost:9080/sort",
+					"raw": "localhost:9080/api/sort",
 					"host": [
 						"localhost"
 					],
 					"port": "9080",
 					"path": [
+						"api",
 						"sort"
 					]
 				}
@@ -127,17 +131,18 @@
 			"response": []
 		},
 		{
-			"name": "localhost:9080/countries",
+			"name": "localhost:9080/api/countries",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:9080/countries",
+					"raw": "localhost:9080/api/countries",
 					"host": [
 						"localhost"
 					],
 					"port": "9080",
 					"path": [
+						"api",
 						"countries"
 					]
 				}
@@ -145,7 +150,7 @@
 			"response": []
 		},
 		{
-			"name": "localhost:9080/country",
+			"name": "localhost:9080/api/country",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -160,13 +165,263 @@
 					"raw": "{\n\t\"country\" : \"USA\"\n}"
 				},
 				"url": {
-					"raw": "localhost:9080/country",
+					"raw": "localhost:9080/api/country",
 					"host": [
 						"localhost"
 					],
 					"port": "9080",
 					"path": [
+						"api",
 						"country"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9080/api/compare/firstdeath",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"countryOne\" : \"Spain\",\n\t\"countryTwo\" : \"Italy\"\n}"
+				},
+				"url": {
+					"raw": "localhost:9080/api/compare/firstdeath",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"api",
+						"compare",
+						"firstdeath"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9080/api/compare/perday",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"countryOne\" : \"Spain\",\n\t\"countryTwo\" : \"Italy\"\n}"
+				},
+				"url": {
+					"raw": "localhost:9080/api/compare/perday",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"api",
+						"compare",
+						"perday"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9080/api/compare/recovery",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\t\"countryOne\" : \"Spain\",\n\t\t\"countryTwo\" : \"Italy\"\n\t}"
+				},
+				"url": {
+					"raw": "localhost:9080/api/compare/recovery",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"api",
+						"compare",
+						"recovery"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9080/api/compare/cases",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\t\"countryOne\" : \"Spain\",\n\t\t\"countryTwo\" : \"Italy\"\n\t}"
+				},
+				"url": {
+					"raw": "localhost:9080/api/compare/cases",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"api",
+						"compare",
+						"cases"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9080/api/compare/cases/unique",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\t\"countryOne\" : \"Spain\",\n\t\t\"countryTwo\" : \"Italy\"\n\t}"
+				},
+				"url": {
+					"raw": "localhost:9080/api/compare/cases/unique",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"api",
+						"compare",
+						"cases",
+						"unique"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9080/api/news",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:9080/api/news",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"api",
+						"news"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9080/api/news/vaccine",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:9080/api/news/vaccine",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"api",
+						"news",
+						"vaccine"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9080/api/news/treatment",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:9080/api/news/treatment",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"api",
+						"news",
+						"treatment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9080/api/news/all",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:9080/api/news/all",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"api",
+						"news",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9080/api/world",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:9080/api/world",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"api",
+						"world"
 					]
 				}
 			},
