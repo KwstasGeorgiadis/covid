@@ -263,62 +263,6 @@ func CompareDeathsFromFirstDeathCountries(nameOne string, nameTwo string, getCou
 	return compareStructs, nil
 }
 
-// ComparePerCentDeathsCountries returns two integer arrays (one per country passed
-// in parameter) which contain incremental percentage of deaths from  the first confirm death.
-// It returns structs.Compare and any write error encountered.
-func ComparePerCentDeathsCountries(nameOne string, nameTwo string) (structs.Compare, error) {
-	country, errGetCountryOne := GetCountry(nameOne)
-	if errGetCountryOne != nil {
-		applogger.Log("ERROR", "curve", "ComparePerCentDeathsCountries", errGetCountryOne.Error())
-		return structs.Compare{}, errGetCountryOne
-	}
-
-	countryTwo, errGetCountryTwo := GetCountry(nameTwo)
-	if errGetCountryTwo != nil {
-		applogger.Log("ERROR", "curve", "ComparePerCentDeathsCountries", errGetCountryTwo.Error())
-		return structs.Compare{}, errGetCountryTwo
-	}
-
-	var countrySortedDeath []float64
-	var countryTwoSortedDeath []float64
-
-	for _, v := range country.Timeline.Deaths.(map[string]interface{}) {
-
-		if v.(float64) == 0 {
-			continue
-		}
-		countrySortedDeath = append(countrySortedDeath, v.(float64))
-	}
-	for _, v := range countryTwo.Timeline.Deaths.(map[string]interface{}) {
-		if v.(float64) == 0 {
-			continue
-		}
-		countryTwoSortedDeath = append(countryTwoSortedDeath, v.(float64))
-	}
-
-	sort.Float64s(countrySortedDeath)
-	sort.Float64s(countryTwoSortedDeath)
-
-	var countryOneStruct structs.CompareData
-	var countryTwoStruct structs.CompareData
-
-	for _, v := range country.Timeline.Deaths.(map[string]interface{}) {
-
-		countrySortedDeath = append(countrySortedDeath, v.(float64))
-	}
-	for _, v := range countryTwo.Timeline.Deaths.(map[string]interface{}) {
-		countryTwoSortedDeath = append(countryTwoSortedDeath, v.(float64))
-	}
-
-	countryOneStruct.Country = nameOne
-	countryOneStruct.Data = countrySortedDeath
-	countryTwoStruct.Country = nameTwo
-	countryTwoStruct.Data = countryTwoSortedDeath
-
-	compareStructs := structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
-	return compareStructs, nil
-}
-
 // ComparePerDayDeathsCountries returns two integer arrays (one per country passed
 // in parameter) which contain unique per day number of deaths from first confrim death
 // It returns structs.Compare and any write error encountered.

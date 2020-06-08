@@ -33,7 +33,7 @@ var (
 )
 
 /*
-	POST request to /country
+	POST request to /api/country
 	Request:
 
 	{
@@ -51,7 +51,9 @@ var (
     		"recovered": 52,
     		"active": 972,
     		"critical": 66,
-    		"casesPerOneMillion": 102
+			"casesPerOneMillion": 102,
+			"tests": 21298974,
+    		"testsPerOneMillion": 64371
 		}
 
 */
@@ -68,7 +70,7 @@ func country(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-	Get request to /countries with no parameters
+	Get request to /api/countries with no parameters
 
 	Response:
 
@@ -83,7 +85,9 @@ func country(w http.ResponseWriter, r *http.Request) {
             	"recovered": 0,
             	"active": 6,
             	"critical": 0,
-            	"casesPerOneMillion": 0.5
+				"casesPerOneMillion": 0.5,
+				"tests": 48305,
+            	"testsPerOneMillion": 1243
         	},
         	{
             	"country": "Zambia",
@@ -94,7 +98,9 @@ func country(w http.ResponseWriter, r *http.Request) {
             	"recovered": 0,
             	"active": 29,
             	"critical": 0,
-            	"casesPerOneMillion": 2
+				"casesPerOneMillion": 2,
+				"tests": 48305,
+            	"testsPerOneMillion": 1243
 			}
 		]
 	}
@@ -112,7 +118,7 @@ func countries(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-	POST request to /sort endpoint
+	POST request to /api/sort endpoint
 
 	Request:
 
@@ -132,7 +138,9 @@ func countries(w http.ResponseWriter, r *http.Request) {
             "recovered": 20996,
             "active": 88274,
             "critical": 3994,
-            "casesPerOneMillion": 2061
+			"casesPerOneMillion": 2061,
+			"tests": 21298974,
+            "testsPerOneMillion": 64371
         },
         {
             "country": "Spain",
@@ -143,7 +151,9 @@ func countries(w http.ResponseWriter, r *http.Request) {
             "recovered": 34219,
             "active": 78773,
             "critical": 6416,
-            "casesPerOneMillion": 2668
+			"casesPerOneMillion": 2668,
+			"tests": 21298974,
+            "testsPerOneMillion": 64371
 		}]
 	}
 
@@ -161,7 +171,7 @@ func sort(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-	Get request to /total with no parameters
+	Get request to /api/total with no parameters
 
 	Response:
 
@@ -187,33 +197,35 @@ func totalStatistics(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-	Get request to /countries with no parameters
+	Get request to /api/countries/all with no parameters
 
 	Response:
 
 	{
-    	"data": [{
-            "country": "Zimbabwe",
-            "cases": 9,
-            "todayCases": 0,
-            "deaths": 1,
-            "todayDeaths": 0,
-            "recovered": 0,
-            "active": 8,
-            "critical": 0,
-            "casesPerOneMillion": 0.6
-        },
-        {
-            "country": "Zambia",
-            "cases": 39,
-            "todayCases": 0,
-            "deaths": 1,
-            "todayDeaths": 0,
-            "recovered": 2,
-            "active": 36,
-            "critical": 0,
-            "casesPerOneMillion": 2
-		}]
+    	"countries": [
+        	"Afghanistan",
+        	"Albania",
+        	"Algeria",
+        	"Andorra",
+        	"Angola",
+        	"Anguilla",
+       		"Antigua and Barbuda",
+        	"Argentina",
+        	"Armenia",
+        	"Aruba",
+        	"Australia",
+        	"Austria",
+        	"Azerbaijan",
+        	"Bahamas",
+        	"Bahrain",
+        	"Bangladesh",
+        	"Barbados",
+        	"Belarus",
+        	"Belgium",
+        	"Belize",
+        	"Benin",
+			"Bermuda"
+		]
 	}
 
 */
@@ -230,7 +242,7 @@ func allCountriesHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-	POST request to /compare endpoint
+	POST request to /api/compare endpoint
 
 	Request:
 
@@ -284,7 +296,7 @@ func compareHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-	POST request to /compare/firstdeath endpoint
+	POST request to /api/compare/firstdeath endpoint
 
 	Request:
 
@@ -388,59 +400,6 @@ func comparePerDayDeathHandle(w http.ResponseWriter, r *http.Request) {
 	elapsed := time.Since(start).Seconds()
 	applogger.LogHTTP("INFO", "main", "comparePerDayDeathHandle",
 		"Endpoint /compare/perday called with response JSON body "+string(jsonBody), status, elapsed)
-}
-
-/*
-	POST request to /compare/percent endpoint
-
-	Request:
-
-	{
-		"countryOne" : "Spain",
-		"countryTwo" : "Italy"
-	}
-
-	Response
-
-	{
-    "countryOne": {
-        "country": "Spain",
-        "data": [
-            1,
-            2,
-            3,
-            7,
-            12428,
-            13155,
-            13915,
-            14681
-        ]
-    },
-    "countryTwo": {
-        "country": "Italy",
-        "data": [
-            1,
-            2,
-            3,
-            7,
-            12428,
-            13155,
-            13915,
-            14681
-        ]
-    }
-}
-*/
-func comparePercantagePerDayDeathHandle(w http.ResponseWriter, r *http.Request) {
-	start := time.Now()
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Content-Type", "application/json")
-	jsonBody, status := compare.PerformPercentangePerDayDeath(r)
-	w.WriteHeader(status)
-	w.Write(jsonBody)
-	elapsed := time.Since(start).Seconds()
-	applogger.LogHTTP("INFO", "main", "comparePercantagePerDayDeathHandle",
-		"Endpoint /compare/percent called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 /*
@@ -815,7 +774,6 @@ func main() {
 	router.HandleFunc("/api/compare", compareHandle).Methods("POST")
 	router.HandleFunc("/api/compare/firstdeath", compareFromFirstDeathHandle).Methods("POST")
 	router.HandleFunc("/api/compare/perday", comparePerDayDeathHandle).Methods("POST")
-	router.HandleFunc("/api/compare/percent", comparePercantagePerDayDeathHandle).Methods("POST")
 	router.HandleFunc("/api/compare/recovery", compareRecoveryHandle).Methods("POST")
 	router.HandleFunc("/api/compare/cases", compareCasesHandle).Methods("POST")
 	router.HandleFunc("/api/compare/cases/unique", compareUniqueCasesHandle).Methods("POST")
