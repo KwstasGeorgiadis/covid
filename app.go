@@ -10,9 +10,7 @@ import (
 	"net/http"
 	"time"
 
-	statisticscon "github.com/junkd0g/covid/controller/statistics"
 	"github.com/junkd0g/covid/lib/applogger"
-	"github.com/junkd0g/covid/lib/news"
 
 	allcountries "github.com/junkd0g/covid/controller/allcountries"
 	compare "github.com/junkd0g/covid/controller/compare"
@@ -160,22 +158,6 @@ func sort(w http.ResponseWriter, r *http.Request) {
 	elapsed := time.Since(start).Seconds()
 	applogger.LogHTTP("INFO", "main", "sort",
 		"Endpoint /sort called with response JSON body "+string(jsonBody), status, elapsed)
-}
-
-/*
-	CHECK THIS ENDPOINT LOOKS THAT IT IS MISSING
-
-*/
-func statistics(w http.ResponseWriter, r *http.Request) {
-	start := time.Now()
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Content-Type", "application/json")
-	jsonBody, status := statisticscon.Perform(r)
-	w.WriteHeader(status)
-	w.Write(jsonBody)
-	elapsed := time.Since(start).Seconds()
-	applogger.LogHTTP("INFO", "main", "statistics",
-		"Endpoint /stats called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 /*
@@ -815,7 +797,6 @@ func hotspotHandle(w http.ResponseWriter, r *http.Request) {
 */
 
 func main() {
-	news.GetNews()
 	router := mux.NewRouter().StrictSlash(true)
 	port := serverConf.Server.Port
 	fmt.Println("server running at port " + port)
@@ -830,7 +811,6 @@ func main() {
 	router.HandleFunc("/api/countries", countries).Methods("GET")
 	router.HandleFunc("/api/countries/all", allCountriesHandle).Methods("GET")
 	router.HandleFunc("/api/sort", sort).Methods("POST")
-	router.HandleFunc("/api/stats", statistics).Methods("POST")
 	router.HandleFunc("/api/total", totalStatistics).Methods("GET")
 	router.HandleFunc("/api/compare", compareHandle).Methods("POST")
 	router.HandleFunc("/api/compare/firstdeath", compareFromFirstDeathHandle).Methods("POST")
