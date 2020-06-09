@@ -1074,7 +1074,8 @@ func hotspotHandle(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
-	jsonBody, status := hotspot.Perform()
+	vars := mux.Vars(r)
+	jsonBody, status := hotspot.Perform(vars["days"])
 	w.WriteHeader(status)
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
@@ -1119,7 +1120,7 @@ func main() {
 	port := serverConf.Server.Port
 	fmt.Println("server running at port " + port)
 
-	router.HandleFunc("/api/hotspot", hotspotHandle).Methods("GET")
+	router.HandleFunc("/api/hotspot/{days}", hotspotHandle).Methods("GET")
 	router.HandleFunc("/api/world", worldHandle).Methods("GET")
 	router.HandleFunc("/api/news", newsHandle).Methods("GET")
 	router.HandleFunc("/api/news/all", newsAllHandle).Methods("GET")

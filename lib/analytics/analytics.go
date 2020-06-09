@@ -6,7 +6,7 @@ import (
 	structs "github.com/junkd0g/covid/lib/structs"
 )
 
-func MostCasesDeathsNearPast() (structs.Hotspot, error) {
+func MostCasesDeathsNearPast(days int) (structs.Hotspot, error) {
 	countries, err := curve.GetAllCountries()
 	if err != nil {
 		applogger.Log("ERROR", "analytics", "MostCasesDeathsLastWeek", err.Error())
@@ -21,7 +21,7 @@ func MostCasesDeathsNearPast() (structs.Hotspot, error) {
 			return structs.Hotspot{}, countryDataError
 		}
 
-		lastDaysCases := getLastData(countryData.CasesPerDay)
+		lastDaysCases := getLastData(countryData.CasesPerDay, days)
 
 		if compare(infoData.MostCases.Data, lastDaysCases) == 2 {
 			infoData.ThirdCases.Data = infoData.SecondCases.Data
@@ -43,7 +43,7 @@ func MostCasesDeathsNearPast() (structs.Hotspot, error) {
 			infoData.ThirdCases.Country = v.Country
 		}
 
-		lastDaysDeaths := getLastData(countryData.DeathsPerDay)
+		lastDaysDeaths := getLastData(countryData.DeathsPerDay, days)
 
 		if compare(infoData.MostDeaths.Data, lastDaysDeaths) == 2 {
 			infoData.ThirdDeaths.Data = infoData.SecondDeaths.Data
@@ -70,9 +70,9 @@ func MostCasesDeathsNearPast() (structs.Hotspot, error) {
 	return infoData, nil
 }
 
-func getLastData(data []float64) []float64 {
+func getLastData(data []float64, days int) []float64 {
 	lastDays := make([]float64, 0)
-	for i := 12; i >= 2; i-- {
+	for i := days; i >= 2; i-- {
 		lastDays = append(lastDays, data[len(data)-i])
 	}
 	return lastDays
@@ -86,7 +86,7 @@ func compare(x []float64, y []float64) int {
 		return 2
 	}
 
-	for i := 0; i < 7; i++ {
+	for i := 0; i < len(x); i++ {
 		xTotal = xTotal + x[i]
 		yTotal = yTotal + y[i]
 	}

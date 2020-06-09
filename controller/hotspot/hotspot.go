@@ -2,18 +2,20 @@ package hotspot
 
 import (
 	"encoding/json"
+	"strconv"
 
 	analytics "github.com/junkd0g/covid/lib/analytics"
 	applogger "github.com/junkd0g/covid/lib/applogger"
 	structs "github.com/junkd0g/covid/lib/structs"
 )
 
-//Perform used in the /compare endpoint's handle to return
+//Perform used in the /api/hotspot endpoint's handle to return
 //	@return array of bytes of the json object
 //	@return int http code status
-func Perform() ([]byte, int) {
+func Perform(days string) ([]byte, int) {
+	i, _ := strconv.Atoi(days)
 
-	worldData, err := analytics.MostCasesDeathsNearPast()
+	worldData, err := analytics.MostCasesDeathsNearPast(i)
 	if err != nil {
 		applogger.Log("ERROR", "hotspot", "Perform", err.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
