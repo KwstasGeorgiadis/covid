@@ -9,7 +9,7 @@ import (
 	pconf "github.com/junkd0g/covid/lib/config"
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
-	structs "github.com/junkd0g/covid/lib/structs"
+	mnews "github.com/junkd0g/covid/lib/model/news"
 )
 
 var (
@@ -23,20 +23,20 @@ func init() {
 // requestNewsData does an HTTP GET request to the third party API that
 // contains covid-9 news article
 // It returns structs.ArticlesData and any write error encountered.
-func requestNewsData(url string) (structs.ArticlesData, error) {
+func requestNewsData(url string) (mnews.ArticlesData, error) {
 
 	client := &http.Client{}
 	req, reqError := http.NewRequest("GET", url, nil)
 
 	if reqError != nil {
 		applogger.Log("ERROR", "news", "requestNewsData", reqError.Error())
-		return structs.ArticlesData{}, reqError
+		return mnews.ArticlesData{}, reqError
 	}
 
 	res, resError := client.Do(req)
 	if resError != nil {
 		applogger.Log("ERROR", "news", "requestNewsData", resError.Error())
-		return structs.ArticlesData{}, resError
+		return mnews.ArticlesData{}, resError
 
 	}
 
@@ -44,22 +44,22 @@ func requestNewsData(url string) (structs.ArticlesData, error) {
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		applogger.Log("ERROR", "news", "requestNewsData", err.Error())
-		return structs.ArticlesData{}, err
+		return mnews.ArticlesData{}, err
 
 	}
 
-	var reponseNews structs.ReponseNews
+	var reponseNews mnews.ReponseNews
 
 	unmarshallError := xml.Unmarshal(body, &reponseNews)
 	if unmarshallError != nil {
 		applogger.Log("ERROR", "news", "requestNewsData", unmarshallError.Error())
 	}
 
-	keys := make([]structs.Article, 0)
+	keys := make([]mnews.Article, 0)
 
 	for _, v := range reponseNews.Channel.Item {
 
-		var article structs.Article
+		var article mnews.Article
 		article.Title = v.Title
 		article.Description = v.Description
 		article.URL = v.Link
@@ -70,13 +70,13 @@ func requestNewsData(url string) (structs.ArticlesData, error) {
 		keys = append(keys, article)
 	}
 
-	return structs.ArticlesData{keys}, nil
+	return mnews.ArticlesData{keys}, nil
 
 }
 
 // GetNews returns an array of articles for covid-19
 // It returns structs.ArticlesData and any write error encountered.
-func GetNews() (structs.ArticlesData, error) {
+func GetNews() (mnews.ArticlesData, error) {
 	pool := caching.NewPool()
 	conn := pool.Get()
 	defer conn.Close()
@@ -84,7 +84,7 @@ func GetNews() (structs.ArticlesData, error) {
 	cachedData, exist, cacheGetError := caching.GetNewsData(conn, "general")
 	if cacheGetError != nil {
 		applogger.Log("ERROR", "curve", "GetNews", cacheGetError.Error())
-		return structs.ArticlesData{}, cacheGetError
+		return mnews.ArticlesData{}, cacheGetError
 	}
 
 	if !exist {
@@ -92,7 +92,7 @@ func GetNews() (structs.ArticlesData, error) {
 		data, err := requestNewsData(serverConf.API.News)
 		if err != nil {
 			applogger.Log("ERROR", "curve", "GetNews", err.Error())
-			return structs.ArticlesData{}, err
+			return mnews.ArticlesData{}, err
 		}
 		caching.SetNewsData(conn, "general", data)
 		return data, nil
@@ -103,7 +103,7 @@ func GetNews() (structs.ArticlesData, error) {
 
 // GetVaccineNews returns an array of articles for covid-19
 // It returns structs.ArticlesData and any write error encountered.
-func GetVaccineNews() (structs.ArticlesData, error) {
+func GetVaccineNews() (mnews.ArticlesData, error) {
 
 	pool := caching.NewPool()
 	conn := pool.Get()
@@ -112,7 +112,7 @@ func GetVaccineNews() (structs.ArticlesData, error) {
 	cachedData, exist, cacheGetError := caching.GetNewsData(conn, "vaccine")
 	if cacheGetError != nil {
 		applogger.Log("ERROR", "curve", "GetVaccineNews", cacheGetError.Error())
-		return structs.ArticlesData{}, cacheGetError
+		return mnews.ArticlesData{}, cacheGetError
 	}
 
 	if !exist {
@@ -120,7 +120,7 @@ func GetVaccineNews() (structs.ArticlesData, error) {
 		data, err := requestNewsData(serverConf.API.VaccineNews)
 		if err != nil {
 			applogger.Log("ERROR", "curve", "GetVaccineNews", err.Error())
-			return structs.ArticlesData{}, err
+			return mnews.ArticlesData{}, err
 		}
 		caching.SetNewsData(conn, "vaccine", data)
 		return data, nil
@@ -131,7 +131,7 @@ func GetVaccineNews() (structs.ArticlesData, error) {
 
 // GetTreatmentNews returns an array of articles for covid-19
 // It returns structs.ArticlesData and any write error encountered.
-func GetTreatmentNews() (structs.ArticlesData, error) {
+func GetTreatmentNews() (mnews.ArticlesData, error) {
 
 	pool := caching.NewPool()
 	conn := pool.Get()
@@ -140,7 +140,7 @@ func GetTreatmentNews() (structs.ArticlesData, error) {
 	cachedData, exist, cacheGetError := caching.GetNewsData(conn, "treatment")
 	if cacheGetError != nil {
 		applogger.Log("ERROR", "curve", "GetTreatmentNews", cacheGetError.Error())
-		return structs.ArticlesData{}, cacheGetError
+		return mnews.ArticlesData{}, cacheGetError
 	}
 
 	if !exist {
@@ -148,7 +148,7 @@ func GetTreatmentNews() (structs.ArticlesData, error) {
 		data, err := requestNewsData(serverConf.API.TreatmentNews)
 		if err != nil {
 			applogger.Log("ERROR", "curve", "GetTreatmentNews", err.Error())
-			return structs.ArticlesData{}, err
+			return mnews.ArticlesData{}, err
 		}
 		caching.SetNewsData(conn, "treatment", data)
 		return data, nil

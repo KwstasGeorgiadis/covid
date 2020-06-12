@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
+	mnews "github.com/junkd0g/covid/lib/model/news"
 	news "github.com/junkd0g/covid/lib/news"
 	structs "github.com/junkd0g/covid/lib/structs"
 )
@@ -178,7 +179,7 @@ func PerformAll() ([]byte, int) {
 		return statsErrJSONBody, 500
 	}
 
-	var allArticlesData structs.AllArticlesData
+	var allArticlesData mnews.AllArticlesData
 	allArticlesData.NewsArticles = generalNews
 	allArticlesData.TreatmentArticles = newsTreatment
 	allArticlesData.VaccineArticles = newsVaccine

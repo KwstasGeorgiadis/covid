@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 
 	pconf "github.com/junkd0g/covid/lib/config"
+	mnews "github.com/junkd0g/covid/lib/model/news"
 	structs "github.com/junkd0g/covid/lib/structs"
 
 	"github.com/gomodule/redigo/redis"
@@ -99,7 +100,7 @@ func GetCurveData(c redis.Conn) ([]structs.CountryCurve, error) {
 
 // SetNewsData executes the redis SET command
 // @param c redis.Conn redis connection
-func SetNewsData(c redis.Conn, newsType string, news structs.ArticlesData) error {
+func SetNewsData(c redis.Conn, newsType string, news mnews.ArticlesData) error {
 	vv, _ := json.Marshal(news)
 	_, err := c.Do("SETEX", newsType, 7200, vv)
 	if err != nil {
@@ -110,14 +111,14 @@ func SetNewsData(c redis.Conn, newsType string, news structs.ArticlesData) error
 }
 
 // GetNewsData executes the redis GET command
-func GetNewsData(c redis.Conn, newsType string) (structs.ArticlesData, bool, error) {
+func GetNewsData(c redis.Conn, newsType string) (mnews.ArticlesData, bool, error) {
 	s, err := redis.String(c.Do("GET", newsType))
 	if err != nil {
 
-		return structs.ArticlesData{}, false, nil
+		return mnews.ArticlesData{}, false, nil
 	}
 
-	var data structs.ArticlesData
+	var data mnews.ArticlesData
 	json.Unmarshal([]byte(s), &data)
 
 	return data, true, nil
