@@ -21,7 +21,7 @@ func init() {
 	serverConf = pconf.GetAppConfig()
 }
 
-// requestData does an HTTP GET request to the third party API that
+// requestHistoryData does an HTTP GET request to the third party API that
 // contains covid-9 stats ' history (per day from 22/01/2020)
 // It returns []structs.Country and any write error encountered.
 func requestHistoryData() ([]structs.CountryCurve, error) {

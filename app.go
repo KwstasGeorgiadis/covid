@@ -14,6 +14,7 @@ import (
 
 	allcountries "github.com/junkd0g/covid/controller/allcountries"
 	compare "github.com/junkd0g/covid/controller/compare"
+	continentct "github.com/junkd0g/covid/controller/continent"
 	countriescon "github.com/junkd0g/covid/controller/countries"
 	countrycon "github.com/junkd0g/covid/controller/country"
 	hotspot "github.com/junkd0g/covid/controller/hotspot"
@@ -967,6 +968,90 @@ func worldHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
+	Get request to /api/continent with no parameters
+
+	Response:
+
+{[
+    {
+        "updated": 1591969378141,
+        "cases": 1313866,
+        "todayCases": 884,
+        "deaths": 56394,
+        "todayDeaths": 21,
+        "recovered": 678380,
+        "todayRecovered": 111,
+        "active": 579092,
+        "critical": 11988,
+        "casesPerOneMillion": 3051.48,
+        "deathsPerOneMillion": 130.98,
+        "tests": 5424046,
+        "testsPerOneMillion": 12597.45,
+        "population": 430566996,
+        "continent": "South America",
+        "activePerOneMillion": 1344.95,
+        "recoveredPerOneMillion": 1575.55,
+        "criticalPerOneMillion": 27.84,
+        "countries": [
+            "Argentina",
+            "Bolivia",
+            "Brazil",
+            "Chile",
+            "Colombia",
+            "Ecuador",
+            "Falkland Islands (Malvinas)",
+            "French Guiana",
+            "Guyana",
+            "Paraguay",
+            "Peru",
+            "Suriname",
+            "Uruguay",
+            "Venezuela"
+        ]
+    },
+    {
+        "updated": 1591969378149,
+        "cases": 8901,
+        "todayCases": 5,
+        "deaths": 124,
+        "todayDeaths": 0,
+        "recovered": 8371,
+        "todayRecovered": 22,
+        "active": 406,
+        "critical": 2,
+        "casesPerOneMillion": 217.71,
+        "deathsPerOneMillion": 3.03,
+        "tests": 2070918,
+        "testsPerOneMillion": 50652.24,
+        "population": 40885025,
+        "continent": "Australia/Oceania",
+        "activePerOneMillion": 9.93,
+        "recoveredPerOneMillion": 204.74,
+        "criticalPerOneMillion": 0.05,
+        "countries": [
+            "Australia",
+            "Fiji",
+            "French Polynesia",
+            "New Caledonia",
+            "New Zealand",
+            "Papua New Guinea"
+        ]
+    }
+]
+*/
+func continentHandle(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	jsonBody, status := continentct.Perform()
+	w.WriteHeader(status)
+	w.Write(jsonBody)
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "main", "worldHandle",
+		"Endpoint /api/world called with response JSON body "+string(jsonBody), status, elapsed)
+}
+
+/*
 	Get request to /api/hotspot with no parameters
 
 	Response:
@@ -1093,7 +1178,8 @@ func hotspotHandle(w http.ResponseWriter, r *http.Request) {
 	Endpoints:
 		GET:
 			/api/hotspot
-			/api/world
+            /api/world
+            /api/continent
 			/api/total
 			/api/countries
 			/api/countries/all
@@ -1122,6 +1208,7 @@ func main() {
 
 	router.HandleFunc("/api/hotspot/{days}", hotspotHandle).Methods("GET")
 	router.HandleFunc("/api/world", worldHandle).Methods("GET")
+	router.HandleFunc("/api/continent", continentHandle).Methods("GET")
 	router.HandleFunc("/api/news", newsHandle).Methods("GET")
 	router.HandleFunc("/api/news/all", newsAllHandle).Methods("GET")
 	router.HandleFunc("/api/news/vaccine", newsVaccineHandle).Methods("GET")

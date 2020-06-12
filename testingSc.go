@@ -3,9 +3,14 @@ package main
 import (
 	"fmt"
 
-	"github.com/junkd0g/covid/lib/analytics"
+	"github.com/junkd0g/covid/lib/continent"
 )
 
 func main() {
-	fmt.Println(analytics.MostCasesDeathsLastWeek())
+	arr, _ := continent.GetContinentData()
+
+	for _, x := range arr {
+		fmt.Println(x)
+
+	}
 }

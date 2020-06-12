@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 
 	pconf "github.com/junkd0g/covid/lib/config"
+	mcontinent "github.com/junkd0g/covid/lib/model/continent"
 	mnews "github.com/junkd0g/covid/lib/model/news"
 	structs "github.com/junkd0g/covid/lib/structs"
 
@@ -122,4 +123,31 @@ func GetNewsData(c redis.Conn, newsType string) (mnews.ArticlesData, bool, error
 	json.Unmarshal([]byte(s), &data)
 
 	return data, true, nil
+}
+
+// GetContinentData executes the redis GET command
+func GetContinentData(c redis.Conn) (mcontinent.Response, bool, error) {
+	s, err := redis.String(c.Do("GET", "continent"))
+	if err != nil {
+
+		return mcontinent.Response{}, false, nil
+	}
+
+	var data mcontinent.Response
+	json.Unmarshal([]byte(s), &data)
+
+	return data, true, nil
+}
+
+// Set executes the redis SET command
+// @param c redis.Conn redis connection
+func SetContinetData(c redis.Conn, ctn mcontinent.Response) error {
+	out, _ := json.Marshal(ctn)
+
+	_, err := c.Do("SETEX", "continent", 900, string(out))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
