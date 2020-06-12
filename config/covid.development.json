@@ -9,7 +9,8 @@
 		"url_world_historical" : "https://corona.lmao.ninja/v2/historical/all/?lastdays=all",
 		"news" : "http://news.google.com/news?q=covid-19&hl=en-US&sort=date&gl=US&num=100&output=rss",
 		"vaccine_news" : "http://news.google.com/news?q=covid-19_vaccine&hl=en-US&sort=date&gl=US&num=100&output=rss",
-		"treatment_news" : "http://news.google.com/news?q=covid-19_treatment&hl=en-US&sort=date&gl=US&num=100&output=rss"
+		"treatment_news" : "http://news.google.com/news?q=covid-19_treatment&hl=en-US&sort=date&gl=US&num=100&output=rss",
+		"continent" : "https://corona.lmao.ninja/v2/continents"
 	},
 	"redis" : {
 		"namespace" 	: "resque:",
