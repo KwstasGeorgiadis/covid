@@ -13,10 +13,8 @@
 		"continent" : "https://corona.lmao.ninja/v2/continents"
 	},
 	"redis" : {
-		"namespace" 	: "resque:",
-		"concurrency"	: 2,
-		"uri" 			: "redis://172.18.0.1",
-		"port"			: ":6379",
-		"queues" 		: ["myqueue","delimited","queues"]
+		"MaxIdle" 	: 80,
+		"MaxActive" : 1200,
+		"url"	: "127.0.0.1:6379"
 	}
 }

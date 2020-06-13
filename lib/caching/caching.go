@@ -22,18 +22,14 @@ var (
 	serverConf = pconf.GetAppConfig()
 )
 
-//NewPool() connects to redis
+//NewPool connects to redis
 func NewPool() *redis.Pool {
 	return &redis.Pool{
-		// Maximum number of idle connections in the pool.
-		MaxIdle: 80,
-		// max number of connections
-		MaxActive: 12000,
-		// Dial is an application supplied function for creating and
-		// configuring a connection.
+		MaxIdle:   serverConf.Redis.MaxIdle,
+		MaxActive: serverConf.Redis.MaxActive,
+
 		Dial: func() (redis.Conn, error) {
-			//c, err := redis.Dial("tcp", serverConf.Redis.Port)
-			c, err := redis.Dial("tcp", "127.0.0.1:6379")
+			c, err := redis.Dial("tcp", serverConf.Redis.URL)
 			if err != nil {
 				panic(err.Error())
 			}
@@ -139,7 +135,7 @@ func GetContinentData(c redis.Conn) (mcontinent.Response, bool, error) {
 	return data, true, nil
 }
 
-// Set executes the redis SET command
+// SetContinetData executes the redis SET command
 // @param c redis.Conn redis connection
 func SetContinetData(c redis.Conn, ctn mcontinent.Response) error {
 	out, _ := json.Marshal(ctn)

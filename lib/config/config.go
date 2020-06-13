@@ -59,12 +59,9 @@ type ServerConfig struct {
 
 //RedisConfig contains the data for the redis server
 type RedisConfig struct {
-	URI         string   `json:"URI"`
-	Namespace   string   `json:"namespace"`
-	Concurrency int      `json:"concurrency"`
-	Queues      []string `json:"queues"`
-	Name        string   `json:"name"`
-	Port        string   `json:"port"`
+	MaxIdle   int    `json:"MaxIdle"`
+	MaxActive int    `json:"MaxActive"`
+	URL       string `json:"url"`
 }
 
 var (
