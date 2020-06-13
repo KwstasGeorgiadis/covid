@@ -38,12 +38,12 @@ func NewPool() *redis.Pool {
 	}
 }
 
-// Set executes the redis SET command
+// SetCountriesData executes the redis SET command
 // @param c redis.Conn redis connection
-func Set(c redis.Conn, countries structs.Countries, key string) error {
+func SetCountriesData(c redis.Conn, countries structs.Countries) error {
 	out, _ := json.Marshal(countries)
 
-	_, err := c.Do("SETEX", key, 900, string(out))
+	_, err := c.Do("SETEX", "total", 2500, string(out))
 	if err != nil {
 		return err
 	}
@@ -51,11 +51,11 @@ func Set(c redis.Conn, countries structs.Countries, key string) error {
 	return nil
 }
 
-// Get executes the redis GET command
-func Get(c redis.Conn, key string) (structs.Countries, error) {
+// GetCountriesData executes the redis GET command
+func GetCountriesData(c redis.Conn) (structs.Countries, error) {
 	// Simple GET example with String helper
 
-	s, err := redis.String(c.Do("GET", key))
+	s, err := redis.String(c.Do("GET", "total"))
 	if err != nil {
 		return structs.Countries{}, nil
 	}
@@ -74,7 +74,7 @@ func Get(c redis.Conn, key string) (structs.Countries, error) {
 // @param c redis.Conn redis connection
 func SetCurveData(c redis.Conn, countries []structs.CountryCurve) error {
 	vv, _ := json.Marshal(countries)
-	_, err := c.Do("SETEX", "curve", 900, vv)
+	_, err := c.Do("SETEX", "curve", 2500, vv)
 	if err != nil {
 		return err
 	}
@@ -140,7 +140,33 @@ func GetContinentData(c redis.Conn) (mcontinent.Response, bool, error) {
 func SetContinetData(c redis.Conn, ctn mcontinent.Response) error {
 	out, _ := json.Marshal(ctn)
 
-	_, err := c.Do("SETEX", "continent", 900, string(out))
+	_, err := c.Do("SETEX", "continent", 2500, string(out))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// GetWorldData executes the redis GET command
+func GetWorldData(c redis.Conn) (structs.WorldTimeline, bool, error) {
+	s, err := redis.String(c.Do("GET", "world"))
+	if err != nil {
+		return structs.WorldTimeline{}, false, nil
+	}
+
+	var data structs.WorldTimeline
+	json.Unmarshal([]byte(s), &data)
+
+	return data, true, nil
+}
+
+// SetWorldData executes the redis SET command
+// @param c redis.Conn redis connection
+func SetWorldData(c redis.Conn, ctn structs.WorldTimeline) error {
+	out, _ := json.Marshal(ctn)
+
+	_, err := c.Do("SETEX", "world", 2500, string(out))
 	if err != nil {
 		return err
 	}

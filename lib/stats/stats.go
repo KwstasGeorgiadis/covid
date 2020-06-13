@@ -61,12 +61,11 @@ func GetAllCountries() (structs.Countries, error) {
 	conn := pool.Get()
 	defer conn.Close()
 
-	cachedData, cacheGetError := caching.Get(conn, "total")
+	cachedData, cacheGetError := caching.GetCountriesData(conn)
 	if cacheGetError != nil {
 		applogger.Log("ERROR", "stats", "GetAllCountries", cacheGetError.Error())
 		return structs.Countries{}, cacheGetError
 	}
-
 	var s structs.Countries
 
 	if len(cachedData.Data) == 0 {
@@ -79,7 +78,7 @@ func GetAllCountries() (structs.Countries, error) {
 
 		s = structs.Countries{Data: response}
 
-		caching.Set(conn, s, "total")
+		caching.SetCountriesData(conn, s)
 
 	} else {
 		applogger.Log("INFO", "stats", "GetAllCountries", "Getting cache data %v instead of requesting it")

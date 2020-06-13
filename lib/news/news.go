@@ -63,7 +63,6 @@ func requestNewsData(url string) (mnews.ArticlesData, error) {
 		article.Title = v.Title
 		article.Description = v.Description
 		article.URL = v.Link
-		//article.URLToImage = v.URLToImage
 		article.PublishedAt = v.PubDate
 		article.Source = v.Source.Text
 		article.SourceURL = v.Source.URL

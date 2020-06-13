@@ -6,6 +6,7 @@ import (
 	"sort"
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
+	"github.com/junkd0g/covid/lib/caching"
 	pconf "github.com/junkd0g/covid/lib/config"
 	structs "github.com/junkd0g/covid/lib/structs"
 
@@ -121,6 +122,25 @@ func requestHistoryData() (structs.WorldTimeline, error) {
 }
 
 func GetaWorldHistory() (structs.WorldTimeline, error) {
-	c, v := requestHistoryData()
-	return c, v
+	pool := caching.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
+
+	cachedData, exist, cacheGetError := caching.GetWorldData(conn)
+	if cacheGetError != nil {
+		applogger.Log("ERROR", "cworld", "GetaWorldHistory", cacheGetError.Error())
+		return structs.WorldTimeline{}, cacheGetError
+	}
+
+	if !exist {
+		applogger.Log("INFO", "cworld", "GetaWorldHistory", "Request data instead of getting cached data")
+		data, err := requestHistoryData()
+		if err != nil {
+			applogger.Log("ERROR", "cworld", "GetaWorldHistory", err.Error())
+			return structs.WorldTimeline{}, err
+		}
+		caching.SetWorldData(conn, data)
+		return data, nil
+	}
+	return cachedData, nil
 }
