@@ -90,35 +90,6 @@ func GetAllCountries() ([]structs.CountryCurve, error) {
 // GetCountry seach through an array of structs.CountryCurve and
 // gets COVID-19 per day stats for that specific country
 // It returns structs.CountryCurve and any write error encountered.
-func GetCountry(name string) (structs.CountryCurve, error) {
-	allCountries, errGetAllCountries := GetAllCountries()
-	if errGetAllCountries != nil {
-		applogger.Log("ERROR", "curve", "GetCountry", errGetAllCountries.Error())
-		return structs.CountryCurve{}, errGetAllCountries
-	}
-
-	for _, v := range allCountries {
-		if name == "UK" && v.Country == "UK" {
-			if len(v.Province) == 0 {
-				return v, nil
-			}
-			continue
-		}
-		if name == "France" && v.Country == "France" {
-			if v.Province == "" {
-				return v, nil
-			}
-			continue
-		}
-
-		if v.Country == name {
-			return v, nil
-		}
-	}
-
-	applogger.Log("WARN", "curve", "GetCountry", "Returning empty country")
-	return structs.CountryCurve{}, nil
-}
 
 // GetCountryBP
 func GetCountryBP(name string, allCountries []structs.CountryCurve) (structs.CountryCurve, error) {
@@ -149,52 +120,31 @@ func GetCountryBP(name string, allCountries []structs.CountryCurve) (structs.Cou
 // CompareDeathsCountries returns two integer arrays (one per country passed
 // in parameter) which contain total number of deaths from  22/01/2020
 // It returns structs.Compare and any write error encountered.
-func CompareDeathsCountries(nameOne string, nameTwo string, getCountryST structs.CountryCurve, getCountryStTwo structs.CountryCurve) (structs.Compare, error) {
-	var country structs.CountryCurve
-	var errGetCountryOne error
-
-	if (getCountryST == structs.CountryCurve{}) {
-		country, errGetCountryOne = GetCountry(nameOne)
-		if errGetCountryOne != nil {
-			applogger.Log("ERROR", "curve", "CompareDeathsCountries", errGetCountryOne.Error())
-			return structs.Compare{}, errGetCountryOne
-		}
-	} else {
-		country = getCountryST
+func CompareDeathsCountries(nameOne string, nameTwo string) (structs.Compare, error) {
+	countries, err := GetAllCountries()
+	if err != nil {
+		applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", err.Error())
+		return structs.Compare{}, err
+	}
+	countryData, countryDataErr := GetCountryData(nameOne, countries)
+	if countryDataErr != nil {
+		applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", countryDataErr.Error())
+		return structs.Compare{}, countryDataErr
 	}
 
-	var countryTwo structs.CountryCurve
-	var errGetCountryTwo error
-
-	if (getCountryStTwo == structs.CountryCurve{}) {
-		countryTwo, errGetCountryTwo = GetCountry(nameTwo)
-		if errGetCountryTwo != nil {
-			applogger.Log("ERROR", "curve", "CompareDeathsCountries", errGetCountryTwo.Error())
-			return structs.Compare{}, errGetCountryTwo
-		}
-	} else {
-		countryTwo = getCountryStTwo
+	countryTwoData, countryTwoDataErr := GetCountryData(nameTwo, countries)
+	if countryTwoDataErr != nil {
+		applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", countryTwoDataErr.Error())
+		return structs.Compare{}, countryTwoDataErr
 	}
-
-	var countrySortedDeath []float64
-	var countryTwoSortedDeath []float64
-
-	for _, v := range country.Timeline.Deaths.(map[string]interface{}) {
-		countrySortedDeath = append(countrySortedDeath, v.(float64))
-	}
-	for _, v := range countryTwo.Timeline.Deaths.(map[string]interface{}) {
-		countryTwoSortedDeath = append(countryTwoSortedDeath, v.(float64))
-	}
-	sort.Float64s(countrySortedDeath)
-	sort.Float64s(countryTwoSortedDeath)
 
 	var countryOneStruct structs.CompareData
 	var countryTwoStruct structs.CompareData
 
 	countryOneStruct.Country = nameOne
-	countryOneStruct.Data = countrySortedDeath
+	countryOneStruct.Data = countryData.Deaths
 	countryTwoStruct.Country = nameTwo
-	countryTwoStruct.Data = countryTwoSortedDeath
+	countryTwoStruct.Data = countryTwoData.Deaths
 
 	compareStructs := structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
 
@@ -204,51 +154,40 @@ func CompareDeathsCountries(nameOne string, nameTwo string, getCountryST structs
 // CompareDeathsFromFirstDeathCountries returns two integer arrays (one per country passed
 // in parameter) which contain total number of deaths from  the first confirm death.
 // It returns structs.Compare and any write error encountered.
-func CompareDeathsFromFirstDeathCountries(nameOne string, nameTwo string, getCountryST structs.CountryCurve, getCountryStTwo structs.CountryCurve) (structs.Compare, error) {
-
-	var country structs.CountryCurve
-	var errGetCountryOne error
-
-	if (getCountryST == structs.CountryCurve{}) {
-		country, errGetCountryOne = GetCountry(nameOne)
-		if errGetCountryOne != nil {
-			applogger.Log("ERROR", "curve", "CompareDeathsFromFirstDeathCountries", errGetCountryOne.Error())
-			return structs.Compare{}, errGetCountryOne
-		}
-	} else {
-		country = getCountryST
+func CompareDeathsFromFirstDeathCountries(nameOne string, nameTwo string) (structs.Compare, error) {
+	countries, err := GetAllCountries()
+	if err != nil {
+		applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", err.Error())
+		return structs.Compare{}, err
 	}
 
-	var countryTwo structs.CountryCurve
-	var errGetCountryTwo error
+	countryData, countryDataErr := GetCountryData(nameOne, countries)
+	if countryDataErr != nil {
+		applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", countryDataErr.Error())
+		return structs.Compare{}, countryDataErr
+	}
 
-	if (getCountryStTwo == structs.CountryCurve{}) {
-		countryTwo, errGetCountryTwo = GetCountry(nameTwo)
-		if errGetCountryTwo != nil {
-			applogger.Log("ERROR", "curve", "CompareDeathsFromFirstDeathCountries", errGetCountryTwo.Error())
-			return structs.Compare{}, errGetCountryTwo
-		}
-	} else {
-		countryTwo = getCountryStTwo
+	countryTwoData, countryTwoDataErr := GetCountryData(nameTwo, countries)
+	if countryTwoDataErr != nil {
+		applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", countryTwoDataErr.Error())
+		return structs.Compare{}, countryTwoDataErr
 	}
 
 	var countrySortedDeath []float64
 	var countryTwoSortedDeath []float64
 
-	for _, v := range country.Timeline.Deaths.(map[string]interface{}) {
-		if v.(float64) == 0 {
+	for _, v := range countryData.Deaths {
+		if v == 0 {
 			continue
 		}
-		countrySortedDeath = append(countrySortedDeath, v.(float64))
+		countrySortedDeath = append(countrySortedDeath, v)
 	}
-	for _, v := range countryTwo.Timeline.Deaths.(map[string]interface{}) {
-		if v.(float64) == 0 {
+	for _, v := range countryTwoData.Deaths {
+		if v == 0 {
 			continue
 		}
-		countryTwoSortedDeath = append(countryTwoSortedDeath, v.(float64))
+		countryTwoSortedDeath = append(countryTwoSortedDeath, v)
 	}
-	sort.Float64s(countrySortedDeath)
-	sort.Float64s(countryTwoSortedDeath)
 
 	var countryOneStruct structs.CompareData
 	var countryTwoStruct structs.CompareData
@@ -266,79 +205,31 @@ func CompareDeathsFromFirstDeathCountries(nameOne string, nameTwo string, getCou
 // ComparePerDayDeathsCountries returns two integer arrays (one per country passed
 // in parameter) which contain unique per day number of deaths from first confrim death
 // It returns structs.Compare and any write error encountered.
-func ComparePerDayDeathsCountries(nameOne string, nameTwo string, getCountryST structs.CountryCurve, getCountryStTwo structs.CountryCurve) (structs.Compare, error) {
-
-	var country structs.CountryCurve
-	var errGetCountryOne error
-
-	if (getCountryST == structs.CountryCurve{}) {
-		country, errGetCountryOne = GetCountry(nameOne)
-		if errGetCountryOne != nil {
-			applogger.Log("ERROR", "curve", "ComparePerDayDeathsCountries", errGetCountryOne.Error())
-			return structs.Compare{}, errGetCountryOne
-		}
-	} else {
-		country = getCountryST
+func ComparePerDayDeathsCountries(nameOne string, nameTwo string) (structs.Compare, error) {
+	countries, err := GetAllCountries()
+	if err != nil {
+		applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", err.Error())
+		return structs.Compare{}, err
+	}
+	countryData, countryDataErr := GetCountryData(nameOne, countries)
+	if countryDataErr != nil {
+		applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", countryDataErr.Error())
+		return structs.Compare{}, countryDataErr
 	}
 
-	var countryTwo structs.CountryCurve
-	var errGetCountryTwo error
-
-	if (getCountryStTwo == structs.CountryCurve{}) {
-		countryTwo, errGetCountryTwo = GetCountry(nameTwo)
-		if errGetCountryTwo != nil {
-			applogger.Log("ERROR", "curve", "ComparePerDayDeathsCountries", errGetCountryTwo.Error())
-			return structs.Compare{}, errGetCountryTwo
-		}
-	} else {
-		countryTwo = getCountryStTwo
-	}
-
-	var countrySortedDeath []float64
-	var countryTwoSortedDeath []float64
-
-	for _, v := range country.Timeline.Deaths.(map[string]interface{}) {
-		if v.(float64) == 0 {
-			continue
-		}
-		countrySortedDeath = append(countrySortedDeath, v.(float64))
-	}
-	for _, v := range countryTwo.Timeline.Deaths.(map[string]interface{}) {
-		if v.(float64) == 0 {
-			continue
-		}
-		countryTwoSortedDeath = append(countryTwoSortedDeath, v.(float64))
-	}
-	sort.Float64s(countrySortedDeath)
-	sort.Float64s(countryTwoSortedDeath)
-
-	var tempCountryOneSortedDeath []float64
-	for i := 0; i < len(countrySortedDeath); i++ {
-		tempCountryOneSortedDeath = append(tempCountryOneSortedDeath, countrySortedDeath[i])
-		if i == 0 {
-			continue
-		}
-
-		countrySortedDeath[i] = countrySortedDeath[i] - tempCountryOneSortedDeath[i-1]
-	}
-
-	var tempCountryTwoSortedDeath []float64
-	for i := 0; i < len(countryTwoSortedDeath); i++ {
-		tempCountryTwoSortedDeath = append(tempCountryTwoSortedDeath, countryTwoSortedDeath[i])
-
-		if i == 0 {
-			continue
-		}
-		countryTwoSortedDeath[i] = countryTwoSortedDeath[i] - tempCountryTwoSortedDeath[i-1]
+	countryTwoData, countryTwoDataErr := GetCountryData(nameTwo, countries)
+	if countryTwoDataErr != nil {
+		applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", countryTwoDataErr.Error())
+		return structs.Compare{}, countryTwoDataErr
 	}
 
 	var countryOneStruct structs.CompareData
 	var countryTwoStruct structs.CompareData
 
 	countryOneStruct.Country = nameOne
-	countryOneStruct.Data = countrySortedDeath
+	countryOneStruct.Data = countryData.DeathsPerDay
 	countryTwoStruct.Country = nameTwo
-	countryTwoStruct.Data = countryTwoSortedDeath
+	countryTwoStruct.Data = countryTwoData.DeathsPerDay
 
 	compareStructs := structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
 	return compareStructs, nil
@@ -347,52 +238,31 @@ func ComparePerDayDeathsCountries(nameOne string, nameTwo string, getCountryST s
 // CompareRecoveryCountries returns two integer arrays (one per country passed
 // in parameter) which contain total number of recovery patients from  22/01/2020
 // It returns structs.Compare and any write error encountered.
-func CompareRecoveryCountries(nameOne string, nameTwo string, getCountryST structs.CountryCurve, getCountryStTwo structs.CountryCurve) (structs.Compare, error) {
-	var country structs.CountryCurve
-	var errGetCountryOne error
-
-	if (getCountryST == structs.CountryCurve{}) {
-		country, errGetCountryOne = GetCountry(nameOne)
-		if errGetCountryOne != nil {
-			applogger.Log("ERROR", "curve", "CompareRecoveryCountries", errGetCountryOne.Error())
-			return structs.Compare{}, errGetCountryOne
-		}
-	} else {
-		country = getCountryST
+func CompareRecoveryCountries(nameOne string, nameTwo string) (structs.Compare, error) {
+	countries, err := GetAllCountries()
+	if err != nil {
+		applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", err.Error())
+		return structs.Compare{}, err
+	}
+	countryData, countryDataErr := GetCountryData(nameOne, countries)
+	if countryDataErr != nil {
+		applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", countryDataErr.Error())
+		return structs.Compare{}, countryDataErr
 	}
 
-	var countryTwo structs.CountryCurve
-	var errGetCountryTwo error
-
-	if (getCountryStTwo == structs.CountryCurve{}) {
-		countryTwo, errGetCountryTwo = GetCountry(nameTwo)
-		if errGetCountryTwo != nil {
-			applogger.Log("ERROR", "curve", "CompareRecoveryCountries", errGetCountryTwo.Error())
-			return structs.Compare{}, errGetCountryTwo
-		}
-	} else {
-		countryTwo = getCountryStTwo
+	countryTwoData, countryTwoDataErr := GetCountryData(nameTwo, countries)
+	if countryTwoDataErr != nil {
+		applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", countryTwoDataErr.Error())
+		return structs.Compare{}, countryTwoDataErr
 	}
-
-	var countrySortedRecovery []float64
-	var countryTwoSortedRecovery []float64
-
-	for _, v := range country.Timeline.Recovered.(map[string]interface{}) {
-		countrySortedRecovery = append(countrySortedRecovery, v.(float64))
-	}
-	for _, v := range countryTwo.Timeline.Recovered.(map[string]interface{}) {
-		countryTwoSortedRecovery = append(countryTwoSortedRecovery, v.(float64))
-	}
-	sort.Float64s(countrySortedRecovery)
-	sort.Float64s(countryTwoSortedRecovery)
 
 	var countryOneStruct structs.CompareData
 	var countryTwoStruct structs.CompareData
 
 	countryOneStruct.Country = nameOne
-	countryOneStruct.Data = countrySortedRecovery
+	countryOneStruct.Data = countryData.Recovered
 	countryTwoStruct.Country = nameTwo
-	countryTwoStruct.Data = countryTwoSortedRecovery
+	countryTwoStruct.Data = countryTwoData.Recovered
 
 	compareStructs := structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
 
@@ -402,52 +272,31 @@ func CompareRecoveryCountries(nameOne string, nameTwo string, getCountryST struc
 // CompareCasesCountries returns two integer arrays (one per country passed
 // in parameter) which contain total number of cases from  22/01/2020
 // It returns structs.Compare and any write error encountered.
-func CompareCasesCountries(nameOne string, nameTwo string, getCountryST structs.CountryCurve, getCountryStTwo structs.CountryCurve) (structs.Compare, error) {
-	var country structs.CountryCurve
-	var errGetCountryOne error
-
-	if (getCountryST == structs.CountryCurve{}) {
-		country, errGetCountryOne = GetCountry(nameOne)
-		if errGetCountryOne != nil {
-			applogger.Log("ERROR", "curve", "CompareCasesCountries", errGetCountryOne.Error())
-			return structs.Compare{}, errGetCountryOne
-		}
-	} else {
-		country = getCountryST
+func CompareCasesCountries(nameOne string, nameTwo string) (structs.Compare, error) {
+	countries, err := GetAllCountries()
+	if err != nil {
+		applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", err.Error())
+		return structs.Compare{}, err
+	}
+	countryData, countryDataErr := GetCountryData(nameOne, countries)
+	if countryDataErr != nil {
+		applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", countryDataErr.Error())
+		return structs.Compare{}, countryDataErr
 	}
 
-	var countryTwo structs.CountryCurve
-	var errGetCountryTwo error
-
-	if (getCountryStTwo == structs.CountryCurve{}) {
-		countryTwo, errGetCountryTwo = GetCountry(nameTwo)
-		if errGetCountryTwo != nil {
-			applogger.Log("ERROR", "curve", "CompareCasesCountries", errGetCountryTwo.Error())
-			return structs.Compare{}, errGetCountryTwo
-		}
-	} else {
-		countryTwo = getCountryStTwo
+	countryTwoData, countryTwoDataErr := GetCountryData(nameTwo, countries)
+	if countryTwoDataErr != nil {
+		applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", countryTwoDataErr.Error())
+		return structs.Compare{}, countryTwoDataErr
 	}
-
-	var countrySortedCases []float64
-	var countryTwoSortedCases []float64
-
-	for _, v := range country.Timeline.Cases.(map[string]interface{}) {
-		countrySortedCases = append(countrySortedCases, v.(float64))
-	}
-	for _, v := range countryTwo.Timeline.Cases.(map[string]interface{}) {
-		countryTwoSortedCases = append(countryTwoSortedCases, v.(float64))
-	}
-	sort.Float64s(countrySortedCases)
-	sort.Float64s(countryTwoSortedCases)
 
 	var countryOneStruct structs.CompareData
 	var countryTwoStruct structs.CompareData
 
 	countryOneStruct.Country = nameOne
-	countryOneStruct.Data = countrySortedCases
+	countryOneStruct.Data = countryData.Cases
 	countryTwoStruct.Country = nameTwo
-	countryTwoStruct.Data = countryTwoSortedCases
+	countryTwoStruct.Data = countryTwoData.Cases
 
 	compareStructs := structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
 
@@ -457,79 +306,31 @@ func CompareCasesCountries(nameOne string, nameTwo string, getCountryST structs.
 // ComparePerDayCasesCountries returns two integer arrays (one per country passed
 // in parameter) which contain unique per day number of case from first confrim case
 // It returns structs.Compare and any write error encountered.
-func ComparePerDayCasesCountries(nameOne string, nameTwo string, getCountryST structs.CountryCurve, getCountryStTwo structs.CountryCurve) (structs.Compare, error) {
-
-	var country structs.CountryCurve
-	var errGetCountryOne error
-
-	if (getCountryST == structs.CountryCurve{}) {
-		country, errGetCountryOne = GetCountry(nameOne)
-		if errGetCountryOne != nil {
-			applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", errGetCountryOne.Error())
-			return structs.Compare{}, errGetCountryOne
-		}
-	} else {
-		country = getCountryST
+func ComparePerDayCasesCountries(nameOne string, nameTwo string) (structs.Compare, error) {
+	countries, err := GetAllCountries()
+	if err != nil {
+		applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", err.Error())
+		return structs.Compare{}, err
+	}
+	countryData, countryDataErr := GetCountryData(nameOne, countries)
+	if countryDataErr != nil {
+		applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", countryDataErr.Error())
+		return structs.Compare{}, countryDataErr
 	}
 
-	var countryTwo structs.CountryCurve
-	var errGetCountryTwo error
-
-	if (getCountryStTwo == structs.CountryCurve{}) {
-		countryTwo, errGetCountryTwo = GetCountry(nameTwo)
-		if errGetCountryTwo != nil {
-			applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", errGetCountryTwo.Error())
-			return structs.Compare{}, errGetCountryTwo
-		}
-	} else {
-		countryTwo = getCountryStTwo
-	}
-
-	var countrySortedCases []float64
-	var countryTwoSortedCases []float64
-
-	for _, v := range country.Timeline.Cases.(map[string]interface{}) {
-		if v.(float64) == 0 {
-			continue
-		}
-		countrySortedCases = append(countrySortedCases, v.(float64))
-	}
-	for _, v := range countryTwo.Timeline.Cases.(map[string]interface{}) {
-		if v.(float64) == 0 {
-			continue
-		}
-		countryTwoSortedCases = append(countryTwoSortedCases, v.(float64))
-	}
-	sort.Float64s(countrySortedCases)
-	sort.Float64s(countryTwoSortedCases)
-
-	var tempCountryOneSortedCases []float64
-	for i := 0; i < len(countrySortedCases); i++ {
-		tempCountryOneSortedCases = append(tempCountryOneSortedCases, countrySortedCases[i])
-		if i == 0 {
-			continue
-		}
-
-		countrySortedCases[i] = countrySortedCases[i] - tempCountryOneSortedCases[i-1]
-	}
-
-	var tempCountryTwoSortedCases []float64
-	for i := 0; i < len(countryTwoSortedCases); i++ {
-		tempCountryTwoSortedCases = append(tempCountryTwoSortedCases, countryTwoSortedCases[i])
-
-		if i == 0 {
-			continue
-		}
-		countryTwoSortedCases[i] = countryTwoSortedCases[i] - tempCountryTwoSortedCases[i-1]
+	countryTwoData, countryTwoDataErr := GetCountryData(nameTwo, countries)
+	if countryTwoDataErr != nil {
+		applogger.Log("ERROR", "curve", "ComparePerDayCasesCountries", countryTwoDataErr.Error())
+		return structs.Compare{}, countryTwoDataErr
 	}
 
 	var countryOneStruct structs.CompareData
 	var countryTwoStruct structs.CompareData
 
 	countryOneStruct.Country = nameOne
-	countryOneStruct.Data = countrySortedCases
+	countryOneStruct.Data = countryData.CasesPerDay
 	countryTwoStruct.Country = nameTwo
-	countryTwoStruct.Data = countryTwoSortedCases
+	countryTwoStruct.Data = countryTwoData.CasesPerDay
 
 	compareStructs := structs.Compare{CountryOne: countryOneStruct, CountryTwo: countryTwoStruct}
 	return compareStructs, nil
@@ -593,6 +394,21 @@ func GetCountryData(countryName string, countries []structs.CountryCurve) (struc
 		recoveredPerDay = append(recoveredPerDay, (recovered[i] - tempCountryOneSortedRecovered[i-1]))
 	}
 
-	return structs.MainCurveData{deaths, deathsPerDay, cases, casesPerDay, recovered, recoveredPerDay}, nil
+	deathsPerDayFromFirst := make([]float64, 0)
+
+	for i := 0; i < len(deathsPerDay); i++ {
+		findFirstDeath := false
+		if deathsPerDay[i] == 0 && findFirstDeath == false {
+			continue
+		}
+
+		if deathsPerDay[i] != 0 {
+			findFirstDeath = true
+		}
+
+		deathsPerDayFromFirst = append(deathsPerDayFromFirst, deathsPerDay[i])
+	}
+
+	return structs.MainCurveData{deaths, deathsPerDay, deathsPerDayFromFirst, cases, casesPerDay, recovered, recoveredPerDay}, nil
 
 }

@@ -115,10 +115,11 @@ type Hotspot struct {
 }
 
 type MainCurveData struct {
-	Deaths          []float64
-	DeathsPerDay    []float64
-	Cases           []float64
-	CasesPerDay     []float64
-	Recovered       []float64
-	RecoveredPerDay []float64
+	Deaths                     []float64
+	DeathsPerDay               []float64
+	DeathsPerDayFromFirstDeath []float64
+	Cases                      []float64
+	CasesPerDay                []float64
+	Recovered                  []float64
+	RecoveredPerDay            []float64
 }
