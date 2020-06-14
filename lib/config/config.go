@@ -40,7 +40,7 @@ type AppConf struct {
 	Redis  RedisConfig  `json:"redis"`
 }
 
-//APIConfig contains the data for exernal API
+//APIConfig contains the data for exernal API http calls
 type APIConfig struct {
 	URL             string `json:"url"`
 	URLHistory      string `json:"url_historical"`
