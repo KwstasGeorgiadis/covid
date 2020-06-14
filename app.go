@@ -955,7 +955,7 @@ func newsAllHandle(w http.ResponseWriter, r *http.Request) {
 }
 }
 */
-func worldHandle(w http.ResponseWriter, r *http.Request) {
+func WorldHandle(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
@@ -1047,7 +1047,7 @@ func continentHandle(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(status)
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
-	applogger.LogHTTP("INFO", "main", "worldHandle",
+	applogger.LogHTTP("INFO", "main", "continentHandle",
 		"Endpoint /api/world called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
@@ -1207,7 +1207,7 @@ func main() {
 	fmt.Println("server running at port " + port)
 
 	router.HandleFunc("/api/hotspot/{days}", hotspotHandle).Methods("GET")
-	router.HandleFunc("/api/world", worldHandle).Methods("GET")
+	router.HandleFunc("/api/world", WorldHandle).Methods("GET")
 	router.HandleFunc("/api/continent", continentHandle).Methods("GET")
 	router.HandleFunc("/api/news", newsHandle).Methods("GET")
 	router.HandleFunc("/api/news/all", newsAllHandle).Methods("GET")
