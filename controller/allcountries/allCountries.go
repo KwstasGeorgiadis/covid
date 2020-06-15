@@ -2,11 +2,58 @@ package allcountries
 
 import (
 	"encoding/json"
+	"net/http"
+	"time"
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
 	stats "github.com/junkd0g/covid/lib/stats"
 	structs "github.com/junkd0g/covid/lib/structs"
 )
+
+/*
+	Get request to /api/countries/all with no parameters
+
+	Response:
+
+	{
+    	"countries": [
+        	"Afghanistan",
+        	"Albania",
+        	"Algeria",
+        	"Andorra",
+        	"Angola",
+        	"Anguilla",
+       		"Antigua and Barbuda",
+        	"Argentina",
+        	"Armenia",
+        	"Aruba",
+        	"Australia",
+        	"Austria",
+        	"Azerbaijan",
+        	"Bahamas",
+        	"Bahrain",
+        	"Bangladesh",
+        	"Barbados",
+        	"Belarus",
+        	"Belgium",
+        	"Belize",
+        	"Benin",
+			"Bermuda"
+		]
+	}
+
+*/
+func AllCountriesHandle(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	jsonBody, status := Perform()
+	w.WriteHeader(status)
+	w.Write(jsonBody)
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "allcountries", "AllCountriesHandle",
+		"Endpoint /api/countries/all called with response JSON body "+string(jsonBody), status, elapsed)
+}
 
 //Perform used in the /countries/all endpoint's handle to return
 //	the AllCountriesName struct as a json response by calling

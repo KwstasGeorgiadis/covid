@@ -2,11 +2,61 @@ package countriescon
 
 import (
 	"encoding/json"
+	"net/http"
+	"time"
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
 	stats "github.com/junkd0g/covid/lib/stats"
 	structs "github.com/junkd0g/covid/lib/structs"
 )
+
+/*
+	Get request to /api/countries with no parameters
+
+	Response:
+
+	{
+    	"data": [
+        	{
+            	"country": "Zimbabwe",
+            	"cases": 7,
+            	"todayCases": 0,
+            	"deaths": 1,
+            	"todayDeaths": 0,
+            	"recovered": 0,
+            	"active": 6,
+            	"critical": 0,
+				"casesPerOneMillion": 0.5,
+				"tests": 48305,
+            	"testsPerOneMillion": 1243
+        	},
+        	{
+            	"country": "Zambia",
+            	"cases": 29,
+            	"todayCases": 1,
+            	"deaths": 0,
+            	"todayDeaths": 0,
+            	"recovered": 0,
+            	"active": 29,
+            	"critical": 0,
+				"casesPerOneMillion": 2,
+				"tests": 48305,
+            	"testsPerOneMillion": 1243
+			}
+		]
+	}
+*/
+func Countries(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	jsonBody, status := Perform()
+	w.WriteHeader(status)
+	w.Write(jsonBody)
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "main", "countries",
+		"Endpoint /api/countries called with response JSON body "+string(jsonBody), status, elapsed)
+}
 
 //Perform used in the /countries endpoint's handle to return
 //	the structs.Countries struct as a json response by calling

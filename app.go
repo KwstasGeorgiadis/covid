@@ -12,7 +12,7 @@ import (
 
 	"github.com/junkd0g/covid/lib/applogger"
 
-	allcountries "github.com/junkd0g/covid/controller/allcountries"
+	"github.com/junkd0g/covid/controller/allcountries"
 	compare "github.com/junkd0g/covid/controller/compare"
 	continentct "github.com/junkd0g/covid/controller/continent"
 	countriescon "github.com/junkd0g/covid/controller/countries"
@@ -71,54 +71,6 @@ func country(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-	Get request to /api/countries with no parameters
-
-	Response:
-
-	{
-    	"data": [
-        	{
-            	"country": "Zimbabwe",
-            	"cases": 7,
-            	"todayCases": 0,
-            	"deaths": 1,
-            	"todayDeaths": 0,
-            	"recovered": 0,
-            	"active": 6,
-            	"critical": 0,
-				"casesPerOneMillion": 0.5,
-				"tests": 48305,
-            	"testsPerOneMillion": 1243
-        	},
-        	{
-            	"country": "Zambia",
-            	"cases": 29,
-            	"todayCases": 1,
-            	"deaths": 0,
-            	"todayDeaths": 0,
-            	"recovered": 0,
-            	"active": 29,
-            	"critical": 0,
-				"casesPerOneMillion": 2,
-				"tests": 48305,
-            	"testsPerOneMillion": 1243
-			}
-		]
-	}
-*/
-func countries(w http.ResponseWriter, r *http.Request) {
-	start := time.Now()
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Content-Type", "application/json")
-	jsonBody, status := countriescon.Perform()
-	w.WriteHeader(status)
-	w.Write(jsonBody)
-	elapsed := time.Since(start).Seconds()
-	applogger.LogHTTP("INFO", "main", "countries",
-		"Endpoint /api/countries called with response JSON body "+string(jsonBody), status, elapsed)
-}
-
-/*
 	POST request to /api/sort endpoint
 
 	Request:
@@ -169,51 +121,6 @@ func sort(w http.ResponseWriter, r *http.Request) {
 	elapsed := time.Since(start).Seconds()
 	applogger.LogHTTP("INFO", "main", "sort",
 		"Endpoint /api/sort called with response JSON body "+string(jsonBody), status, elapsed)
-}
-
-/*
-	Get request to /api/countries/all with no parameters
-
-	Response:
-
-	{
-    	"countries": [
-        	"Afghanistan",
-        	"Albania",
-        	"Algeria",
-        	"Andorra",
-        	"Angola",
-        	"Anguilla",
-       		"Antigua and Barbuda",
-        	"Argentina",
-        	"Armenia",
-        	"Aruba",
-        	"Australia",
-        	"Austria",
-        	"Azerbaijan",
-        	"Bahamas",
-        	"Bahrain",
-        	"Bangladesh",
-        	"Barbados",
-        	"Belarus",
-        	"Belgium",
-        	"Belize",
-        	"Benin",
-			"Bermuda"
-		]
-	}
-
-*/
-func allCountriesHandle(w http.ResponseWriter, r *http.Request) {
-	start := time.Now()
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Content-Type", "application/json")
-	jsonBody, status := allcountries.Perform()
-	w.WriteHeader(status)
-	w.Write(jsonBody)
-	elapsed := time.Since(start).Seconds()
-	applogger.LogHTTP("INFO", "main", "allCountriesHandle",
-		"Endpoint /api/countries/all called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 /*
@@ -919,8 +826,8 @@ func main() {
 	router.HandleFunc("/api/news/vaccine", newsVaccineHandle).Methods("GET")
 	router.HandleFunc("/api/news/treatment", newsTreatmentHandle).Methods("GET")
 	router.HandleFunc("/api/country", country).Methods("POST")
-	router.HandleFunc("/api/countries", countries).Methods("GET")
-	router.HandleFunc("/api/countries/all", allCountriesHandle).Methods("GET")
+	router.HandleFunc("/api/countries", countriescon.Countries).Methods("GET")
+	router.HandleFunc("/api/countries/all", allcountries.AllCountriesHandle).Methods("GET")
 	router.HandleFunc("/api/sort", sort).Methods("POST")
 	router.HandleFunc("/api/total", totalcon.TotalHandle).Methods("GET")
 	router.HandleFunc("/api/compare", compareHandle).Methods("POST")
