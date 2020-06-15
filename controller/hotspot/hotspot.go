@@ -2,18 +2,143 @@ package hotspot
 
 import (
 	"encoding/json"
+	"net/http"
 	"strconv"
+	"time"
 
+	"github.com/gorilla/mux"
 	analytics "github.com/junkd0g/covid/lib/analytics"
 	applogger "github.com/junkd0g/covid/lib/applogger"
 	structs "github.com/junkd0g/covid/lib/structs"
 )
 
+/*
+	Get request to /api/hotspot with no parameters
+
+	Response:
+
+{
+    "mostCases": {
+        "country": "Brazil",
+        "data": [
+            20599,
+            26417,
+            26928,
+            33274,
+            16409,
+            11598,
+            28936,
+            28633,
+            30925,
+            30830,
+            27075
+        ]
+    },
+    "secondCases": {
+        "country": "USA",
+        "data": [
+            18263,
+            22577,
+            24266,
+            24146,
+            20007,
+            20848,
+            20801,
+            19699,
+            21140,
+            24720,
+            22681
+        ]
+    },
+    "thirdCases": {
+        "country": "Russia",
+        "data": [
+            8338,
+            8371,
+            8572,
+            8952,
+            9268,
+            8485,
+            8858,
+            8529,
+            8823,
+            8718,
+            8846
+        ]
+    },
+    "mostDeaths": {
+        "country": "USA",
+        "data": [
+            1505,
+            1199,
+            1193,
+            967,
+            605,
+            768,
+            1031,
+            995,
+            1036,
+            921,
+            670
+        ]
+    },
+    "secondDeaths": {
+        "country": "Brazil",
+        "data": [
+            1086,
+            1156,
+            1124,
+            956,
+            480,
+            623,
+            1262,
+            1349,
+            1473,
+            1005,
+            904
+        ]
+    },
+    "thirdDeaths": {
+        "country": "Mexico",
+        "data": [
+            463,
+            447,
+            371,
+            364,
+            151,
+            237,
+            470,
+            1092,
+            816,
+            625,
+            341
+        ]
+    }
+}
+*/
+func HotspotHandle(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	vars := mux.Vars(r)
+	jsonBody, status := Perform(vars["days"])
+	w.WriteHeader(status)
+	w.Write(jsonBody)
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "hotspot", "HotspotHandle",
+		"Endpoint /api/hotspot called with response JSON body "+string(jsonBody), status, elapsed)
+}
+
 //Perform used in the /api/hotspot endpoint's handle to return
 //	@return array of bytes of the json object
 //	@return int http code status
 func Perform(days string) ([]byte, int) {
-	i, _ := strconv.Atoi(days)
+	i, errAtoi := strconv.Atoi(days)
+	if errAtoi != nil {
+		applogger.Log("ERROR", "hotspot", "Perform", errAtoi.Error())
+		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: errAtoi.Error(), Code: 400})
+		return statsErrJSONBody, 400
+	}
 
 	worldData, err := analytics.MostCasesDeathsNearPast(i)
 	if err != nil {
@@ -28,8 +153,5 @@ func Perform(days string) ([]byte, int) {
 		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}
-
-	applogger.Log("INFO", "hotspot", "Perform",
-		"Returning status: 200 with JSONbody "+string(jsonBody))
 	return jsonBody, 200
 }
