@@ -4,7 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
+
+	"github.com/gorilla/mux"
 )
 
 type HotspotExpectedResponse struct {
@@ -45,6 +48,9 @@ func Test_APIHotspotError(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	req = mux.SetURLVars(req, map[string]string{
+		"days": "ksdfsfd",
+	})
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(HotspotHandle)
 	handler.ServeHTTP(rr, req)
@@ -61,10 +67,9 @@ func Test_APIHotspotError(t *testing.T) {
 		t.Errorf("Wrong code value")
 	}
 
-	//matched, _ := regexp.MatchString(eer.Message, "ksdfsfd")
-	//t.Error(eer.Message)
-	//if !matched {
-	//	t.Errorf("Wrong message value")
-	//}
+	matched := strings.Contains(eer.Message, "ksdfsfd")
+	if !matched {
+		t.Errorf("Wrong message value")
+	}
 
 }
