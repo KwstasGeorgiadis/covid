@@ -900,74 +900,6 @@ func newsAllHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-	Get request to /api/world with no parameters
-
-	Response:
-
-{
-    "cases": [
-        555,
-        654,
-        941,
-        1434,
-
-    ],
-    "deaths": [
-        17,
-        18,
-        26,
-        42,
-        56,
-        82,
-    ],
-    "recovered": [
-        28,
-        30,
-        36,
-        39,
-        52,
-    ],
-    "casesDaily": [
-        99,
-        287,
-        493,
-        684,
-        809,
-    ],
-    "deathsDaily": [
-        1,
-        8,
-        16,
-        14,
-        26,
-        49,
-    ],
-    "recoveredDaily": [
-        2,
-        6,
-        3,
-        13,
-        9,
-        46,
-        19,
-        17,
-    ]
-}
-}
-*/
-func WorldHandle(w http.ResponseWriter, r *http.Request) {
-	start := time.Now()
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Content-Type", "application/json")
-	jsonBody, status := worldct.Perform()
-	w.WriteHeader(status)
-	w.Write(jsonBody)
-	elapsed := time.Since(start).Seconds()
-	applogger.LogHTTP("INFO", "main", "worldHandle",
-		"Endpoint /api/world called with response JSON body "+string(jsonBody), status, elapsed)
-}
-
-/*
 	Get request to /api/continent with no parameters
 
 	Response:
@@ -1207,7 +1139,7 @@ func main() {
 	fmt.Println("server running at port " + port)
 
 	router.HandleFunc("/api/hotspot/{days}", hotspotHandle).Methods("GET")
-	router.HandleFunc("/api/world", WorldHandle).Methods("GET")
+	router.HandleFunc("/api/world", worldct.WorldHandle).Methods("GET")
 	router.HandleFunc("/api/continent", continentHandle).Methods("GET")
 	router.HandleFunc("/api/news", newsHandle).Methods("GET")
 	router.HandleFunc("/api/news/all", newsAllHandle).Methods("GET")

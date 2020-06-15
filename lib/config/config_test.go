@@ -1,16 +1,10 @@
 package pconf
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
-
-func init() {
-	enviroment = "testing"
-	cp = conPath{fmt.Sprintf("testFiles/covid.%s.json", enviroment)}
-}
 
 func TestGetAppConfig(t *testing.T) {
 	assert := assert.New(t)
