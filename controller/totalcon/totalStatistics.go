@@ -2,11 +2,39 @@ package totalcon
 
 import (
 	"encoding/json"
+	"net/http"
+	"time"
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
 	stats "github.com/junkd0g/covid/lib/stats"
 	structs "github.com/junkd0g/covid/lib/structs"
 )
+
+/*
+	Get request to /api/total with no parameters
+
+	Response:
+
+	{
+    	"todayPerCentOfTotalCases": 7,
+    	"todayPerCentOfTotalDeaths": 6,
+    	"totalCases": 1188489,
+    	"totalDeaths": 64103,
+    	"todayTotalCases": 71846,
+    	"todayTotalDeaths": 4933
+	}
+*/
+func TotalHandle(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	jsonBody, status := Perform()
+	w.WriteHeader(status)
+	w.Write(jsonBody)
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "totalcon", "TotalHandle",
+		"Endpoint /api/total called with response JSON body "+string(jsonBody), status, elapsed)
+}
 
 //Perform used in the /total endpoint's handle to return
 //	the TotalStats struct as a json response by calling

@@ -1,4 +1,4 @@
-package main
+package continentct
 
 import (
 	"encoding/json"
@@ -36,7 +36,7 @@ func Test_APIContinent(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(continentHandle)
+	handler := http.HandlerFunc(ContinentHandle)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {

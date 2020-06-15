@@ -172,32 +172,6 @@ func sort(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-	Get request to /api/total with no parameters
-
-	Response:
-
-	{
-    	"todayPerCentOfTotalCases": 7,
-    	"todayPerCentOfTotalDeaths": 6,
-    	"totalCases": 1188489,
-    	"totalDeaths": 64103,
-    	"todayTotalCases": 71846,
-    	"todayTotalDeaths": 4933
-	}
-*/
-func totalStatistics(w http.ResponseWriter, r *http.Request) {
-	start := time.Now()
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Content-Type", "application/json")
-	jsonBody, status := totalcon.Perform()
-	w.WriteHeader(status)
-	w.Write(jsonBody)
-	elapsed := time.Since(start).Seconds()
-	applogger.LogHTTP("INFO", "main", "totalStatistics",
-		"Endpoint /api/total called with response JSON body "+string(jsonBody), status, elapsed)
-}
-
-/*
 	Get request to /api/countries/all with no parameters
 
 	Response:
@@ -900,90 +874,6 @@ func newsAllHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-	Get request to /api/continent with no parameters
-
-	Response:
-
-{[
-    {
-        "updated": 1591969378141,
-        "cases": 1313866,
-        "todayCases": 884,
-        "deaths": 56394,
-        "todayDeaths": 21,
-        "recovered": 678380,
-        "todayRecovered": 111,
-        "active": 579092,
-        "critical": 11988,
-        "casesPerOneMillion": 3051.48,
-        "deathsPerOneMillion": 130.98,
-        "tests": 5424046,
-        "testsPerOneMillion": 12597.45,
-        "population": 430566996,
-        "continent": "South America",
-        "activePerOneMillion": 1344.95,
-        "recoveredPerOneMillion": 1575.55,
-        "criticalPerOneMillion": 27.84,
-        "countries": [
-            "Argentina",
-            "Bolivia",
-            "Brazil",
-            "Chile",
-            "Colombia",
-            "Ecuador",
-            "Falkland Islands (Malvinas)",
-            "French Guiana",
-            "Guyana",
-            "Paraguay",
-            "Peru",
-            "Suriname",
-            "Uruguay",
-            "Venezuela"
-        ]
-    },
-    {
-        "updated": 1591969378149,
-        "cases": 8901,
-        "todayCases": 5,
-        "deaths": 124,
-        "todayDeaths": 0,
-        "recovered": 8371,
-        "todayRecovered": 22,
-        "active": 406,
-        "critical": 2,
-        "casesPerOneMillion": 217.71,
-        "deathsPerOneMillion": 3.03,
-        "tests": 2070918,
-        "testsPerOneMillion": 50652.24,
-        "population": 40885025,
-        "continent": "Australia/Oceania",
-        "activePerOneMillion": 9.93,
-        "recoveredPerOneMillion": 204.74,
-        "criticalPerOneMillion": 0.05,
-        "countries": [
-            "Australia",
-            "Fiji",
-            "French Polynesia",
-            "New Caledonia",
-            "New Zealand",
-            "Papua New Guinea"
-        ]
-    }
-]
-*/
-func continentHandle(w http.ResponseWriter, r *http.Request) {
-	start := time.Now()
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Content-Type", "application/json")
-	jsonBody, status := continentct.Perform()
-	w.WriteHeader(status)
-	w.Write(jsonBody)
-	elapsed := time.Since(start).Seconds()
-	applogger.LogHTTP("INFO", "main", "continentHandle",
-		"Endpoint /api/world called with response JSON body "+string(jsonBody), status, elapsed)
-}
-
-/*
 	Get request to /api/hotspot with no parameters
 
 	Response:
@@ -1140,7 +1030,7 @@ func main() {
 
 	router.HandleFunc("/api/hotspot/{days}", hotspotHandle).Methods("GET")
 	router.HandleFunc("/api/world", worldct.WorldHandle).Methods("GET")
-	router.HandleFunc("/api/continent", continentHandle).Methods("GET")
+	router.HandleFunc("/api/continent", continentct.ContinentHandle).Methods("GET")
 	router.HandleFunc("/api/news", newsHandle).Methods("GET")
 	router.HandleFunc("/api/news/all", newsAllHandle).Methods("GET")
 	router.HandleFunc("/api/news/vaccine", newsVaccineHandle).Methods("GET")
@@ -1149,7 +1039,7 @@ func main() {
 	router.HandleFunc("/api/countries", countries).Methods("GET")
 	router.HandleFunc("/api/countries/all", allCountriesHandle).Methods("GET")
 	router.HandleFunc("/api/sort", sort).Methods("POST")
-	router.HandleFunc("/api/total", totalStatistics).Methods("GET")
+	router.HandleFunc("/api/total", totalcon.TotalHandle).Methods("GET")
 	router.HandleFunc("/api/compare", compareHandle).Methods("POST")
 	router.HandleFunc("/api/compare/firstdeath", compareFromFirstDeathHandle).Methods("POST")
 	router.HandleFunc("/api/compare/perday", comparePerDayDeathHandle).Methods("POST")
