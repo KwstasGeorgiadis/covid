@@ -23,7 +23,7 @@ func Test_APITotal(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(TotalHandle)
+	handler := http.HandlerFunc(Handle)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {

@@ -52,7 +52,7 @@ func Test_APIHotspotError(t *testing.T) {
 		"days": "ksdfsfd",
 	})
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(HotspotHandle)
+	handler := http.HandlerFunc(Handle)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusBadRequest {
@@ -84,7 +84,7 @@ func Test_APIHotspotHandle(t *testing.T) {
 		"days": "43",
 	})
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(HotspotHandle)
+	handler := http.HandlerFunc(Handle)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {

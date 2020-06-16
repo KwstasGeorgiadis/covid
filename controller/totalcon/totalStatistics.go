@@ -24,7 +24,7 @@ import (
     	"todayTotalDeaths": 4933
 	}
 */
-func TotalHandle(w http.ResponseWriter, r *http.Request) {
+func Handle(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")

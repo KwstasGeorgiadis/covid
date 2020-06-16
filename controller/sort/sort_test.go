@@ -33,7 +33,7 @@ func Test_APISortByDeaths(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SortHandle)
+	handler := http.HandlerFunc(Handle)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -62,7 +62,7 @@ func Test_APISortByCases(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SortHandle)
+	handler := http.HandlerFunc(Handle)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -91,7 +91,7 @@ func Test_APISortByTodayCases(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SortHandle)
+	handler := http.HandlerFunc(Handle)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -120,7 +120,7 @@ func Test_APISortByTodayDeaths(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SortHandle)
+	handler := http.HandlerFunc(Handle)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -149,7 +149,7 @@ func Test_APISortByTodayRecovered(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SortHandle)
+	handler := http.HandlerFunc(Handle)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -178,7 +178,7 @@ func Test_APISortByTodayActive(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SortHandle)
+	handler := http.HandlerFunc(Handle)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -207,7 +207,7 @@ func Test_APISortByTodayCritical(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SortHandle)
+	handler := http.HandlerFunc(Handle)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -236,7 +236,7 @@ func Test_APISortByTodayCasesPerOneMillion(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SortHandle)
+	handler := http.HandlerFunc(Handle)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
