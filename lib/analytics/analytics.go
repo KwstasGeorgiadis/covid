@@ -72,7 +72,7 @@ func MostCasesDeathsNearPast(days int) (structs.Hotspot, error) {
 
 func getLastData(data []float64, days int) []float64 {
 	lastDays := make([]float64, 0)
-	for i := days; i >= 2; i-- {
+	for i := days; i >= 1; i-- {
 		lastDays = append(lastDays, data[len(data)-i])
 	}
 	return lastDays

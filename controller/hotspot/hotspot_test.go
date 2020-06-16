@@ -73,3 +73,53 @@ func Test_APIHotspotError(t *testing.T) {
 	}
 
 }
+
+func Test_APIHotspotHandle(t *testing.T) {
+	req, err := http.NewRequest("GET", "/api/hotspot", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req = mux.SetURLVars(req, map[string]string{
+		"days": "43",
+	})
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(HotspotHandle)
+	handler.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusBadRequest)
+	}
+
+	var her HotspotExpectedResponse
+	json.Unmarshal([]byte(rr.Body.String()), &her)
+
+	if len(her.MostCases.Data) != 43 {
+		t.Errorf("Wrong ammount in most cases data")
+	}
+
+	if len(her.SecondCases.Data) != 43 {
+		t.Errorf("Wrong ammount in second cases data ")
+	}
+
+	if len(her.ThirdCases.Data) != 43 {
+		t.Errorf("Wrong ammount in third cases data ")
+	}
+
+	if len(her.MostDeaths.Data) != 43 {
+		t.Errorf("Wrong ammount in most deaths data ")
+	}
+
+	if len(her.SecondDeaths.Data) != 43 {
+		t.Errorf("Wrong ammount in second deaths data ")
+	}
+
+	if len(her.ThirdDeaths.Data) != 43 {
+		t.Errorf("Wrong ammount in third deaths data ")
+	}
+
+	if &her.MostCases.Country == nil {
+		t.Errorf("Something is wrong with the country field")
+	}
+}
