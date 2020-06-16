@@ -122,4 +122,28 @@ func Test_APIHotspotHandle(t *testing.T) {
 	if &her.MostCases.Country == nil {
 		t.Errorf("Something is wrong with the country field")
 	}
+
+	if calculateTotalAmmount(her.MostCases.Data) < calculateTotalAmmount(her.SecondCases.Data) {
+		t.Errorf("MostCases' ammount is less than SecondCases'")
+	}
+
+	if calculateTotalAmmount(her.SecondCases.Data) < calculateTotalAmmount(her.ThirdCases.Data) {
+		t.Errorf("SecondCases' ammount is less than ThirdCases'")
+	}
+
+	if calculateTotalAmmount(her.MostDeaths.Data) < calculateTotalAmmount(her.SecondDeaths.Data) {
+		t.Errorf("MostDeaths' ammount is less than SecondDeaths'")
+	}
+
+	if calculateTotalAmmount(her.SecondDeaths.Data) < calculateTotalAmmount(her.ThirdDeaths.Data) {
+		t.Errorf("SecondDeaths' ammount is less than ThirdDeaths'")
+	}
+}
+
+func calculateTotalAmmount(arr []int) int {
+	total := 0
+	for _, v := range arr {
+		total = total + v
+	}
+	return total
 }
