@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
 	stats "github.com/junkd0g/covid/lib/stats"
@@ -13,6 +14,59 @@ import (
 //SortRequest used for the https request's body
 type SortRequest struct {
 	Type string `json:"type"`
+}
+
+/*
+	POST request to /api/sort endpoint
+
+	Request:
+
+	{
+		"type" : "deaths"
+	}
+
+	Response
+
+	{
+    	"data": [{
+        	"country": "Italy",
+            "cases": 124632,
+            "todayCases": 4805,
+            "deaths": 15362,
+            "todayDeaths": 681,
+            "recovered": 20996,
+            "active": 88274,
+            "critical": 3994,
+			"casesPerOneMillion": 2061,
+			"tests": 21298974,
+            "testsPerOneMillion": 64371
+        },
+        {
+            "country": "Spain",
+            "cases": 124736,
+            "todayCases": 5537,
+            "deaths": 11744,
+            "todayDeaths": 546,
+            "recovered": 34219,
+            "active": 78773,
+            "critical": 6416,
+			"casesPerOneMillion": 2668,
+			"tests": 21298974,
+            "testsPerOneMillion": 64371
+		}]
+	}
+
+*/
+func SortHandle(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	jsonBody, status := Perform(r)
+	w.WriteHeader(status)
+	w.Write(jsonBody)
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "main", "sort",
+		"Endpoint /api/sort called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 //Perform used in the /sort endpoint's handle to return
