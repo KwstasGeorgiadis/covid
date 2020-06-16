@@ -74,7 +74,7 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(status)
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
-	applogger.LogHTTP("INFO", "main", "worldHandle",
+	applogger.LogHTTP("INFO", "worldct", "Handle",
 		"Endpoint /api/world called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
@@ -85,14 +85,14 @@ func perform() ([]byte, int) {
 
 	worldData, err := cworld.GetaWorldHistory()
 	if err != nil {
-		applogger.Log("ERROR", "worldct", "Perform", err.Error())
+		applogger.Log("ERROR", "worldct", "perform", err.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	jsonBody, jsonBodyErr := json.Marshal(worldData)
 	if jsonBodyErr != nil {
-		applogger.Log("ERROR", "worldct", "Perform", jsonBodyErr.Error())
+		applogger.Log("ERROR", "worldct", "perform", jsonBodyErr.Error())
 		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}

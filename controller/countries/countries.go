@@ -50,11 +50,11 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
-	jsonBody, status := Perform()
+	jsonBody, status := perform()
 	w.WriteHeader(status)
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
-	applogger.LogHTTP("INFO", "main", "countries",
+	applogger.LogHTTP("INFO", "countriescon", "Handle",
 		"Endpoint /api/countries called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
@@ -89,18 +89,18 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 //
 //	@return array of bytes of the json object
 //	@return int http code status
-func Perform() ([]byte, int) {
+func perform() ([]byte, int) {
 
 	countries, err := stats.GetAllCountries()
 	if err != nil {
-		applogger.Log("ERROR", "comcountriesconpare", "Perform", err.Error())
+		applogger.Log("ERROR", "countriescon", "perform", err.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	jsonBody, jsonBodyErr := json.Marshal(countries)
 	if err != nil {
-		applogger.Log("ERROR", "comcountriesconpare", "Perform", jsonBodyErr.Error())
+		applogger.Log("ERROR", "countriescon", "perform", jsonBodyErr.Error())
 		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}

@@ -47,7 +47,7 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
-	jsonBody, status := Perform()
+	jsonBody, status := perform()
 	w.WriteHeader(status)
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
@@ -72,18 +72,18 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 //
 //	@return array of bytes of the json object
 //	@return int http code status
-func Perform() ([]byte, int) {
+func perform() ([]byte, int) {
 
 	totalStats, err := stats.GetAllCountriesName()
 	if err != nil {
-		applogger.Log("ERROR", "allcountries", "Perform", err.Error())
+		applogger.Log("ERROR", "allcountries", "perform", err.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	jsonBody, jsonBodyErr := json.Marshal(totalStats)
 	if jsonBodyErr != nil {
-		applogger.Log("ERROR", "allcountries", "Perform", err.Error())
+		applogger.Log("ERROR", "allcountries", "perform", err.Error())
 		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}

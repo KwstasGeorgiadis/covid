@@ -86,29 +86,29 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
-	jsonBody, status := Perform()
+	jsonBody, status := perform()
 	w.WriteHeader(status)
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
-	applogger.LogHTTP("INFO", "continentct", "ContinentHandle",
+	applogger.LogHTTP("INFO", "continentct", "Handle",
 		"Endpoint /api/world called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 //Perform used in the /api/continent endpoint's handle to return
 //	@return array of bytes of the json object
 //	@return int http code status
-func Perform() ([]byte, int) {
+func perform() ([]byte, int) {
 
 	continentData, err := continent.GetContinentData()
 	if err != nil {
-		applogger.Log("ERROR", "continentct", "Perform", err.Error())
+		applogger.Log("ERROR", "continentct", "perform", err.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	jsonBody, jsonBodyErr := json.Marshal(continentData)
 	if jsonBodyErr != nil {
-		applogger.Log("ERROR", "continentct", "Perform", jsonBodyErr.Error())
+		applogger.Log("ERROR", "continentct", "perform", jsonBodyErr.Error())
 		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}

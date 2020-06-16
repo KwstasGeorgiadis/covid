@@ -121,35 +121,35 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
-	jsonBody, status := Perform(vars["days"])
+	jsonBody, status := perform(vars["days"])
 	w.WriteHeader(status)
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
-	applogger.LogHTTP("INFO", "hotspot", "HotspotHandle",
+	applogger.LogHTTP("INFO", "hotspot", "Handle",
 		"Endpoint /api/hotspot called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 //Perform used in the /api/hotspot endpoint's handle to return
 //	@return array of bytes of the json object
 //	@return int http code status
-func Perform(days string) ([]byte, int) {
+func perform(days string) ([]byte, int) {
 	i, errAtoi := strconv.Atoi(days)
 	if errAtoi != nil {
-		applogger.Log("ERROR", "hotspot", "Perform", errAtoi.Error())
+		applogger.Log("ERROR", "hotspot", "perform", errAtoi.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: errAtoi.Error(), Code: 400})
 		return statsErrJSONBody, 400
 	}
 
 	worldData, err := analytics.MostCasesDeathsNearPast(i)
 	if err != nil {
-		applogger.Log("ERROR", "hotspot", "Perform", err.Error())
+		applogger.Log("ERROR", "hotspot", "perform", err.Error())
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	jsonBody, jsonBodyErr := json.Marshal(worldData)
 	if jsonBodyErr != nil {
-		applogger.Log("ERROR", "hotspot", "Perform", jsonBodyErr.Error())
+		applogger.Log("ERROR", "hotspot", "perform", jsonBodyErr.Error())
 		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}
