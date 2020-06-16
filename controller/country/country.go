@@ -50,7 +50,7 @@ func Country(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(status)
 	w.Write(jsonBody)
 	elapsed := time.Since(start).Seconds()
-	applogger.LogHTTP("INFO", "main", "country",
+	applogger.LogHTTP("INFO", "countrycon", "Country",
 		"Endpoint /api/country called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
