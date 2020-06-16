@@ -2,6 +2,7 @@ package countrycon
 
 import (
 	"encoding/json"
+	"time"
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
 	stats "github.com/junkd0g/covid/lib/stats"
@@ -14,6 +15,43 @@ import (
 //CountryRequest used for the https request's body
 type CountryRequest struct {
 	Name string `json:"country"`
+}
+
+/*
+	POST request to /api/country
+	Request:
+
+	{
+		"country" : "Greece"
+	}
+
+	Response
+
+		{
+		    "country": "Greece",
+    		"cases": 1061,
+    		"todayCases": 0,
+    		"deaths": 37,
+    		"todayDeaths": 5,
+    		"recovered": 52,
+    		"active": 972,
+    		"critical": 66,
+			"casesPerOneMillion": 102,
+			"tests": 21298974,
+    		"testsPerOneMillion": 64371
+		}
+
+*/
+func Country(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	jsonBody, status := Perform(r)
+	w.WriteHeader(status)
+	w.Write(jsonBody)
+	elapsed := time.Since(start).Seconds()
+	applogger.LogHTTP("INFO", "main", "country",
+		"Endpoint /api/country called with response JSON body "+string(jsonBody), status, elapsed)
 }
 
 //Perform used in the /country endpoint's handle to return
