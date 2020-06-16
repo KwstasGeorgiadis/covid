@@ -1,4 +1,4 @@
-package compare
+package comparectl
 
 /*
 	Controller used for the endpoints:

@@ -10,17 +10,17 @@ import (
 	"net/http"
 
 	"github.com/junkd0g/covid/controller/allcountries"
-	"github.com/junkd0g/covid/controller/compare"
-	continentct "github.com/junkd0g/covid/controller/continent"
+	comparectl "github.com/junkd0g/covid/controller/compare"
+	continentctl "github.com/junkd0g/covid/controller/continent"
 	countriescon "github.com/junkd0g/covid/controller/countries"
 	countrycon "github.com/junkd0g/covid/controller/country"
 	hotspot "github.com/junkd0g/covid/controller/hotspot"
 	crnews "github.com/junkd0g/covid/controller/news"
+	sortcon "github.com/junkd0g/covid/controller/sort"
 	totalcon "github.com/junkd0g/covid/controller/totalcon"
 	worldct "github.com/junkd0g/covid/controller/world"
 
 	"github.com/gorilla/mux"
-	sortcon "github.com/junkd0g/covid/controller/sort"
 	pconf "github.com/junkd0g/covid/lib/config"
 	"github.com/rs/cors"
 )
@@ -64,14 +64,14 @@ func main() {
 
 	router.HandleFunc("/api/hotspot/{days}", hotspot.Handle).Methods("GET")
 	router.HandleFunc("/api/world", worldct.Handle).Methods("GET")
-	router.HandleFunc("/api/continent", continentct.Handle).Methods("GET")
+	router.HandleFunc("/api/continent", continentctl.Handle).Methods("GET")
 	router.HandleFunc("/api/news/all", crnews.NewsAllHandle).Methods("GET")
 	router.HandleFunc("/api/country", countrycon.Handle).Methods("POST")
 	router.HandleFunc("/api/countries", countriescon.Handle).Methods("GET")
 	router.HandleFunc("/api/countries/all", allcountries.Handle).Methods("GET")
 	router.HandleFunc("/api/sort", sortcon.Handle).Methods("POST")
 	router.HandleFunc("/api/total", totalcon.Handle).Methods("GET")
-	router.HandleFunc("/api/compare/all", compare.Handle).Methods("POST")
+	router.HandleFunc("/api/compare/all", comparectl.Handle).Methods("POST")
 
 	c := cors.New(cors.Options{
 		AllowCredentials: true,

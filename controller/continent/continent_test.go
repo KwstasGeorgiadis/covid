@@ -1,4 +1,4 @@
-package continentct
+package continentctl
 
 import (
 	"encoding/json"
