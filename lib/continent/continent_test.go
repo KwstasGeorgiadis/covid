@@ -27,11 +27,11 @@ func TestRegisterUser(t *testing.T) {
 	reqDataOB = requestDataMock{}
 
 	requestDataMockFunc = func() (mcontinent.Response, error) {
-		return mcontinent.Response{{Cases: 64}, {Cases: 74}}, nil
+		return mcontinent.Response{{Cases: 64}, {Cases: 74}, {Cases: 64}, {Cases: 74}, {Cases: 64}, {Cases: 74}}, nil
 	}
 
 	requestCacheDataMockFunc = func() (mcontinent.Response, error) {
-		return mcontinent.Response{{Cases: 32}, {Cases: 44}}, nil
+		return mcontinent.Response{{Cases: 32}, {Cases: 44}, {Cases: 32}, {Cases: 44}, {Cases: 32}, {Cases: 44}}, nil
 	}
 
 	withCashedData, err := GetContinentData()

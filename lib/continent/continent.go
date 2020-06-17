@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/gomodule/redigo/redis"
 	applogger "github.com/junkd0g/covid/lib/applogger"
 	caching "github.com/junkd0g/covid/lib/caching"
 	pconf "github.com/junkd0g/covid/lib/config"
@@ -16,14 +15,12 @@ var (
 	serverConf pconf.AppConf
 	reqDataOB  requestAPI
 	reqCacheOB requestCache
-	pool       *redis.Pool
 )
 
 func init() {
 	serverConf = pconf.GetAppConfig()
 	reqDataOB = requestData{}
 	reqCacheOB = requestCacheData{}
-	pool = caching.NewPool()
 }
 
 type requestData struct{}
@@ -70,6 +67,7 @@ func (r requestData) requestContinentData() (mcontinent.Response, error) {
 }
 
 func (r requestCacheData) getCacheData() (mcontinent.Response, error) {
+	pool := caching.NewPool()
 	conn := pool.Get()
 	defer conn.Close()
 	cachedData, _, cacheGetError := caching.GetContinentData(conn)
@@ -80,6 +78,7 @@ func (r requestCacheData) getCacheData() (mcontinent.Response, error) {
 // GetContinentData checks if continent data are on redis and return them
 // else it request them using requestContinentData
 func GetContinentData() (mcontinent.Response, error) {
+	pool := caching.NewPool()
 	conn := pool.Get()
 
 	cachedData, cacheGetError := reqCacheOB.getCacheData()

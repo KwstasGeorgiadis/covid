@@ -48,7 +48,7 @@ func Test_APIContinent(t *testing.T) {
 	json.Unmarshal([]byte(rr.Body.String()), &cer)
 
 	if len(cer) != 6 {
-		t.Errorf("Missing continent in the response")
+		t.Errorf("Missing continent in the response %v", cer)
 	}
 
 }
