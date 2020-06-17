@@ -8,7 +8,8 @@ import (
 	applogger "github.com/junkd0g/covid/lib/applogger"
 	"github.com/junkd0g/covid/lib/caching"
 	pconf "github.com/junkd0g/covid/lib/config"
-	structs "github.com/junkd0g/covid/lib/structs"
+	mcountry "github.com/junkd0g/covid/lib/model/country"
+	mworld "github.com/junkd0g/covid/lib/model/world"
 
 	"encoding/json"
 	"io/ioutil"
@@ -25,34 +26,34 @@ func init() {
 
 // requestData does an HTTP GET request to the third party API that
 // contains covid-9 stats ' history (per day from 22/01/2020)
-// It returns []structs.Country and any write error encountered.
-func requestHistoryData() (structs.WorldTimeline, error) {
+// It returns []mcountry.Country and any write error encountered.
+func requestHistoryData() (mworld.WorldTimeline, error) {
 	client := &http.Client{}
 	requestURL := serverConf.API.URLWorldHistory
 
 	req, reqErr := http.NewRequest("GET", requestURL, nil)
 	if reqErr != nil {
 		applogger.Log("ERROR", "cworld", "requestHistoryData", reqErr.Error())
-		return structs.WorldTimeline{}, reqErr
+		return mworld.WorldTimeline{}, reqErr
 	}
 
 	res, resError := client.Do(req)
 	if resError != nil {
 		applogger.Log("ERROR", "cworld", "requestHistoryData", resError.Error())
-		return structs.WorldTimeline{}, resError
+		return mworld.WorldTimeline{}, resError
 	}
 	defer res.Body.Close()
 
 	b, errorReadAll := ioutil.ReadAll(res.Body)
 	if errorReadAll != nil {
 		applogger.Log("ERROR", "cworld", "requestHistoryData", errorReadAll.Error())
-		return structs.WorldTimeline{}, errorReadAll
+		return mworld.WorldTimeline{}, errorReadAll
 	}
 
-	var timeline structs.TimelineStruct
+	var timeline mcountry.TimelineStruct
 	if errUnmarshal := json.Unmarshal(b, &timeline); errUnmarshal != nil {
 		applogger.Log("ERROR", "cworld", "requestHistoryData", errUnmarshal.Error())
-		return structs.WorldTimeline{}, errUnmarshal
+		return mworld.WorldTimeline{}, errUnmarshal
 	}
 
 	deaths := make([]float64, 0)
@@ -75,7 +76,7 @@ func requestHistoryData() (structs.WorldTimeline, error) {
 	sort.Float64s(cases)
 	sort.Float64s(recovered)
 
-	var worldTimeline structs.WorldTimeline
+	var worldTimeline mworld.WorldTimeline
 
 	worldTimeline.Deaths = deaths
 	worldTimeline.Cases = cases
@@ -121,7 +122,7 @@ func requestHistoryData() (structs.WorldTimeline, error) {
 	return worldTimeline, nil
 }
 
-func GetaWorldHistory() (structs.WorldTimeline, error) {
+func GetaWorldHistory() (mworld.WorldTimeline, error) {
 	pool := caching.NewPool()
 	conn := pool.Get()
 	defer conn.Close()
@@ -129,7 +130,7 @@ func GetaWorldHistory() (structs.WorldTimeline, error) {
 	cachedData, exist, cacheGetError := caching.GetWorldData(conn)
 	if cacheGetError != nil {
 		applogger.Log("ERROR", "cworld", "GetaWorldHistory", cacheGetError.Error())
-		return structs.WorldTimeline{}, cacheGetError
+		return mworld.WorldTimeline{}, cacheGetError
 	}
 
 	if !exist {
@@ -137,7 +138,7 @@ func GetaWorldHistory() (structs.WorldTimeline, error) {
 		data, err := requestHistoryData()
 		if err != nil {
 			applogger.Log("ERROR", "cworld", "GetaWorldHistory", err.Error())
-			return structs.WorldTimeline{}, err
+			return mworld.WorldTimeline{}, err
 		}
 		caching.SetWorldData(conn, data)
 		return data, nil

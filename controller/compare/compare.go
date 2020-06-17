@@ -14,6 +14,7 @@ import (
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
 	curve "github.com/junkd0g/covid/lib/curve"
+	mcountry "github.com/junkd0g/covid/lib/model/country"
 	structs "github.com/junkd0g/covid/lib/structs"
 
 	"io/ioutil"
@@ -223,8 +224,8 @@ func perform(r *http.Request) ([]byte, int) {
 		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: compareDeathsFromFirstDeathCountriesErr.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
-	var countryOneAllData structs.CompareAllData
-	var countryTwoAllData structs.CompareAllData
+	var countryOneAllData mcountry.CompareAllData
+	var countryTwoAllData mcountry.CompareAllData
 
 	countryOneAllData.Country = compareRequest.NameOne
 	countryOneAllData.DataDeaths = compareDeathsCountries.CountryOne.Data
@@ -242,7 +243,7 @@ func perform(r *http.Request) ([]byte, int) {
 	countryTwoAllData.DataCases = compareCasesCountries.CountryTwo.Data
 	countryTwoAllData.DataCasesFromFist = comparePerDayCasesCountries.CountryTwo.Data
 
-	jsonBody, jsonBodyErr := json.Marshal(structs.CompareAll{countryOneAllData, countryTwoAllData})
+	jsonBody, jsonBodyErr := json.Marshal(mcountry.CompareAll{countryOneAllData, countryTwoAllData})
 	if jsonBodyErr != nil {
 		applogger.Log("ERROR", "compare", "perform", jsonBodyErr.Error())
 		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})

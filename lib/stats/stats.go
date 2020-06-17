@@ -9,7 +9,7 @@ import (
 	applogger "github.com/junkd0g/covid/lib/applogger"
 	caching "github.com/junkd0g/covid/lib/caching"
 	pconf "github.com/junkd0g/covid/lib/config"
-	structs "github.com/junkd0g/covid/lib/structs"
+	mcountry "github.com/junkd0g/covid/lib/model/country"
 )
 
 var (
@@ -18,34 +18,34 @@ var (
 
 // requestData does an HTTP GET request to the third party API that
 // contains covid-9 stats
-// It returns []structs.Country and any write error encountered.
-func requestData() ([]structs.Country, error) {
+// It returns []mcountry.Country and any write error encountered.
+func requestData() ([]mcountry.Country, error) {
 
 	client := &http.Client{}
 	requestURL := serverConf.API.URL
 	req, err := http.NewRequest("GET", requestURL, nil)
 	if err != nil {
 		applogger.Log("ERROR", "stats", "requestData", err.Error())
-		return []structs.Country{}, err
+		return []mcountry.Country{}, err
 	}
 
 	res, resError := client.Do(req)
 	if resError != nil {
 		applogger.Log("ERROR", "stats", "requestData", resError.Error())
-		return []structs.Country{}, resError
+		return []mcountry.Country{}, resError
 	}
 	defer res.Body.Close()
 
 	b, readBoyError := ioutil.ReadAll(res.Body)
 	if readBoyError != nil {
 		applogger.Log("ERROR", "stats", "requestData", readBoyError.Error())
-		return []structs.Country{}, readBoyError
+		return []mcountry.Country{}, readBoyError
 	}
 
-	keys := make([]structs.Country, 0)
+	keys := make([]mcountry.Country, 0)
 	if errUnmarshal := json.Unmarshal(b, &keys); err != nil {
 		applogger.Log("ERROR", "stats", "requestData", errUnmarshal.Error())
-		return []structs.Country{}, errUnmarshal
+		return []mcountry.Country{}, errUnmarshal
 	}
 
 	return keys, nil
@@ -55,8 +55,8 @@ func requestData() ([]structs.Country, error) {
 // Covid-19 stats (data starts from date 22/01/2020)
 // Check if there are cached data if not does a HTTP
 // request to the 3rd party API (check requestData())
-// It returns structs.Countries ([] Country) and any write error encountered.
-func GetAllCountries() (structs.Countries, error) {
+// It returns mcountry.Countries ([] Country) and any write error encountered.
+func GetAllCountries() (mcountry.Countries, error) {
 	pool := caching.NewPool()
 	conn := pool.Get()
 	defer conn.Close()
@@ -64,19 +64,19 @@ func GetAllCountries() (structs.Countries, error) {
 	cachedData, cacheGetError := caching.GetCountriesData(conn)
 	if cacheGetError != nil {
 		applogger.Log("ERROR", "stats", "GetAllCountries", cacheGetError.Error())
-		return structs.Countries{}, cacheGetError
+		return mcountry.Countries{}, cacheGetError
 	}
-	var s structs.Countries
+	var s mcountry.Countries
 
 	if len(cachedData.Data) == 0 {
 		applogger.Log("INFO", "stats", "GetAllCountries", "Request data instead of getting cached data")
 		response, responseError := requestData()
 		if responseError != nil {
 			applogger.Log("ERROR", "stats", "GetAllCountries", responseError.Error())
-			return structs.Countries{}, responseError
+			return mcountry.Countries{}, responseError
 		}
 
-		s = structs.Countries{Data: response}
+		s = mcountry.Countries{Data: response}
 
 		caching.SetCountriesData(conn, s)
 
@@ -88,14 +88,14 @@ func GetAllCountries() (structs.Countries, error) {
 	return s, nil
 }
 
-// GetCountry seach through an array of structs.Country and
+// GetCountry seach through an array of mcountry.Country and
 // gets COVID-19 stats for that specific country
-// It returns structs.Country and any write error encountered.
-func GetCountry(name string) (structs.Country, error) {
+// It returns mcountry.Country and any write error encountered.
+func GetCountry(name string) (mcountry.Country, error) {
 	allCountries, allCountriesError := GetAllCountries()
 	if allCountriesError != nil {
 		applogger.Log("ERROR", "stats", "GetCountry", allCountriesError.Error())
-		return structs.Country{}, allCountriesError
+		return mcountry.Country{}, allCountriesError
 	}
 
 	for _, v := range allCountries.Data {
@@ -105,17 +105,17 @@ func GetCountry(name string) (structs.Country, error) {
 	}
 
 	applogger.Log("WARN", "stats", "GetCountry", "Returning empty country")
-	return structs.Country{}, nil
+	return mcountry.Country{}, nil
 }
 
 // SortByCases sorts an array of Country structs by Country.Cases
 // It returns structs.Countries ([] Country) and any write error encountered.
-func SortByCases() (structs.Countries, error) {
+func SortByCases() (mcountry.Countries, error) {
 
 	allCountriesArr, allCountriesError := GetAllCountries()
 	if allCountriesError != nil {
 		applogger.Log("ERROR", "stats", "SortByCases", allCountriesError.Error())
-		return structs.Countries{}, allCountriesError
+		return mcountry.Countries{}, allCountriesError
 	}
 
 	allCountries := allCountriesArr.Data
@@ -127,18 +127,18 @@ func SortByCases() (structs.Countries, error) {
 		return allCountries[i].Deaths > allCountries[j].Deaths
 	})
 
-	s := structs.Countries{Data: allCountries}
+	s := mcountry.Countries{Data: allCountries}
 
 	return s, nil
 }
 
 // SortByDeaths sorts an array of Country structs by Country.Deaths
 // It returns structs.Countries ([] Country) and any write error encountered.
-func SortByDeaths() (structs.Countries, error) {
+func SortByDeaths() (mcountry.Countries, error) {
 	allCountriesArr, allCountriesError := GetAllCountries()
 	if allCountriesError != nil {
 		applogger.Log("ERROR", "stats", "SortByDeaths", allCountriesError.Error())
-		return structs.Countries{}, allCountriesError
+		return mcountry.Countries{}, allCountriesError
 	}
 
 	allCountries := allCountriesArr.Data
@@ -150,18 +150,18 @@ func SortByDeaths() (structs.Countries, error) {
 		return allCountries[i].Cases > allCountries[j].Cases
 	})
 
-	s := structs.Countries{Data: allCountries}
+	s := mcountry.Countries{Data: allCountries}
 
 	return s, nil
 }
 
-// SortByTodayCases sorts an array of Country structs by Country.TodayCases
-// It returns structs.Countries ([] Country) and any write error encountered.
-func SortByTodayCases() (structs.Countries, error) {
+// SortByTodayCases sorts an array of Country mcountry by Country.TodayCases
+// It returns mcountry.Countries ([] Country) and any write error encountered.
+func SortByTodayCases() (mcountry.Countries, error) {
 	allCountriesArr, allCountriesError := GetAllCountries()
 	if allCountriesError != nil {
 		applogger.Log("ERROR", "stats", "SortByTodayCases", allCountriesError.Error())
-		return structs.Countries{}, allCountriesError
+		return mcountry.Countries{}, allCountriesError
 	}
 
 	allCountries := allCountriesArr.Data
@@ -170,17 +170,17 @@ func SortByTodayCases() (structs.Countries, error) {
 		return allCountries[i].TodayCases > allCountries[j].TodayCases
 	})
 
-	s := structs.Countries{Data: allCountries}
+	s := mcountry.Countries{Data: allCountries}
 	return s, nil
 }
 
 // SortByTodayDeaths sorts an array of Country structs by Country.TodayDeaths
 // It returns structs.Countries ([] Country) and any write error encountered.
-func SortByTodayDeaths() (structs.Countries, error) {
+func SortByTodayDeaths() (mcountry.Countries, error) {
 	allCountriesArr, allCountriesError := GetAllCountries()
 	if allCountriesError != nil {
 		applogger.Log("ERROR", "stats", "SortByTodayDeaths", allCountriesError.Error())
-		return structs.Countries{}, allCountriesError
+		return mcountry.Countries{}, allCountriesError
 	}
 
 	allCountries := allCountriesArr.Data
@@ -189,17 +189,17 @@ func SortByTodayDeaths() (structs.Countries, error) {
 		return allCountries[i].TodayDeaths > allCountries[j].TodayDeaths
 	})
 
-	s := structs.Countries{Data: allCountries}
+	s := mcountry.Countries{Data: allCountries}
 	return s, nil
 }
 
 // SortByRecovered sorts an array of Country structs by Country.Recovered
-// It returns structs.Countries ([] Country) and any write error encountered.
-func SortByRecovered() (structs.Countries, error) {
+// It returns mcountry.Countries ([] Country) and any write error encountered.
+func SortByRecovered() (mcountry.Countries, error) {
 	allCountriesArr, allCountriesError := GetAllCountries()
 	if allCountriesError != nil {
 		applogger.Log("ERROR", "stats", "SortByRecovered", allCountriesError.Error())
-		return structs.Countries{}, allCountriesError
+		return mcountry.Countries{}, allCountriesError
 	}
 
 	allCountries := allCountriesArr.Data
@@ -208,17 +208,17 @@ func SortByRecovered() (structs.Countries, error) {
 		return allCountries[i].Recovered > allCountries[j].Recovered
 	})
 
-	s := structs.Countries{Data: allCountries}
+	s := mcountry.Countries{Data: allCountries}
 	return s, nil
 }
 
 // SortByActive sorts an array of Country structs by Country.Active
-// It returns structs.Countries ([] Country) and any write error encountered.
-func SortByActive() (structs.Countries, error) {
+// It returns mcountry.Countries ([] Country) and any write error encountered.
+func SortByActive() (mcountry.Countries, error) {
 	allCountriesArr, allCountriesError := GetAllCountries()
 	if allCountriesError != nil {
 		applogger.Log("ERROR", "stats", "SortByActive", allCountriesError.Error())
-		return structs.Countries{}, allCountriesError
+		return mcountry.Countries{}, allCountriesError
 	}
 
 	allCountries := allCountriesArr.Data
@@ -227,17 +227,17 @@ func SortByActive() (structs.Countries, error) {
 		return allCountries[i].Active > allCountries[j].Active
 	})
 
-	s := structs.Countries{Data: allCountries}
+	s := mcountry.Countries{Data: allCountries}
 	return s, nil
 }
 
 // SortByCritical sorts an array of Country structs by Country.Critical
-// It returns structs.Countries ([] Country) and any write error encountered.
-func SortByCritical() (structs.Countries, error) {
+// It returns mcountry.Countries ([] Country) and any write error encountered.
+func SortByCritical() (mcountry.Countries, error) {
 	allCountriesArr, allCountriesError := GetAllCountries()
 	if allCountriesError != nil {
 		applogger.Log("ERROR", "stats", "SortByCritical", allCountriesError.Error())
-		return structs.Countries{}, allCountriesError
+		return mcountry.Countries{}, allCountriesError
 	}
 
 	allCountries := allCountriesArr.Data
@@ -246,17 +246,17 @@ func SortByCritical() (structs.Countries, error) {
 		return allCountries[i].Critical > allCountries[j].Critical
 	})
 
-	s := structs.Countries{Data: allCountries}
+	s := mcountry.Countries{Data: allCountries}
 	return s, nil
 }
 
 // SortByCasesPerOneMillion sorts an array of Country structs by Country.CasesPerOneMillion
-// It returns structs.Countries ([] Country) and any write error encountered.
-func SortByCasesPerOneMillion() (structs.Countries, error) {
+// It returns mcountry.Countries ([] Country) and any write error encountered.
+func SortByCasesPerOneMillion() (mcountry.Countries, error) {
 	allCountriesArr, allCountriesError := GetAllCountries()
 	if allCountriesError != nil {
 		applogger.Log("ERROR", "stats", "SortByCasesPerOneMillion", allCountriesError.Error())
-		return structs.Countries{}, allCountriesError
+		return mcountry.Countries{}, allCountriesError
 	}
 
 	allCountries := allCountriesArr.Data
@@ -265,24 +265,24 @@ func SortByCasesPerOneMillion() (structs.Countries, error) {
 		return allCountries[i].CasesPerOneMillion > allCountries[j].CasesPerOneMillion
 	})
 
-	s := structs.Countries{Data: allCountries}
+	s := mcountry.Countries{Data: allCountries}
 	return s, nil
 }
 
 // PercentancePerCountry gets a country's COVID-19 stats (getting the from GetCountry)
 // and calculate today's total cases percentance and today's death percentance
-// It returns structs.CountryStats and any write error encountered.
-func PercentancePerCountry(name string) (structs.CountryStats, error) {
+// It returns mcountry.CountryStats and any write error encountered.
+func PercentancePerCountry(name string) (mcountry.CountryStats, error) {
 	country, countryError := GetCountry(name)
 	if countryError != nil {
 		applogger.Log("ERROR", "stats", "PercentancePerCountry", countryError.Error())
-		return structs.CountryStats{}, nil
+		return mcountry.CountryStats{}, nil
 	}
 
 	var todayPerCentOfTotalCases = country.TodayCases * 100 / country.Cases
 	var todayPerCentOfTotalDeaths = country.TodayDeaths * 100 / country.Deaths
 
-	countryStats := structs.CountryStats{Country: country.Country,
+	countryStats := mcountry.CountryStats{Country: country.Country,
 		TodayPerCentOfTotalCases:  todayPerCentOfTotalCases,
 		TodayPerCentOfTotalDeaths: todayPerCentOfTotalDeaths}
 
@@ -292,8 +292,8 @@ func PercentancePerCountry(name string) (structs.CountryStats, error) {
 // GetTotalStats gets worlds COVID-19 total statistics.
 // The statistics are total cases, total deaths today's total deaths
 // totltoal cases, percentace totay increase in deaths and cases
-// It returns structs.TotalStats and any write error encountered.
-func GetTotalStats() (structs.TotalStats, error) {
+// It returns mcountry.TotalStats and any write error encountered.
+func GetTotalStats() (mcountry.TotalStats, error) {
 	var totalDeaths = 0
 	var totalCases = 0
 	var todayTotalDeaths = 0
@@ -302,7 +302,7 @@ func GetTotalStats() (structs.TotalStats, error) {
 	allCountriesArr, errorAllCountries := GetAllCountries()
 	if errorAllCountries != nil {
 		applogger.Log("ERROR", "stats", "GetTotalStats", errorAllCountries.Error())
-		return structs.TotalStats{}, nil
+		return mcountry.TotalStats{}, nil
 	}
 
 	allCountries := allCountriesArr.Data
@@ -320,7 +320,7 @@ func GetTotalStats() (structs.TotalStats, error) {
 	var todayPerCentOfTotalCases = todayTotalDeaths * 100 / totalDeaths
 	var todayPerCentOfTotalDeaths = todayTotalCases * 100 / totalCases
 
-	totalStatsStuct := structs.TotalStats{
+	totalStatsStuct := mcountry.TotalStats{
 		TodayPerCentOfTotalCases:  todayPerCentOfTotalCases,
 		TodayPerCentOfTotalDeaths: todayPerCentOfTotalDeaths,
 		TotalCases:                totalCases,
@@ -333,12 +333,12 @@ func GetTotalStats() (structs.TotalStats, error) {
 }
 
 // GetAllCountriesName get names of the countries that we have Covid-19 stats
-// It returns structs.AllCountriesName and any write error encountered.
-func GetAllCountriesName() (structs.AllCountriesName, error) {
+// It returns mcountry.AllCountriesName and any write error encountered.
+func GetAllCountriesName() (mcountry.AllCountriesName, error) {
 	allCountriesArr, allCountriesError := GetAllCountries()
 	if allCountriesError != nil {
 		applogger.Log("ERROR", "stats", "GetAllCountriesName", allCountriesError.Error())
-		return structs.AllCountriesName{}, allCountriesError
+		return mcountry.AllCountriesName{}, allCountriesError
 	}
 
 	allCountries := allCountriesArr.Data
@@ -349,7 +349,7 @@ func GetAllCountriesName() (structs.AllCountriesName, error) {
 		counties = append(counties, v.Country)
 	}
 
-	allCountriesStruct := structs.AllCountriesName{Countries: counties}
+	allCountriesStruct := mcountry.AllCountriesName{Countries: counties}
 
 	return allCountriesStruct, nil
 }

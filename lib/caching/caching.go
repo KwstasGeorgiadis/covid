@@ -10,12 +10,12 @@ package caching
 import (
 	"encoding/json"
 
+	"github.com/gomodule/redigo/redis"
 	pconf "github.com/junkd0g/covid/lib/config"
 	mcontinent "github.com/junkd0g/covid/lib/model/continent"
+	mcountry "github.com/junkd0g/covid/lib/model/country"
 	mnews "github.com/junkd0g/covid/lib/model/news"
-	structs "github.com/junkd0g/covid/lib/structs"
-
-	"github.com/gomodule/redigo/redis"
+	mworld "github.com/junkd0g/covid/lib/model/world"
 )
 
 var (
@@ -40,7 +40,7 @@ func NewPool() *redis.Pool {
 
 // SetCountriesData executes the redis SET command
 // @param c redis.Conn redis connection
-func SetCountriesData(c redis.Conn, countries structs.Countries) error {
+func SetCountriesData(c redis.Conn, countries mcountry.Countries) error {
 	out, _ := json.Marshal(countries)
 
 	_, err := c.Do("SETEX", "total", 2500, string(out))
@@ -52,27 +52,27 @@ func SetCountriesData(c redis.Conn, countries structs.Countries) error {
 }
 
 // GetCountriesData executes the redis GET command
-func GetCountriesData(c redis.Conn) (structs.Countries, error) {
+func GetCountriesData(c redis.Conn) (mcountry.Countries, error) {
 	// Simple GET example with String helper
 
 	s, err := redis.String(c.Do("GET", "total"))
 	if err != nil {
-		return structs.Countries{}, nil
+		return mcountry.Countries{}, nil
 	}
 
 	bytStr := []byte(s)
-	datsa := structs.Countries{}
+	datsa := mcountry.Countries{}
 
 	erra := json.Unmarshal(bytStr, &datsa)
 	if erra != nil {
-		return structs.Countries{}, nil
+		return mcountry.Countries{}, nil
 	}
 	return datsa, nil
 }
 
 // SetCurveData executes the redis SET command
 // @param c redis.Conn redis connection
-func SetCurveData(c redis.Conn, countries []structs.CountryCurve) error {
+func SetCurveData(c redis.Conn, countries []mcountry.CountryCurve) error {
 	vv, _ := json.Marshal(countries)
 	_, err := c.Do("SETEX", "curve", 2500, vv)
 	if err != nil {
@@ -83,13 +83,13 @@ func SetCurveData(c redis.Conn, countries []structs.CountryCurve) error {
 }
 
 // GetCurveData executes the redis GET command
-func GetCurveData(c redis.Conn) ([]structs.CountryCurve, error) {
+func GetCurveData(c redis.Conn) ([]mcountry.CountryCurve, error) {
 	s, err := redis.String(c.Do("GET", "curve"))
 	if err != nil {
-		return []structs.CountryCurve{}, nil
+		return []mcountry.CountryCurve{}, nil
 	}
 
-	var data []structs.CountryCurve
+	var data []mcountry.CountryCurve
 	json.Unmarshal([]byte(s), &data)
 
 	return data, nil
@@ -149,13 +149,13 @@ func SetContinetData(c redis.Conn, ctn mcontinent.Response) error {
 }
 
 // GetWorldData executes the redis GET command
-func GetWorldData(c redis.Conn) (structs.WorldTimeline, bool, error) {
+func GetWorldData(c redis.Conn) (mworld.WorldTimeline, bool, error) {
 	s, err := redis.String(c.Do("GET", "world"))
 	if err != nil {
-		return structs.WorldTimeline{}, false, nil
+		return mworld.WorldTimeline{}, false, nil
 	}
 
-	var data structs.WorldTimeline
+	var data mworld.WorldTimeline
 	json.Unmarshal([]byte(s), &data)
 
 	return data, true, nil
@@ -163,7 +163,7 @@ func GetWorldData(c redis.Conn) (structs.WorldTimeline, bool, error) {
 
 // SetWorldData executes the redis SET command
 // @param c redis.Conn redis connection
-func SetWorldData(c redis.Conn, ctn structs.WorldTimeline) error {
+func SetWorldData(c redis.Conn, ctn mworld.WorldTimeline) error {
 	out, _ := json.Marshal(ctn)
 
 	_, err := c.Do("SETEX", "world", 2500, string(out))

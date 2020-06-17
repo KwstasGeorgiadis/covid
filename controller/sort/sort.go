@@ -7,6 +7,7 @@ import (
 	"time"
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
+	mcountry "github.com/junkd0g/covid/lib/model/country"
 	stats "github.com/junkd0g/covid/lib/stats"
 	structs "github.com/junkd0g/covid/lib/structs"
 )
@@ -127,7 +128,7 @@ func perform(r *http.Request) ([]byte, int) {
 	}
 
 	sortType := sortRequest.Type
-	var countries structs.Countries
+	var countries mcountry.Countries
 	var countriesError error
 
 	switch sortType {
