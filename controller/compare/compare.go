@@ -26,9 +26,8 @@ type Request struct {
 	NameTwo string `json:"countryTwo"`
 }
 
+// Handle POST request to /api/compare/all endpoint
 /*
-	POST request to /api/compare/all endpoint
-
 	Request:
 
 	{

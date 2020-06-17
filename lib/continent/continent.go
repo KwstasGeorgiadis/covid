@@ -13,14 +13,28 @@ import (
 
 var (
 	serverConf pconf.AppConf
+	reqDataOB  requestAPI
+	reqCacheOB requestCache
 )
 
 func init() {
 	serverConf = pconf.GetAppConfig()
+	reqDataOB = requestData{}
+	reqCacheOB = requestCacheData{}
+}
+
+type requestData struct{}
+type requestAPI interface {
+	requestContinentData() (mcontinent.Response, error)
+}
+
+type requestCacheData struct{}
+type requestCache interface {
+	getCacheData() (mcontinent.Response, error)
 }
 
 //requestContinentData does a GET http request to serverConf.API.Continent value ( https://corona.lmao.ninja​/v2/continents )
-func requestContinentData() (mcontinent.Response, error) {
+func (r requestData) requestContinentData() (mcontinent.Response, error) {
 	client := &http.Client{}
 	requestURL := serverConf.API.Continent
 
@@ -52,6 +66,15 @@ func requestContinentData() (mcontinent.Response, error) {
 	return responseData, nil
 }
 
+func (r requestCacheData) getCacheData() (mcontinent.Response, error) {
+	pool := caching.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
+	cachedData, _, cacheGetError := caching.GetContinentData(conn)
+
+	return cachedData, cacheGetError
+}
+
 // GetContinentData checks if continent data are on redis and return them
 // else it request them using requestContinentData
 func GetContinentData() (mcontinent.Response, error) {
@@ -59,7 +82,7 @@ func GetContinentData() (mcontinent.Response, error) {
 	conn := pool.Get()
 	defer conn.Close()
 
-	cachedData, _, cacheGetError := caching.GetContinentData(conn)
+	cachedData, cacheGetError := reqCacheOB.getCacheData()
 	if cacheGetError != nil {
 		applogger.Log("ERROR", "continent", "GetContinentData", cacheGetError.Error())
 		return mcontinent.Response{}, cacheGetError
@@ -67,7 +90,7 @@ func GetContinentData() (mcontinent.Response, error) {
 
 	if len(cachedData) == 0 {
 		applogger.Log("INFO", "continent", "GetContinentData", "Request data instead of getting cached data")
-		data, err := requestContinentData()
+		data, err := reqDataOB.requestContinentData()
 		if err != nil {
 			applogger.Log("ERROR", "continent", "GetContinentData", err.Error())
 			return mcontinent.Response{}, err

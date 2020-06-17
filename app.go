@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/junkd0g/covid/controller/allcountries"
+	allcountries "github.com/junkd0g/covid/controller/allcountries"
 	comparectl "github.com/junkd0g/covid/controller/compare"
 	continentctl "github.com/junkd0g/covid/controller/continent"
 	countriescon "github.com/junkd0g/covid/controller/countries"
