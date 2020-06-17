@@ -3,22 +3,22 @@ package analytics
 import (
 	applogger "github.com/junkd0g/covid/lib/applogger"
 	curve "github.com/junkd0g/covid/lib/curve"
-	structs "github.com/junkd0g/covid/lib/structs"
+	mhotspot "github.com/junkd0g/covid/lib/model/hotspot"
 )
 
-func MostCasesDeathsNearPast(days int) (structs.Hotspot, error) {
+func MostCasesDeathsNearPast(days int) (mhotspot.Hotspot, error) {
 	countries, err := curve.GetAllCountries()
 	if err != nil {
 		applogger.Log("ERROR", "analytics", "MostCasesDeathsLastWeek", err.Error())
-		return structs.Hotspot{}, err
+		return mhotspot.Hotspot{}, err
 	}
-	var infoData structs.Hotspot
+	var infoData mhotspot.Hotspot
 
 	for _, v := range countries {
 		countryData, countryDataError := curve.GetCountryData(v.Country, countries)
 		if countryDataError != nil {
 			applogger.Log("ERROR", "analytics", "MostCasesDeathsLastWeek", countryDataError.Error())
-			return structs.Hotspot{}, countryDataError
+			return mhotspot.Hotspot{}, countryDataError
 		}
 
 		lastDaysCases := getLastData(countryData.CasesPerDay, days)

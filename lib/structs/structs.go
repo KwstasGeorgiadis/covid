@@ -105,15 +105,6 @@ type ErrorMessage struct {
 	Code         int    `json:"code"`
 }
 
-type Hotspot struct {
-	MostCases    CompareData `json:"mostCases"`
-	SecondCases  CompareData `json:"secondCases"`
-	ThirdCases   CompareData `json:"thirdCases"`
-	MostDeaths   CompareData `json:"mostDeaths"`
-	SecondDeaths CompareData `json:"secondDeaths"`
-	ThirdDeaths  CompareData `json:"thirdDeaths"`
-}
-
 type MainCurveData struct {
 	Deaths                     []float64
 	DeathsPerDay               []float64
