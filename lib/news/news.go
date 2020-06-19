@@ -14,16 +14,38 @@ import (
 
 var (
 	serverConf pconf.AppConf
+	reqDataOB  requestAPI
+	reqCacheOB requestCache
 )
 
 func init() {
 	serverConf = pconf.GetAppConfig()
+	reqDataOB = requestData{}
+	reqCacheOB = requestCacheData{}
+}
+
+type requestData struct{}
+type requestAPI interface {
+	requestNewsData(url string) (mnews.ArticlesData, error)
+}
+
+type requestCacheData struct{}
+type requestCache interface {
+	getCacheData(newsType string) (mnews.ArticlesData, bool, error)
+}
+
+func (r requestCacheData) getCacheData(newsType string) (mnews.ArticlesData, bool, error) {
+	pool := caching.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
+	cachedData, exist, cacheGetError := caching.GetNewsData(conn, newsType)
+	return cachedData, exist, cacheGetError
 }
 
 // requestNewsData does an HTTP GET request to the third party API that
 // contains covid-9 news article
 // It returns structs.ArticlesData and any write error encountered.
-func requestNewsData(url string) (mnews.ArticlesData, error) {
+func (r requestData) requestNewsData(url string) (mnews.ArticlesData, error) {
 
 	client := &http.Client{}
 	req, reqError := http.NewRequest("GET", url, nil)
@@ -68,8 +90,7 @@ func requestNewsData(url string) (mnews.ArticlesData, error) {
 		article.SourceURL = v.Source.URL
 		keys = append(keys, article)
 	}
-
-	return mnews.ArticlesData{keys}, nil
+	return mnews.ArticlesData{Articles: keys}, nil
 
 }
 
@@ -80,7 +101,7 @@ func GetNews() (mnews.ArticlesData, error) {
 	conn := pool.Get()
 	defer conn.Close()
 
-	cachedData, exist, cacheGetError := caching.GetNewsData(conn, "general")
+	cachedData, exist, cacheGetError := reqCacheOB.getCacheData("general")
 	if cacheGetError != nil {
 		applogger.Log("ERROR", "curve", "GetNews", cacheGetError.Error())
 		return mnews.ArticlesData{}, cacheGetError
@@ -88,7 +109,7 @@ func GetNews() (mnews.ArticlesData, error) {
 
 	if !exist {
 		applogger.Log("INFO", "stats", "GetNews", "Request data instead of getting cached data")
-		data, err := requestNewsData(serverConf.API.News)
+		data, err := reqDataOB.requestNewsData(serverConf.API.News)
 		if err != nil {
 			applogger.Log("ERROR", "curve", "GetNews", err.Error())
 			return mnews.ArticlesData{}, err
@@ -108,7 +129,7 @@ func GetVaccineNews() (mnews.ArticlesData, error) {
 	conn := pool.Get()
 	defer conn.Close()
 
-	cachedData, exist, cacheGetError := caching.GetNewsData(conn, "vaccine")
+	cachedData, exist, cacheGetError := reqCacheOB.getCacheData("vaccine")
 	if cacheGetError != nil {
 		applogger.Log("ERROR", "curve", "GetVaccineNews", cacheGetError.Error())
 		return mnews.ArticlesData{}, cacheGetError
@@ -116,7 +137,7 @@ func GetVaccineNews() (mnews.ArticlesData, error) {
 
 	if !exist {
 		applogger.Log("INFO", "stats", "GetVaccineNews", "Request data instead of getting cached data")
-		data, err := requestNewsData(serverConf.API.VaccineNews)
+		data, err := reqDataOB.requestNewsData(serverConf.API.VaccineNews)
 		if err != nil {
 			applogger.Log("ERROR", "curve", "GetVaccineNews", err.Error())
 			return mnews.ArticlesData{}, err
@@ -136,7 +157,7 @@ func GetTreatmentNews() (mnews.ArticlesData, error) {
 	conn := pool.Get()
 	defer conn.Close()
 
-	cachedData, exist, cacheGetError := caching.GetNewsData(conn, "treatment")
+	cachedData, exist, cacheGetError := reqCacheOB.getCacheData("treatment")
 	if cacheGetError != nil {
 		applogger.Log("ERROR", "curve", "GetTreatmentNews", cacheGetError.Error())
 		return mnews.ArticlesData{}, cacheGetError
@@ -144,7 +165,7 @@ func GetTreatmentNews() (mnews.ArticlesData, error) {
 
 	if !exist {
 		applogger.Log("INFO", "stats", "GetTreatmentNews", "Request data instead of getting cached data")
-		data, err := requestNewsData(serverConf.API.TreatmentNews)
+		data, err := reqDataOB.requestNewsData(serverConf.API.TreatmentNews)
 		if err != nil {
 			applogger.Log("ERROR", "curve", "GetTreatmentNews", err.Error())
 			return mnews.ArticlesData{}, err
