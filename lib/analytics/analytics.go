@@ -3,11 +3,33 @@ package analytics
 import (
 	applogger "github.com/junkd0g/covid/lib/applogger"
 	curve "github.com/junkd0g/covid/lib/curve"
+	mcountry "github.com/junkd0g/covid/lib/model/country"
 	mhotspot "github.com/junkd0g/covid/lib/model/hotspot"
 )
 
-func MostCasesDeathsNearPast(days int) (mhotspot.Hotspot, error) {
+var (
+	countryData getCountryData
+)
+
+func init() {
+	countryData = countryOB{}
+}
+
+type countryOB struct{}
+
+type getCountryData interface {
+	getAllCountries() ([]mcountry.CountryCurve, error)
+}
+
+func (r countryOB) getAllCountries() ([]mcountry.CountryCurve, error) {
 	countries, err := curve.GetAllCountries()
+	return countries, err
+}
+
+// MostCasesDeathsNearPast returns 3 countries with
+// most case and most deaths in n ammount of days
+func MostCasesDeathsNearPast(days int) (mhotspot.Hotspot, error) {
+	countries, err := countryData.getAllCountries()
 	if err != nil {
 		applogger.Log("ERROR", "analytics", "MostCasesDeathsLastWeek", err.Error())
 		return mhotspot.Hotspot{}, err
@@ -70,6 +92,7 @@ func MostCasesDeathsNearPast(days int) (mhotspot.Hotspot, error) {
 	return infoData, nil
 }
 
+// return n ammount of last elements in an array
 func getLastData(data []float64, days int) []float64 {
 	lastDays := make([]float64, 0)
 	for i := days; i >= 1; i-- {

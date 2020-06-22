@@ -18,16 +18,39 @@ import (
 
 var (
 	serverConf pconf.AppConf
+	reqDataOB  requestAPI
+	reqCacheOB requestCache
 )
 
 func init() {
 	serverConf = pconf.GetAppConfig()
+	reqDataOB = requestData{}
+	reqCacheOB = requestCacheData{}
+}
+
+type requestData struct{}
+type requestAPI interface {
+	requestHistoryData() (mworld.WorldTimeline, error)
+}
+
+type requestCacheData struct{}
+type requestCache interface {
+	getCacheData() (mworld.WorldTimeline, bool, error)
+}
+
+func (r requestCacheData) getCacheData() (mworld.WorldTimeline, bool, error) {
+	pool := caching.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
+
+	cachedData, exist, cacheGetError := caching.GetWorldData(conn)
+	return cachedData, exist, cacheGetError
 }
 
 // requestData does an HTTP GET request to the third party API that
 // contains covid-9 stats ' history (per day from 22/01/2020)
 // It returns []mcountry.Country and any write error encountered.
-func requestHistoryData() (mworld.WorldTimeline, error) {
+func (r requestData) requestHistoryData() (mworld.WorldTimeline, error) {
 	client := &http.Client{}
 	requestURL := serverConf.API.URLWorldHistory
 
@@ -122,12 +145,13 @@ func requestHistoryData() (mworld.WorldTimeline, error) {
 	return worldTimeline, nil
 }
 
+//GetaWorldHistory returns world history for covid-19
 func GetaWorldHistory() (mworld.WorldTimeline, error) {
 	pool := caching.NewPool()
 	conn := pool.Get()
 	defer conn.Close()
 
-	cachedData, exist, cacheGetError := caching.GetWorldData(conn)
+	cachedData, exist, cacheGetError := reqCacheOB.getCacheData()
 	if cacheGetError != nil {
 		applogger.Log("ERROR", "cworld", "GetaWorldHistory", cacheGetError.Error())
 		return mworld.WorldTimeline{}, cacheGetError
@@ -135,7 +159,7 @@ func GetaWorldHistory() (mworld.WorldTimeline, error) {
 
 	if !exist {
 		applogger.Log("INFO", "cworld", "GetaWorldHistory", "Request data instead of getting cached data")
-		data, err := requestHistoryData()
+		data, err := reqDataOB.requestHistoryData()
 		if err != nil {
 			applogger.Log("ERROR", "cworld", "GetaWorldHistory", err.Error())
 			return mworld.WorldTimeline{}, err
