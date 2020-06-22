@@ -6,9 +6,9 @@ import (
 	"time"
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
+	merror "github.com/junkd0g/covid/lib/model/error"
 	mnews "github.com/junkd0g/covid/lib/model/news"
 	news "github.com/junkd0g/covid/lib/news"
-	structs "github.com/junkd0g/covid/lib/structs"
 )
 
 /*
@@ -102,21 +102,21 @@ func perform() ([]byte, int) {
 	generalNews, err := news.GetNews()
 	if err != nil {
 		applogger.Log("ERROR", "crnews", "perform", err.Error())
-		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
+		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	newsTreatment, errNewsTreatment := news.GetTreatmentNews()
 	if errNewsTreatment != nil {
 		applogger.Log("ERROR", "crnews", "perform", err.Error())
-		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: errNewsTreatment.Error(), Code: 500})
+		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: errNewsTreatment.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	newsVaccine, errNewsVaccine := news.GetVaccineNews()
 	if errNewsVaccine != nil {
 		applogger.Log("ERROR", "crnews", "perform", err.Error())
-		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: errNewsVaccine.Error(), Code: 500})
+		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: errNewsVaccine.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
@@ -128,7 +128,7 @@ func perform() ([]byte, int) {
 	jsonBody, jsonBodyErr := json.Marshal(allArticlesData)
 	if jsonBodyErr != nil {
 		applogger.Log("ERROR", "crnews", "perform", err.Error())
-		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
+		errorJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}
 

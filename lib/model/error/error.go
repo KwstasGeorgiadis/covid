@@ -1,4 +1,4 @@
-package structs
+package merror
 
 // ErrorMessage is being used across all controllers
 type ErrorMessage struct {

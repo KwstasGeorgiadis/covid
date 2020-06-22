@@ -15,7 +15,7 @@ import (
 	applogger "github.com/junkd0g/covid/lib/applogger"
 	curve "github.com/junkd0g/covid/lib/curve"
 	mcountry "github.com/junkd0g/covid/lib/model/country"
-	structs "github.com/junkd0g/covid/lib/structs"
+	merror "github.com/junkd0g/covid/lib/model/error"
 
 	"io/ioutil"
 	"net/http"
@@ -169,14 +169,14 @@ func perform(r *http.Request) ([]byte, int) {
 	b, errIoutilReadAll := ioutil.ReadAll(r.Body)
 	if errIoutilReadAll != nil {
 		applogger.Log("ERROR", "compare", "perform", errIoutilReadAll.Error())
-		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: errIoutilReadAll.Error(), Code: 500})
+		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: errIoutilReadAll.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	unmarshallError := json.Unmarshal(b, &compareRequest)
 	if unmarshallError != nil {
 		applogger.Log("ERROR", "compare", "perform", unmarshallError.Error())
-		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: unmarshallError.Error(), Code: 400})
+		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: unmarshallError.Error(), Code: 400})
 		return statsErrJSONBody, 400
 	}
 
@@ -186,42 +186,42 @@ func perform(r *http.Request) ([]byte, int) {
 	compareDeathsCountries, compareDeathsCountriesErr := curve.CompareDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo)
 	if compareDeathsCountriesErr != nil {
 		applogger.Log("ERROR", "compare", "perform", compareDeathsCountriesErr.Error())
-		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: compareDeathsCountriesErr.Error(), Code: 500})
+		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: compareDeathsCountriesErr.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	compareRecoveryCountries, compareRecoveryCountriesErr := curve.CompareRecoveryCountries(compareRequest.NameOne, compareRequest.NameTwo)
 	if compareDeathsCountriesErr != nil {
 		applogger.Log("ERROR", "compare", "perform", compareRecoveryCountriesErr.Error())
-		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: compareRecoveryCountriesErr.Error(), Code: 500})
+		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: compareRecoveryCountriesErr.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	compareCasesCountries, compareCasesCountriesErr := curve.CompareCasesCountries(compareRequest.NameOne, compareRequest.NameTwo)
 	if compareDeathsCountriesErr != nil {
 		applogger.Log("ERROR", "compare", "perform", compareCasesCountriesErr.Error())
-		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: compareCasesCountriesErr.Error(), Code: 500})
+		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: compareCasesCountriesErr.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	comparePerDayCasesCountries, comparePerDayCasesCountriesErr := curve.ComparePerDayCasesCountries(compareRequest.NameOne, compareRequest.NameTwo)
 	if compareDeathsCountriesErr != nil {
 		applogger.Log("ERROR", "compare", "perform", comparePerDayCasesCountriesErr.Error())
-		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: comparePerDayCasesCountriesErr.Error(), Code: 500})
+		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: comparePerDayCasesCountriesErr.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	comparePerDayDeathsCountries, comparePerDayDeathsCountriesErr := curve.ComparePerDayDeathsCountries(compareRequest.NameOne, compareRequest.NameTwo)
 	if compareDeathsCountriesErr != nil {
 		applogger.Log("ERROR", "compare", "perform", comparePerDayDeathsCountriesErr.Error())
-		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: comparePerDayDeathsCountriesErr.Error(), Code: 500})
+		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: comparePerDayDeathsCountriesErr.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	compareDeathsFromFirstDeathCountries, compareDeathsFromFirstDeathCountriesErr := curve.CompareDeathsFromFirstDeathCountries(compareRequest.NameOne, compareRequest.NameTwo)
 	if compareDeathsCountriesErr != nil {
 		applogger.Log("ERROR", "compare", "perform", compareDeathsFromFirstDeathCountriesErr.Error())
-		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: compareDeathsFromFirstDeathCountriesErr.Error(), Code: 500})
+		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: compareDeathsFromFirstDeathCountriesErr.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 	var countryOneAllData mcountry.CompareAllData
@@ -246,7 +246,7 @@ func perform(r *http.Request) ([]byte, int) {
 	jsonBody, jsonBodyErr := json.Marshal(mcountry.CompareAll{countryOneAllData, countryTwoAllData})
 	if jsonBodyErr != nil {
 		applogger.Log("ERROR", "compare", "perform", jsonBodyErr.Error())
-		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
+		errorJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}
 

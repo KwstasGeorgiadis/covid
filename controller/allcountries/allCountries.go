@@ -6,8 +6,8 @@ import (
 	"time"
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
+	merror "github.com/junkd0g/covid/lib/model/error"
 	stats "github.com/junkd0g/covid/lib/stats"
-	structs "github.com/junkd0g/covid/lib/structs"
 )
 
 /*
@@ -77,14 +77,14 @@ func perform() ([]byte, int) {
 	totalStats, err := stats.GetAllCountriesName()
 	if err != nil {
 		applogger.Log("ERROR", "allcountries", "perform", err.Error())
-		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
+		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	jsonBody, jsonBodyErr := json.Marshal(totalStats)
 	if jsonBodyErr != nil {
 		applogger.Log("ERROR", "allcountries", "perform", err.Error())
-		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
+		errorJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}
 

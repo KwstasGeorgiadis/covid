@@ -7,7 +7,7 @@ import (
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
 	cworld "github.com/junkd0g/covid/lib/cworld"
-	structs "github.com/junkd0g/covid/lib/structs"
+	merror "github.com/junkd0g/covid/lib/model/error"
 )
 
 /*
@@ -86,14 +86,14 @@ func perform() ([]byte, int) {
 	worldData, err := cworld.GetaWorldHistory()
 	if err != nil {
 		applogger.Log("ERROR", "worldct", "perform", err.Error())
-		statsErrJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
+		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	jsonBody, jsonBodyErr := json.Marshal(worldData)
 	if jsonBodyErr != nil {
 		applogger.Log("ERROR", "worldct", "perform", jsonBodyErr.Error())
-		errorJSONBody, _ := json.Marshal(structs.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
+		errorJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}
 	return jsonBody, 200
