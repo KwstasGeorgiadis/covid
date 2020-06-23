@@ -22,6 +22,7 @@ func TestGetAppConfig(t *testing.T) {
 			VaccineNews:     "http://news.google.com/news?q=covid-19_vaccine&hl=en-US&sort=date&gl=US&num=100&output=rss",
 			TreatmentNews:   "http://news.google.com/news?q=covid-19_treatment&hl=en-US&sort=date&gl=US&num=100&output=rss",
 			Continent:       "https://corona.lmao.ninja/v2/continents",
+			CSSE:            "https://corona.lmao.ninja/v2/jhucsse",
 		},
 		Redis: RedisConfig{
 			URL:       "127.0.0.1:6379",

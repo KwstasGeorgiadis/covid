@@ -49,6 +49,7 @@ type APIConfig struct {
 	VaccineNews     string `json:"vaccine_news"`
 	TreatmentNews   string `json:"treatment_news"`
 	Continent       string `json:"continent"`
+	CSSE            string `json:"csse"`
 }
 
 //ServerConfig contains the data for the server like port

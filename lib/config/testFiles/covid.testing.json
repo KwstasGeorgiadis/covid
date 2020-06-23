@@ -10,7 +10,8 @@
 		"news" : "http://news.google.com/news?q=covid-19&hl=en-US&sort=date&gl=US&num=100&output=rss",
 		"vaccine_news" : "http://news.google.com/news?q=covid-19_vaccine&hl=en-US&sort=date&gl=US&num=100&output=rss",
 		"treatment_news" : "http://news.google.com/news?q=covid-19_treatment&hl=en-US&sort=date&gl=US&num=100&output=rss",
-		"continent" : "https://corona.lmao.ninja/v2/continents"
+		"continent" : "https://corona.lmao.ninja/v2/continents",
+		"csse" : "https://corona.lmao.ninja/v2/jhucsse"
 	},
 	"redis" : {
 		"MaxIdle" 	: 80,
