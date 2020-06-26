@@ -110,11 +110,16 @@ func GetCSSEData() (mcsse.CSSEResponse, error) {
 
 // GetCSSECountryData returns csse data for a specific country
 func GetCSSECountryData(country string) (mcsse.CSEECountryResponse, error) {
+	country = getCountriesName(country)
+	fmt.Println("-----------------------------")
+	fmt.Println(country)
+	fmt.Println("-----------------------------")
 	countriesData, err := GetCSSEData()
 	if err != nil {
 		applogger.Log("ERROR", "csse", "GetCSSECountryData", err.Error())
 		return mcsse.CSEECountryResponse{}, err
 	}
+	fmt.Println(countriesData)
 
 	for _, v := range countriesData.Data {
 		if v.Country == country {
