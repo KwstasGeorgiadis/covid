@@ -31,6 +31,16 @@ type requestAPI interface {
 type requestCacheData struct{}
 type requestCache interface {
 	getCacheData() (mcontinent.Response, error)
+	setCacheData(ctn mcontinent.Response) error
+}
+
+func (r requestCacheData) setCacheData(ctn mcontinent.Response) error {
+	pool := caching.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
+	err := caching.SetContinetData(conn, ctn)
+
+	return err
 }
 
 //requestContinentData does a GET http request to serverConf.API.Continent value ( https://corona.lmao.ninja​/v2/continents )
@@ -78,9 +88,6 @@ func (r requestCacheData) getCacheData() (mcontinent.Response, error) {
 // GetContinentData checks if continent data are on redis and return them
 // else it request them using requestContinentData
 func GetContinentData() (mcontinent.Response, error) {
-	pool := caching.NewPool()
-	conn := pool.Get()
-
 	cachedData, cacheGetError := reqCacheOB.getCacheData()
 	if cacheGetError != nil {
 		applogger.Log("ERROR", "continent", "GetContinentData", cacheGetError.Error())
@@ -94,7 +101,7 @@ func GetContinentData() (mcontinent.Response, error) {
 			applogger.Log("ERROR", "continent", "GetContinentData", err.Error())
 			return mcontinent.Response{}, err
 		}
-		caching.SetContinetData(conn, data)
+		reqCacheOB.setCacheData(data)
 		return data, nil
 	}
 

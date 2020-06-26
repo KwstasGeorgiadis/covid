@@ -17,11 +17,14 @@ func (u requestDataMock) requestContinentData() (mcontinent.Response, error) {
 type requestCacheDataMock struct{}
 
 var requestCacheDataMockFunc func() (mcontinent.Response, error)
+var setCacheDataMockFunc func(ctn mcontinent.Response) error
 
 func (u requestCacheDataMock) getCacheData() (mcontinent.Response, error) {
 	return requestCacheDataMockFunc()
 }
-
+func (u requestCacheDataMock) setCacheData(ctn mcontinent.Response) error {
+	return setCacheDataMockFunc(ctn)
+}
 func TestRegisterUser(t *testing.T) {
 	reqCacheOB = requestCacheDataMock{}
 	reqDataOB = requestDataMock{}
@@ -32,6 +35,10 @@ func TestRegisterUser(t *testing.T) {
 
 	requestCacheDataMockFunc = func() (mcontinent.Response, error) {
 		return mcontinent.Response{{Cases: 32}, {Cases: 44}, {Cases: 32}, {Cases: 44}, {Cases: 32}, {Cases: 44}}, nil
+	}
+
+	setCacheDataMockFunc = func(ctn mcontinent.Response) error {
+		return nil
 	}
 
 	withCashedData, err := GetContinentData()
