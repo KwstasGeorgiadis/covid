@@ -51,9 +51,14 @@ func (u requestDataMock) requestCSSEData() ([]mcsse.ResponseCountry, error) {
 type requestCacheDataMock struct{}
 
 var requestCacheDataMockFunc func() ([]mcsse.ResponseCountry, error)
+var setCacheDataMockFunc func(ctn []mcsse.ResponseCountry) error
 
 func (u requestCacheDataMock) getCacheData() ([]mcsse.ResponseCountry, error) {
 	return requestCacheDataMockFunc()
+}
+
+func (u requestCacheDataMock) setCacheData(ctn []mcsse.ResponseCountry) error {
+	return setCacheDataMockFunc(ctn)
 }
 
 func TestCSSEData(t *testing.T) {
@@ -68,6 +73,10 @@ func TestCSSEData(t *testing.T) {
 
 	requestDataMockFunc = func() ([]mcsse.ResponseCountry, error) {
 		return sc, nil
+	}
+
+	setCacheDataMockFunc = func(ctn []mcsse.ResponseCountry) error {
+		return nil
 	}
 
 	requestCacheDataMockFunc = func() ([]mcsse.ResponseCountry, error) {

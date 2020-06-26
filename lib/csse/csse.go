@@ -33,6 +33,7 @@ type requestAPI interface {
 type requestCacheData struct{}
 type requestCache interface {
 	getCacheData() ([]mcsse.ResponseCountry, error)
+	setCacheData(ctn []mcsse.ResponseCountry) error
 }
 
 //requestCSSEData request csse data from external api
@@ -78,12 +79,18 @@ func (r requestCacheData) getCacheData() ([]mcsse.ResponseCountry, error) {
 	return cachedData, cacheGetError
 }
 
+func (r requestCacheData) setCacheData(ctn []mcsse.ResponseCountry) error {
+	pool := caching.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
+	err := caching.SetCSSEData(conn, ctn)
+
+	return err
+}
+
 // GetCSSEData checks if continent data are on redis and return them
 // else it request them using requestContinentData
 func GetCSSEData() (mcsse.CSSEResponse, error) {
-	pool := caching.NewPool()
-	conn := pool.Get()
-
 	data, dataErr := reqCacheOB.getCacheData()
 	if dataErr != nil {
 		applogger.Log("ERROR", "csse", "GetCSSEData", dataErr.Error())
@@ -97,7 +104,7 @@ func GetCSSEData() (mcsse.CSSEResponse, error) {
 			applogger.Log("ERROR", "csse", "GetCSSEData", dataErr.Error())
 			return mcsse.CSSEResponse{}, dataErr
 		}
-		caching.SetCSSEData(conn, data)
+		reqCacheOB.setCacheData(data)
 	}
 	var countries []mcsse.CSEECountryResponse
 
