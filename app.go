@@ -14,6 +14,7 @@ import (
 	continentctl "github.com/junkd0g/covid/controller/continent"
 	countriescon "github.com/junkd0g/covid/controller/countries"
 	countrycon "github.com/junkd0g/covid/controller/country"
+	cssectl "github.com/junkd0g/covid/controller/csse"
 	hotspot "github.com/junkd0g/covid/controller/hotspot"
 	crnews "github.com/junkd0g/covid/controller/news"
 	sortcon "github.com/junkd0g/covid/controller/sort"
@@ -62,6 +63,7 @@ func main() {
 	port := serverConf.Server.Port
 	fmt.Println("server running at port " + port)
 
+	router.HandleFunc("/api/csse/{country}", cssectl.Handle).Methods("GET")
 	router.HandleFunc("/api/hotspot/{days}", hotspot.Handle).Methods("GET")
 	router.HandleFunc("/api/world", worldct.Handle).Methods("GET")
 	router.HandleFunc("/api/continent", continentctl.Handle).Methods("GET")

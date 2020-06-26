@@ -1,0 +1,63 @@
+[
+    {
+        "country": "US",
+        "county": null,
+         "stats": {
+            "confirmed": 3283,
+            "deaths": 461,
+            "recovered": 2444
+        },
+        "province": "Abruzzo"
+    },
+    {
+        "country": "Brazil",
+        "county": null,
+        "stats": {
+            "confirmed": 12022,
+            "deaths": 326,
+            "recovered": 6270
+        },
+        "province": "Acre"
+    },
+    {
+        "country": "Greece",
+        "county": null,
+        "stats": {
+            "confirmed": 1647,
+            "deaths": 12,
+            "recovered": 1096
+        },
+        "province": "Adygea Republic"
+    },
+    {
+        "country": "Greece",
+        "county": null,
+        "updatedAt": "2020-06-25 05:26:54",
+        "stats": {
+            "confirmed": 3522,
+            "deaths": 29,
+            "recovered": 2540
+        },
+        "coordinates": {
+            "latitude": "52.6932243",
+            "longitude": "82.69314240000001"
+        },
+        "province": "Altai Krai"
+    },
+    {
+        "country": "Greece",
+        "county": null,
+        "updatedAt": "2020-06-25 05:26:54",
+        "stats": {
+            "confirmed": 483,
+            "deaths": 0,
+            "recovered": 207
+        },
+        "coordinates": {
+            "latitude": "50.7114101",
+            "longitude": "86.8572186"
+        },
+        "province": "Altai Republic"
+    }
+
+]

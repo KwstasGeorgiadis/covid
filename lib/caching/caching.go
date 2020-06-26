@@ -14,6 +14,7 @@ import (
 	pconf "github.com/junkd0g/covid/lib/config"
 	mcontinent "github.com/junkd0g/covid/lib/model/continent"
 	mcountry "github.com/junkd0g/covid/lib/model/country"
+	mcsse "github.com/junkd0g/covid/lib/model/csse"
 	mnews "github.com/junkd0g/covid/lib/model/news"
 	mworld "github.com/junkd0g/covid/lib/model/world"
 )
@@ -167,6 +168,32 @@ func SetWorldData(c redis.Conn, ctn mworld.WorldTimeline) error {
 	out, _ := json.Marshal(ctn)
 
 	_, err := c.Do("SETEX", "world", 2500, string(out))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// GetCSSEData executes the redis GET command
+func GetCSSEData(c redis.Conn) ([]mcsse.ResponseCountry, error) {
+	s, err := redis.String(c.Do("GET", "csse"))
+	if err != nil {
+		return []mcsse.ResponseCountry{}, nil
+	}
+
+	var data []mcsse.ResponseCountry
+	json.Unmarshal([]byte(s), &data)
+
+	return data, nil
+}
+
+// SetCSSEData executes the redis SET command
+// @param c redis.Conn redis connection
+func SetCSSEData(c redis.Conn, ctn []mcsse.ResponseCountry) error {
+	out, _ := json.Marshal(ctn)
+
+	_, err := c.Do("SETEX", "csse", 2500, string(out))
 	if err != nil {
 		return err
 	}
