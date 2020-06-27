@@ -15,6 +15,7 @@ var (
 	serverConf pconf.AppConf
 	reqDataOB  requestAPI
 	reqCacheOB requestCache
+	redis      caching.RedisST
 )
 
 func init() {
@@ -35,10 +36,10 @@ type requestCache interface {
 }
 
 func (r requestCacheData) setCacheData(ctn mcontinent.Response) error {
-	pool := caching.NewPool()
+	pool := redis.NewPool()
 	conn := pool.Get()
 	defer conn.Close()
-	err := caching.SetContinetData(conn, ctn)
+	err := redis.SetContinetData(conn, ctn)
 
 	return err
 }
@@ -77,10 +78,10 @@ func (r requestData) requestContinentData() (mcontinent.Response, error) {
 }
 
 func (r requestCacheData) getCacheData() (mcontinent.Response, error) {
-	pool := caching.NewPool()
+	pool := redis.NewPool()
 	conn := pool.Get()
 	defer conn.Close()
-	cachedData, _, cacheGetError := caching.GetContinentData(conn)
+	cachedData, _, cacheGetError := redis.GetContinentData(conn)
 
 	return cachedData, cacheGetError
 }

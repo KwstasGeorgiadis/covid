@@ -15,6 +15,7 @@ import (
 
 var (
 	serverConf pconf.AppConf
+	redis      caching.RedisST
 )
 
 func init() {
@@ -63,11 +64,11 @@ func requestHistoryData() ([]mcountry.CountryCurve, error) {
 // It returns []structs.CountryCurve and any write error encountered.
 func GetAllCountries() ([]mcountry.CountryCurve, error) {
 
-	pool := caching.NewPool()
+	pool := redis.NewPool()
 	conn := pool.Get()
 	defer conn.Close()
 
-	cachedData, cacheGetError := caching.GetCurveData(conn)
+	cachedData, cacheGetError := redis.GetCurveData(conn)
 	if cacheGetError != nil {
 		applogger.Log("ERROR", "curve", "GetAllCountries", cacheGetError.Error())
 		return []mcountry.CountryCurve{}, cacheGetError
@@ -80,18 +81,16 @@ func GetAllCountries() ([]mcountry.CountryCurve, error) {
 			applogger.Log("ERROR", "curve", "GetAllCountries", err.Error())
 			return []mcountry.CountryCurve{}, err
 		}
-		caching.SetCurveData(conn, data)
+		redis.SetCurveData(conn, data)
 		return data, nil
 	}
 
 	return cachedData, nil
 }
 
-// GetCountry seach through an array of structs.CountryCurve and
+// GetCountryBP seach through an array of structs.CountryCurve and
 // gets COVID-19 per day stats for that specific country
 // It returns mcountry.CountryCurve and any write error encountered.
-
-// GetCountryBP
 func GetCountryBP(name string, allCountries []mcountry.CountryCurve) (mcountry.CountryCurve, error) {
 
 	for _, v := range allCountries {

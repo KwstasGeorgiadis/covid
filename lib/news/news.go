@@ -16,6 +16,7 @@ var (
 	serverConf pconf.AppConf
 	reqDataOB  requestAPI
 	reqCacheOB requestCache
+	redis      caching.RedisST
 )
 
 func init() {
@@ -35,10 +36,10 @@ type requestCache interface {
 }
 
 func (r requestCacheData) getCacheData(newsType string) (mnews.ArticlesData, bool, error) {
-	pool := caching.NewPool()
+	pool := redis.NewPool()
 	conn := pool.Get()
 	defer conn.Close()
-	cachedData, exist, cacheGetError := caching.GetNewsData(conn, newsType)
+	cachedData, exist, cacheGetError := redis.GetNewsData(conn, newsType)
 	return cachedData, exist, cacheGetError
 }
 
@@ -97,7 +98,7 @@ func (r requestData) requestNewsData(url string) (mnews.ArticlesData, error) {
 // GetNews returns an array of articles for covid-19
 // It returns structs.ArticlesData and any write error encountered.
 func GetNews() (mnews.ArticlesData, error) {
-	pool := caching.NewPool()
+	pool := redis.NewPool()
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -114,7 +115,7 @@ func GetNews() (mnews.ArticlesData, error) {
 			applogger.Log("ERROR", "curve", "GetNews", err.Error())
 			return mnews.ArticlesData{}, err
 		}
-		caching.SetNewsData(conn, "general", data)
+		redis.SetNewsData(conn, "general", data)
 		return data, nil
 	}
 
@@ -125,7 +126,7 @@ func GetNews() (mnews.ArticlesData, error) {
 // It returns structs.ArticlesData and any write error encountered.
 func GetVaccineNews() (mnews.ArticlesData, error) {
 
-	pool := caching.NewPool()
+	pool := redis.NewPool()
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -142,7 +143,7 @@ func GetVaccineNews() (mnews.ArticlesData, error) {
 			applogger.Log("ERROR", "curve", "GetVaccineNews", err.Error())
 			return mnews.ArticlesData{}, err
 		}
-		caching.SetNewsData(conn, "vaccine", data)
+		redis.SetNewsData(conn, "vaccine", data)
 		return data, nil
 	}
 
@@ -153,7 +154,7 @@ func GetVaccineNews() (mnews.ArticlesData, error) {
 // It returns structs.ArticlesData and any write error encountered.
 func GetTreatmentNews() (mnews.ArticlesData, error) {
 
-	pool := caching.NewPool()
+	pool := redis.NewPool()
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -170,7 +171,7 @@ func GetTreatmentNews() (mnews.ArticlesData, error) {
 			applogger.Log("ERROR", "curve", "GetTreatmentNews", err.Error())
 			return mnews.ArticlesData{}, err
 		}
-		caching.SetNewsData(conn, "treatment", data)
+		redis.SetNewsData(conn, "treatment", data)
 		return data, nil
 	}
 

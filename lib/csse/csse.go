@@ -16,6 +16,7 @@ var (
 	serverConf pconf.AppConf
 	reqDataOB  requestAPI
 	reqCacheOB requestCache
+	redis      caching.RedisST
 )
 
 func init() {
@@ -71,19 +72,19 @@ func (r requestData) requestCSSEData() ([]mcsse.ResponseCountry, error) {
 
 // getCacheData get data from redis for csse key
 func (r requestCacheData) getCacheData() ([]mcsse.ResponseCountry, error) {
-	pool := caching.NewPool()
+	pool := redis.NewPool()
 	conn := pool.Get()
 	defer conn.Close()
-	cachedData, cacheGetError := caching.GetCSSEData(conn)
+	cachedData, cacheGetError := redis.GetCSSEData(conn)
 
 	return cachedData, cacheGetError
 }
 
 func (r requestCacheData) setCacheData(ctn []mcsse.ResponseCountry) error {
-	pool := caching.NewPool()
+	pool := redis.NewPool()
 	conn := pool.Get()
 	defer conn.Close()
-	err := caching.SetCSSEData(conn, ctn)
+	err := redis.SetCSSEData(conn, ctn)
 
 	return err
 }

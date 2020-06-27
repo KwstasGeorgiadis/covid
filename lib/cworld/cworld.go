@@ -20,6 +20,7 @@ var (
 	serverConf pconf.AppConf
 	reqDataOB  requestAPI
 	reqCacheOB requestCache
+	redis      caching.RedisST
 )
 
 func init() {
@@ -39,11 +40,11 @@ type requestCache interface {
 }
 
 func (r requestCacheData) getCacheData() (mworld.WorldTimeline, bool, error) {
-	pool := caching.NewPool()
+	pool := redis.NewPool()
 	conn := pool.Get()
 	defer conn.Close()
 
-	cachedData, exist, cacheGetError := caching.GetWorldData(conn)
+	cachedData, exist, cacheGetError := redis.GetWorldData(conn)
 	return cachedData, exist, cacheGetError
 }
 
@@ -147,7 +148,7 @@ func (r requestData) requestHistoryData() (mworld.WorldTimeline, error) {
 
 //GetaWorldHistory returns world history for covid-19
 func GetaWorldHistory() (mworld.WorldTimeline, error) {
-	pool := caching.NewPool()
+	pool := redis.NewPool()
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -164,7 +165,7 @@ func GetaWorldHistory() (mworld.WorldTimeline, error) {
 			applogger.Log("ERROR", "cworld", "GetaWorldHistory", err.Error())
 			return mworld.WorldTimeline{}, err
 		}
-		caching.SetWorldData(conn, data)
+		redis.SetWorldData(conn, data)
 		return data, nil
 	}
 	return cachedData, nil

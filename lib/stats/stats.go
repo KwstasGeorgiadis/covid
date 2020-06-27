@@ -14,6 +14,7 @@ import (
 
 var (
 	serverConf = pconf.GetAppConfig()
+	redis      caching.RedisST
 )
 
 // requestData does an HTTP GET request to the third party API that
@@ -57,11 +58,11 @@ func requestData() ([]mcountry.Country, error) {
 // request to the 3rd party API (check requestData())
 // It returns mcountry.Countries ([] Country) and any write error encountered.
 func GetAllCountries() (mcountry.Countries, error) {
-	pool := caching.NewPool()
+	pool := redis.NewPool()
 	conn := pool.Get()
 	defer conn.Close()
 
-	cachedData, cacheGetError := caching.GetCountriesData(conn)
+	cachedData, cacheGetError := redis.GetCountriesData(conn)
 	if cacheGetError != nil {
 		applogger.Log("ERROR", "stats", "GetAllCountries", cacheGetError.Error())
 		return mcountry.Countries{}, cacheGetError
@@ -78,7 +79,7 @@ func GetAllCountries() (mcountry.Countries, error) {
 
 		s = mcountry.Countries{Data: response}
 
-		caching.SetCountriesData(conn, s)
+		redis.SetCountriesData(conn, s)
 
 	} else {
 		applogger.Log("INFO", "stats", "GetAllCountries", "Getting cache data %v instead of requesting it")
