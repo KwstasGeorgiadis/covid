@@ -14,7 +14,7 @@ Stats for covid-19
 &nbsp; a. Check https://redis.io to download  it<br />
 &nbsp; b. ``bash
 redis-server
-```  <br />
+```
 3. Build app  <br />
 &nbsp; a. ```bash
 go build app.go
