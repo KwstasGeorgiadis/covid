@@ -1,6 +1,6 @@
 FROM golang:alpine
 
-RUN export env19="docker"
+RUN export env19="./config/covid.docker.json"
 
 RUN mkdir /var/log/covid
 RUN touch /var/log/covid/app.ndjson
@@ -12,8 +12,6 @@ WORKDIR /app
 RUN apk add git
 
 RUN git clone https://github.com/junkd0g/covid.git
-
-
 
 RUN go build -o main .
 RUN adduser -S -D -H -h /app appuser

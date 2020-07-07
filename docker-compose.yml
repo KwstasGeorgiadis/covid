@@ -1,12 +1,10 @@
-version: "3"
+version: '3'
 services:
+  redis-server:
+    image: 'redis'
   covid:
-    build: ./
+    build: .
     ports:
-      - "9080:9080"
+      - '9080:9080'
     links:
-      - 'redis'
-  redis:
-    image: redis:5.0-rc
-    ports:
-      - "6579:6379"
+      - 'redis-server'
