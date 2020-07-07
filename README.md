@@ -19,7 +19,7 @@ API for covid-19 statistics
 
 ## With docker-compose
 
-```bash docker-compose up --build ```
+```docker-compose up --build ```
 
 It will run the app with the configuation in ```config/covid.docker.json```
 
@@ -29,3 +29,4 @@ Feel free to import the postman collection in the directory ./postman
 
 Or you can use curl request like this one \
   ```curl --location --request GET 'localhost:9080/api/countries'```
+Check https://github.com/junkd0g/covid/blob/master/documentation/curl/requests.md for more examples

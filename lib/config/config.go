@@ -71,7 +71,7 @@ var (
 
 func init() {
 	if len(configPath) == 0 {
-		configPath = "./config/covid.docker.json"
+		configPath = "./config/covid.development.json"
 	}
 }
 
