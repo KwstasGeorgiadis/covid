@@ -26,7 +26,7 @@
 			"response": []
 		},
 		{
-			"name": "localhost:9080/api/compare",
+			"name": "localhost:9080/api/compare/all",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -41,14 +41,15 @@
 					"raw": "{\n\t\"countryOne\" : \"Spain\",\n\t\"countryTwo\" : \"Italy\"\n}"
 				},
 				"url": {
-					"raw": "localhost:9080/api/compare",
+					"raw": "localhost:9080/api/compare/all",
 					"host": [
 						"localhost"
 					],
 					"port": "9080",
 					"path": [
 						"api",
-						"compare"
+						"compare",
+						"all"
 					]
 				}
 			},
@@ -68,34 +69,6 @@
 					"path": [
 						"api",
 						"total"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "localhost:9080/stats",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"country\" : \"Greece\"\n}"
-				},
-				"url": {
-					"raw": "localhost:9080/stats",
-					"host": [
-						"localhost"
-					],
-					"port": "9080",
-					"path": [
-						"stats"
 					]
 				}
 			},
@@ -179,216 +152,6 @@
 			"response": []
 		},
 		{
-			"name": "localhost:9080/api/compare/firstdeath",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"countryOne\" : \"Spain\",\n\t\"countryTwo\" : \"Italy\"\n}"
-				},
-				"url": {
-					"raw": "localhost:9080/api/compare/firstdeath",
-					"host": [
-						"localhost"
-					],
-					"port": "9080",
-					"path": [
-						"api",
-						"compare",
-						"firstdeath"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "localhost:9080/api/compare/perday",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"countryOne\" : \"Spain\",\n\t\"countryTwo\" : \"Italy\"\n}"
-				},
-				"url": {
-					"raw": "localhost:9080/api/compare/perday",
-					"host": [
-						"localhost"
-					],
-					"port": "9080",
-					"path": [
-						"api",
-						"compare",
-						"perday"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "localhost:9080/api/compare/recovery",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\t\"countryOne\" : \"Spain\",\n\t\t\"countryTwo\" : \"Italy\"\n\t}"
-				},
-				"url": {
-					"raw": "localhost:9080/api/compare/recovery",
-					"host": [
-						"localhost"
-					],
-					"port": "9080",
-					"path": [
-						"api",
-						"compare",
-						"recovery"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "localhost:9080/api/compare/cases",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\t\"countryOne\" : \"Spain\",\n\t\t\"countryTwo\" : \"Italy\"\n\t}"
-				},
-				"url": {
-					"raw": "localhost:9080/api/compare/cases",
-					"host": [
-						"localhost"
-					],
-					"port": "9080",
-					"path": [
-						"api",
-						"compare",
-						"cases"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "localhost:9080/api/compare/cases/unique",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\t\"countryOne\" : \"Spain\",\n\t\t\"countryTwo\" : \"Italy\"\n\t}"
-				},
-				"url": {
-					"raw": "localhost:9080/api/compare/cases/unique",
-					"host": [
-						"localhost"
-					],
-					"port": "9080",
-					"path": [
-						"api",
-						"compare",
-						"cases",
-						"unique"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "localhost:9080/api/news",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "localhost:9080/api/news",
-					"host": [
-						"localhost"
-					],
-					"port": "9080",
-					"path": [
-						"api",
-						"news"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "localhost:9080/api/news/vaccine",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "localhost:9080/api/news/vaccine",
-					"host": [
-						"localhost"
-					],
-					"port": "9080",
-					"path": [
-						"api",
-						"news",
-						"vaccine"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "localhost:9080/api/news/treatment",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "localhost:9080/api/news/treatment",
-					"host": [
-						"localhost"
-					],
-					"port": "9080",
-					"path": [
-						"api",
-						"news",
-						"treatment"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "localhost:9080/api/news/all",
 			"request": {
 				"method": "GET",
@@ -414,14 +177,86 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:9080/api/world",
+					"raw": "localhost:9080/api/hotspot/12",
 					"host": [
 						"localhost"
 					],
 					"port": "9080",
 					"path": [
 						"api",
-						"world"
+						"hotspot",
+						"12"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9080/api/continent",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:9080/api/continent",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"api",
+						"continent"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9080/api/hotspot/14",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:9080/api/hotspot/14",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"api",
+						"hotspot",
+						"14"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:9080/api/csse/USA",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:9080/api/csse/USA",
+					"host": [
+						"localhost"
+					],
+					"port": "9080",
+					"path": [
+						"api",
+						"csse",
+						"USA"
 					]
 				}
 			},
