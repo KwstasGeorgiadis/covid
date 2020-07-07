@@ -177,15 +177,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:9080/api/hotspot/12",
+					"raw": "localhost:9080/api/world",
 					"host": [
 						"localhost"
 					],
 					"port": "9080",
 					"path": [
 						"api",
-						"hotspot",
-						"12"
+						"world"
 					]
 				}
 			},
