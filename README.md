@@ -1,9 +1,9 @@
 # covid
-Stats for covid-19
+API for statistic for covid-19
 
 # Quick set up
 
-## For macos and linux users
+## Without Docker for macos and linux users
 
 1. Set up log files  
  a. ```mkdir /var/log/covid``` \
@@ -17,9 +17,11 @@ Stats for covid-19
  b. ```./app```
 
 
-## Docker
+## With docker-compose
 
 ```bash docker-compose up --build ```
+
+It will run the app with the configuation in ```config/covid.docker.json```
 
 # Test it
 
