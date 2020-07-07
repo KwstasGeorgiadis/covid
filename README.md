@@ -1,5 +1,5 @@
 # covid
-API for statistic for covid-19
+API for covid-19 statistics
 
 # Quick set up
 
