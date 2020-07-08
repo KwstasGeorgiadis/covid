@@ -36,11 +36,7 @@ type requestCache interface {
 }
 
 func (r requestCacheData) setCacheData(ctn mcontinent.Response) error {
-	pool := redis.NewPool()
-	conn := pool.Get()
-	defer conn.Close()
-	err := redis.SetContinetData(conn, ctn)
-
+	err := redis.SetContinetData(ctn)
 	return err
 }
 
@@ -78,11 +74,7 @@ func (r requestData) requestContinentData() (mcontinent.Response, error) {
 }
 
 func (r requestCacheData) getCacheData() (mcontinent.Response, error) {
-	pool := redis.NewPool()
-	conn := pool.Get()
-	defer conn.Close()
-	cachedData, _, cacheGetError := redis.GetContinentData(conn)
-
+	cachedData, _, cacheGetError := redis.GetContinentData()
 	return cachedData, cacheGetError
 }
 

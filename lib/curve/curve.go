@@ -63,12 +63,7 @@ func requestHistoryData() ([]mcountry.CountryCurve, error) {
 // request to the 3rd party API (check requestHistoryData())
 // It returns []structs.CountryCurve and any write error encountered.
 func GetAllCountries() ([]mcountry.CountryCurve, error) {
-
-	pool := redis.NewPool()
-	conn := pool.Get()
-	defer conn.Close()
-
-	cachedData, cacheGetError := redis.GetCurveData(conn)
+	cachedData, cacheGetError := redis.GetCurveData()
 	if cacheGetError != nil {
 		applogger.Log("ERROR", "curve", "GetAllCountries", cacheGetError.Error())
 		return []mcountry.CountryCurve{}, cacheGetError
@@ -81,7 +76,7 @@ func GetAllCountries() ([]mcountry.CountryCurve, error) {
 			applogger.Log("ERROR", "curve", "GetAllCountries", err.Error())
 			return []mcountry.CountryCurve{}, err
 		}
-		redis.SetCurveData(conn, data)
+		redis.SetCurveData(data)
 		return data, nil
 	}
 

@@ -31,18 +31,18 @@ func init() {
 type RedisST struct{}
 type redisOBInt interface {
 	NewPool() *redis.Pool
-	SetCountriesData(c redis.Conn, countries mcountry.Countries) error
-	GetCountriesData(c redis.Conn) (mcountry.Countries, error)
-	SetCurveData(c redis.Conn, countries []mcountry.CountryCurve) error
-	GetCurveData(c redis.Conn) ([]mcountry.CountryCurve, error)
-	SetNewsData(c redis.Conn, newsType string, news mnews.ArticlesData) error
-	GetNewsData(c redis.Conn, newsType string) (mnews.ArticlesData, bool, error)
-	GetContinentData(c redis.Conn) (mcontinent.Response, bool, error)
-	SetContinetData(c redis.Conn, ctn mcontinent.Response) error
-	SetCSSEData(c redis.Conn, ctn []mcsse.ResponseCountry) error
-	GetCSSEData(c redis.Conn) ([]mcsse.ResponseCountry, error)
-	SetWorldData(c redis.Conn, ctn mworld.WorldTimeline) error
-	GetWorldData(c redis.Conn) (mworld.WorldTimeline, bool, error)
+	SetCountriesData(countries mcountry.Countries) error
+	GetCountriesData() (mcountry.Countries, error)
+	SetCurveData(countries []mcountry.CountryCurve) error
+	GetCurveData() ([]mcountry.CountryCurve, error)
+	SetNewsData(newsType string, news mnews.ArticlesData) error
+	GetNewsData(newsType string) (mnews.ArticlesData, bool, error)
+	GetContinentData() (mcontinent.Response, bool, error)
+	SetContinetData(ctn mcontinent.Response) error
+	SetCSSEData(ctn []mcsse.ResponseCountry) error
+	GetCSSEData() ([]mcsse.ResponseCountry, error)
+	SetWorldData(ctn mworld.WorldTimeline) error
+	GetWorldData() (mworld.WorldTimeline, bool, error)
 }
 
 //NewPool connects to redis
@@ -62,11 +62,13 @@ func (r RedisST) NewPool() *redis.Pool {
 }
 
 // SetCountriesData executes the redis SET command
-// @param c redis.Conn redis connection
-func (r RedisST) SetCountriesData(c redis.Conn, countries mcountry.Countries) error {
+func (r RedisST) SetCountriesData(countries mcountry.Countries) error {
+	pool := r.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
 	out, _ := json.Marshal(countries)
 
-	_, err := c.Do("SETEX", "total", 2500, string(out))
+	_, err := conn.Do("SETEX", "total", 2500, string(out))
 	if err != nil {
 		return err
 	}
@@ -75,10 +77,11 @@ func (r RedisST) SetCountriesData(c redis.Conn, countries mcountry.Countries) er
 }
 
 // GetCountriesData executes the redis GET command
-func (r RedisST) GetCountriesData(c redis.Conn) (mcountry.Countries, error) {
-	// Simple GET example with String helper
-
-	s, err := redis.String(c.Do("GET", "total"))
+func (r RedisST) GetCountriesData() (mcountry.Countries, error) {
+	pool := r.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
+	s, err := redis.String(conn.Do("GET", "total"))
 	if err != nil {
 		return mcountry.Countries{}, nil
 	}
@@ -95,9 +98,12 @@ func (r RedisST) GetCountriesData(c redis.Conn) (mcountry.Countries, error) {
 
 // SetCurveData executes the redis SET command
 // @param c redis.Conn redis connection
-func (r RedisST) SetCurveData(c redis.Conn, countries []mcountry.CountryCurve) error {
+func (r RedisST) SetCurveData(countries []mcountry.CountryCurve) error {
+	pool := r.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
 	vv, _ := json.Marshal(countries)
-	_, err := c.Do("SETEX", "curve", 2500, vv)
+	_, err := conn.Do("SETEX", "curve", 2500, vv)
 	if err != nil {
 		return err
 	}
@@ -106,8 +112,11 @@ func (r RedisST) SetCurveData(c redis.Conn, countries []mcountry.CountryCurve) e
 }
 
 // GetCurveData executes the redis GET command
-func (r RedisST) GetCurveData(c redis.Conn) ([]mcountry.CountryCurve, error) {
-	s, err := redis.String(c.Do("GET", "curve"))
+func (r RedisST) GetCurveData() ([]mcountry.CountryCurve, error) {
+	pool := r.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
+	s, err := redis.String(conn.Do("GET", "curve"))
 	if err != nil {
 		return []mcountry.CountryCurve{}, nil
 	}
@@ -120,9 +129,13 @@ func (r RedisST) GetCurveData(c redis.Conn) ([]mcountry.CountryCurve, error) {
 
 // SetNewsData executes the redis SET command
 // @param c redis.Conn redis connection
-func (r RedisST) SetNewsData(c redis.Conn, newsType string, news mnews.ArticlesData) error {
+func (r RedisST) SetNewsData(newsType string, news mnews.ArticlesData) error {
+	pool := r.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
+
 	vv, _ := json.Marshal(news)
-	_, err := c.Do("SETEX", newsType, 7200, vv)
+	_, err := conn.Do("SETEX", newsType, 7200, vv)
 	if err != nil {
 		return err
 	}
@@ -131,8 +144,11 @@ func (r RedisST) SetNewsData(c redis.Conn, newsType string, news mnews.ArticlesD
 }
 
 // GetNewsData executes the redis GET command
-func (r RedisST) GetNewsData(c redis.Conn, newsType string) (mnews.ArticlesData, bool, error) {
-	s, err := redis.String(c.Do("GET", newsType))
+func (r RedisST) GetNewsData(newsType string) (mnews.ArticlesData, bool, error) {
+	pool := r.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
+	s, err := redis.String(conn.Do("GET", newsType))
 	if err != nil {
 
 		return mnews.ArticlesData{}, false, nil
@@ -145,8 +161,11 @@ func (r RedisST) GetNewsData(c redis.Conn, newsType string) (mnews.ArticlesData,
 }
 
 // GetContinentData executes the redis GET command
-func (r RedisST) GetContinentData(c redis.Conn) (mcontinent.Response, bool, error) {
-	s, err := redis.String(c.Do("GET", "continent"))
+func (r RedisST) GetContinentData() (mcontinent.Response, bool, error) {
+	pool := r.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
+	s, err := redis.String(conn.Do("GET", "continent"))
 	if err != nil {
 
 		return mcontinent.Response{}, false, nil
@@ -159,11 +178,13 @@ func (r RedisST) GetContinentData(c redis.Conn) (mcontinent.Response, bool, erro
 }
 
 // SetContinetData executes the redis SET command
-// @param c redis.Conn redis connection
-func (r RedisST) SetContinetData(c redis.Conn, ctn mcontinent.Response) error {
+func (r RedisST) SetContinetData(ctn mcontinent.Response) error {
+	pool := r.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
 	out, _ := json.Marshal(ctn)
 
-	_, err := c.Do("SETEX", "continent", 2500, string(out))
+	_, err := conn.Do("SETEX", "continent", 2500, string(out))
 	if err != nil {
 		return err
 	}
@@ -172,8 +193,11 @@ func (r RedisST) SetContinetData(c redis.Conn, ctn mcontinent.Response) error {
 }
 
 // GetWorldData executes the redis GET command
-func (r RedisST) GetWorldData(c redis.Conn) (mworld.WorldTimeline, bool, error) {
-	s, err := redis.String(c.Do("GET", "world"))
+func (r RedisST) GetWorldData() (mworld.WorldTimeline, bool, error) {
+	pool := r.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
+	s, err := redis.String(conn.Do("GET", "world"))
 	if err != nil {
 		return mworld.WorldTimeline{}, false, nil
 	}
@@ -185,11 +209,13 @@ func (r RedisST) GetWorldData(c redis.Conn) (mworld.WorldTimeline, bool, error) 
 }
 
 // SetWorldData executes the redis SET command
-// @param c redis.Conn redis connection
-func (r RedisST) SetWorldData(c redis.Conn, ctn mworld.WorldTimeline) error {
+func (r RedisST) SetWorldData(ctn mworld.WorldTimeline) error {
+	pool := r.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
 	out, _ := json.Marshal(ctn)
 
-	_, err := c.Do("SETEX", "world", 2500, string(out))
+	_, err := conn.Do("SETEX", "world", 2500, string(out))
 	if err != nil {
 		return err
 	}
@@ -198,8 +224,11 @@ func (r RedisST) SetWorldData(c redis.Conn, ctn mworld.WorldTimeline) error {
 }
 
 // GetCSSEData executes the redis GET command
-func (r RedisST) GetCSSEData(c redis.Conn) ([]mcsse.ResponseCountry, error) {
-	s, err := redis.String(c.Do("GET", "csse"))
+func (r RedisST) GetCSSEData() ([]mcsse.ResponseCountry, error) {
+	pool := r.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
+	s, err := redis.String(conn.Do("GET", "csse"))
 	if err != nil {
 		return []mcsse.ResponseCountry{}, nil
 	}
@@ -212,10 +241,13 @@ func (r RedisST) GetCSSEData(c redis.Conn) ([]mcsse.ResponseCountry, error) {
 
 // SetCSSEData executes the redis SET command
 // @param c redis.Conn redis connection
-func (r RedisST) SetCSSEData(c redis.Conn, ctn []mcsse.ResponseCountry) error {
+func (r RedisST) SetCSSEData(ctn []mcsse.ResponseCountry) error {
+	pool := r.NewPool()
+	conn := pool.Get()
+	defer conn.Close()
 	out, _ := json.Marshal(ctn)
 
-	_, err := c.Do("SETEX", "csse", 2500, string(out))
+	_, err := conn.Do("SETEX", "csse", 2500, string(out))
 	if err != nil {
 		return err
 	}

@@ -72,20 +72,12 @@ func (r requestData) requestCSSEData() ([]mcsse.ResponseCountry, error) {
 
 // getCacheData get data from redis for csse key
 func (r requestCacheData) getCacheData() ([]mcsse.ResponseCountry, error) {
-	pool := redis.NewPool()
-	conn := pool.Get()
-	defer conn.Close()
-	cachedData, cacheGetError := redis.GetCSSEData(conn)
-
+	cachedData, cacheGetError := redis.GetCSSEData()
 	return cachedData, cacheGetError
 }
 
 func (r requestCacheData) setCacheData(ctn []mcsse.ResponseCountry) error {
-	pool := redis.NewPool()
-	conn := pool.Get()
-	defer conn.Close()
-	err := redis.SetCSSEData(conn, ctn)
-
+	err := redis.SetCSSEData(ctn)
 	return err
 }
 

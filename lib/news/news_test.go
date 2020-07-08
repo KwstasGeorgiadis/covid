@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	mnews "github.com/junkd0g/covid/lib/model/news"
+	//mockredis "github.com/junkd0g/covid/test/redis"
 )
 
 type requestDataMock struct{}
@@ -22,9 +23,10 @@ func (u requestCacheDataMock) getCacheData(newsType string) (mnews.ArticlesData,
 	return requestCacheDataMockFunc(newsType)
 }
 
-func TestRegisterUser(t *testing.T) {
+func TestNews(t *testing.T) {
 	reqCacheOB = requestCacheDataMock{}
 	reqDataOB = requestDataMock{}
+	//redis = mockredis.MockRedisST{}
 
 	requestDataOne := mnews.Article{
 		Title:       "To the Grand Line",

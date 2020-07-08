@@ -58,11 +58,8 @@ func requestData() ([]mcountry.Country, error) {
 // request to the 3rd party API (check requestData())
 // It returns mcountry.Countries ([] Country) and any write error encountered.
 func GetAllCountries() (mcountry.Countries, error) {
-	pool := redis.NewPool()
-	conn := pool.Get()
-	defer conn.Close()
 
-	cachedData, cacheGetError := redis.GetCountriesData(conn)
+	cachedData, cacheGetError := redis.GetCountriesData()
 	if cacheGetError != nil {
 		applogger.Log("ERROR", "stats", "GetAllCountries", cacheGetError.Error())
 		return mcountry.Countries{}, cacheGetError
@@ -79,7 +76,7 @@ func GetAllCountries() (mcountry.Countries, error) {
 
 		s = mcountry.Countries{Data: response}
 
-		redis.SetCountriesData(conn, s)
+		redis.SetCountriesData(s)
 
 	} else {
 		applogger.Log("INFO", "stats", "GetAllCountries", "Getting cache data %v instead of requesting it")
