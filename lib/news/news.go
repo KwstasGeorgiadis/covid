@@ -33,14 +33,17 @@ type requestAPI interface {
 type requestCacheData struct{}
 type requestCache interface {
 	getCacheData(newsType string) (mnews.ArticlesData, bool, error)
+	setCacheData(newsType string, ctn mnews.ArticlesData) error
 }
 
 func (r requestCacheData) getCacheData(newsType string) (mnews.ArticlesData, bool, error) {
-	pool := redis.NewPool()
-	conn := pool.Get()
-	defer conn.Close()
 	cachedData, exist, cacheGetError := redis.GetNewsData(newsType)
 	return cachedData, exist, cacheGetError
+}
+
+func (r requestCacheData) setCacheData(newsType string, ctn mnews.ArticlesData) error {
+	err := redis.SetNewsData(newsType, ctn)
+	return err
 }
 
 // requestNewsData does an HTTP GET request to the third party API that
@@ -112,7 +115,11 @@ func GetNews() (mnews.ArticlesData, error) {
 			applogger.Log("ERROR", "curve", "GetNews", err.Error())
 			return mnews.ArticlesData{}, err
 		}
-		redis.SetNewsData("general", data)
+		errReqCacheOB := reqCacheOB.setCacheData("general", data)
+		if errReqCacheOB != nil {
+			applogger.Log("ERROR", "curve", "GetNews", errReqCacheOB.Error())
+			return mnews.ArticlesData{}, errReqCacheOB
+		}
 		return data, nil
 	}
 
@@ -136,7 +143,12 @@ func GetVaccineNews() (mnews.ArticlesData, error) {
 			applogger.Log("ERROR", "curve", "GetVaccineNews", err.Error())
 			return mnews.ArticlesData{}, err
 		}
-		redis.SetNewsData("vaccine", data)
+
+		errReqCacheOB := reqCacheOB.setCacheData("vaccine", data)
+		if errReqCacheOB != nil {
+			applogger.Log("ERROR", "curve", "GetVaccineNews", errReqCacheOB.Error())
+			return mnews.ArticlesData{}, errReqCacheOB
+		}
 		return data, nil
 	}
 
@@ -160,7 +172,12 @@ func GetTreatmentNews() (mnews.ArticlesData, error) {
 			applogger.Log("ERROR", "curve", "GetTreatmentNews", err.Error())
 			return mnews.ArticlesData{}, err
 		}
-		redis.SetNewsData("treatment", data)
+
+		errReqCacheOB := reqCacheOB.setCacheData("treatment", data)
+		if errReqCacheOB != nil {
+			applogger.Log("ERROR", "curve", "GetTreatmentNews", errReqCacheOB.Error())
+			return mnews.ArticlesData{}, errReqCacheOB
+		}
 		return data, nil
 	}
 

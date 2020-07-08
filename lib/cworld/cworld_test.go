@@ -22,9 +22,19 @@ func (u requestCacheDataMock) getCacheData() (mworld.WorldTimeline, bool, error)
 	return requestCacheDataMockFunc()
 }
 
+var setCacheDataMockFunc func(ctn mworld.WorldTimeline) error
+
+func (u requestCacheDataMock) setCacheData(ctn mworld.WorldTimeline) error {
+	return setCacheDataMockFunc(ctn)
+}
+
 func TestRegisterUser(t *testing.T) {
 	reqCacheOB = requestCacheDataMock{}
 	reqDataOB = requestDataMock{}
+
+	setCacheDataMockFunc = func(ctn mworld.WorldTimeline) error {
+		return nil
+	}
 
 	requestDataMockFunc = func() (mworld.WorldTimeline, error) {
 		return mworld.WorldTimeline{

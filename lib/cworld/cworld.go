@@ -37,6 +37,12 @@ type requestAPI interface {
 type requestCacheData struct{}
 type requestCache interface {
 	getCacheData() (mworld.WorldTimeline, bool, error)
+	setCacheData(ctn mworld.WorldTimeline) error
+}
+
+func (r requestCacheData) setCacheData(ctn mworld.WorldTimeline) error {
+	err := redis.SetWorldData(ctn)
+	return err
 }
 
 func (r requestCacheData) getCacheData() (mworld.WorldTimeline, bool, error) {
@@ -157,7 +163,7 @@ func GetaWorldHistory() (mworld.WorldTimeline, error) {
 			applogger.Log("ERROR", "cworld", "GetaWorldHistory", err.Error())
 			return mworld.WorldTimeline{}, err
 		}
-		redis.SetWorldData(data)
+		reqCacheOB.setCacheData(data)
 		return data, nil
 	}
 	return cachedData, nil

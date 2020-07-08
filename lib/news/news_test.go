@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	mnews "github.com/junkd0g/covid/lib/model/news"
-	//mockredis "github.com/junkd0g/covid/test/redis"
 )
 
 type requestDataMock struct{}
@@ -23,11 +22,15 @@ func (u requestCacheDataMock) getCacheData(newsType string) (mnews.ArticlesData,
 	return requestCacheDataMockFunc(newsType)
 }
 
+var setCacheDataMockFunc func(newsType string, ctn mnews.ArticlesData) error
+
+func (u requestCacheDataMock) setCacheData(newsType string, ctn mnews.ArticlesData) error {
+	return setCacheDataMockFunc(newsType, ctn)
+}
+
 func TestNews(t *testing.T) {
 	reqCacheOB = requestCacheDataMock{}
 	reqDataOB = requestDataMock{}
-	//redis = mockredis.MockRedisST{}
-
 	requestDataOne := mnews.Article{
 		Title:       "To the Grand Line",
 		Description: "To the Grand Line To the Grand Line",
@@ -36,6 +39,10 @@ func TestNews(t *testing.T) {
 		PublishedAt: "Sun, 07 Jun 2020 16:02:58 GMT",
 		Source:      "stats",
 		SourceURL:   "stats-covid",
+	}
+
+	setCacheDataMockFunc = func(newsType string, ctn mnews.ArticlesData) error {
+		return nil
 	}
 
 	/* --------------------------
