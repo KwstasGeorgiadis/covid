@@ -15,17 +15,42 @@ import (
 
 var (
 	serverConf pconf.AppConf
+	reqDataOB  requestAPI
+	reqCacheOB requestCache
 	redis      caching.RedisST
 )
 
 func init() {
 	serverConf = pconf.GetAppConfig()
+	reqDataOB = requestData{}
+	reqCacheOB = requestCacheData{}
+}
+
+type requestData struct{}
+type requestAPI interface {
+	requestHistoryData() ([]mcountry.CountryCurve, error)
+}
+
+type requestCacheData struct{}
+type requestCache interface {
+	getCacheData() ([]mcountry.CountryCurve, error)
+	setCacheData(ctn []mcountry.CountryCurve) error
+}
+
+func (r requestCacheData) setCacheData(ctn []mcountry.CountryCurve) error {
+	err := redis.SetCurveData(ctn)
+	return err
+}
+
+func (r requestCacheData) getCacheData() ([]mcountry.CountryCurve, error) {
+	cachedData, cacheGetError := redis.GetCurveData()
+	return cachedData, cacheGetError
 }
 
 // requestHistoryData does an HTTP GET request to the third party API that
 // contains covid-9 stats ' history (per day from 22/01/2020)
 // It returns []mcountry.Country and any write error encountered.
-func requestHistoryData() ([]mcountry.CountryCurve, error) {
+func (r requestData) requestHistoryData() ([]mcountry.CountryCurve, error) {
 	client := &http.Client{}
 	requestURL := serverConf.API.URLHistory
 
@@ -63,7 +88,7 @@ func requestHistoryData() ([]mcountry.CountryCurve, error) {
 // request to the 3rd party API (check requestHistoryData())
 // It returns []structs.CountryCurve and any write error encountered.
 func GetAllCountries() ([]mcountry.CountryCurve, error) {
-	cachedData, cacheGetError := redis.GetCurveData()
+	cachedData, cacheGetError := reqCacheOB.getCacheData()
 	if cacheGetError != nil {
 		applogger.Log("ERROR", "curve", "GetAllCountries", cacheGetError.Error())
 		return []mcountry.CountryCurve{}, cacheGetError
@@ -71,12 +96,12 @@ func GetAllCountries() ([]mcountry.CountryCurve, error) {
 
 	if len(cachedData) == 0 {
 		applogger.Log("INFO", "stats", "GetAllCountries", "Request data instead of getting cached data")
-		data, err := requestHistoryData()
+		data, err := reqDataOB.requestHistoryData()
 		if err != nil {
 			applogger.Log("ERROR", "curve", "GetAllCountries", err.Error())
 			return []mcountry.CountryCurve{}, err
 		}
-		redis.SetCurveData(data)
+		reqCacheOB.setCacheData(data)
 		return data, nil
 	}
 

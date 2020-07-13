@@ -1,8 +1,6 @@
 package continent
 
 import (
-	"encoding/json"
-	"io/ioutil"
 	"net/http"
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
@@ -12,10 +10,11 @@ import (
 )
 
 var (
-	serverConf pconf.AppConf
-	reqDataOB  requestAPI
-	reqCacheOB requestCache
-	redis      caching.RedisST
+	serverConf      pconf.AppConf
+	reqDataOB       requestAPI
+	reqCacheOB      requestCache
+	redis           caching.RedisST
+	continentObject mcontinent.ContinentOB
 )
 
 func init() {
@@ -58,14 +57,8 @@ func (r requestData) requestContinentData() (mcontinent.Response, error) {
 	}
 	defer res.Body.Close()
 
-	b, errorReadAll := ioutil.ReadAll(res.Body)
-	if errorReadAll != nil {
-		applogger.Log("ERROR", "continent", "requestContinentData", errorReadAll.Error())
-		return mcontinent.Response{}, errorReadAll
-	}
-
-	var responseData mcontinent.Response
-	if errUnmarshal := json.Unmarshal(b, &responseData); errUnmarshal != nil {
+	responseData, errUnmarshal := continentObject.UnmarshalContintent(res.Body)
+	if errUnmarshal != nil {
 		applogger.Log("ERROR", "continent", "requestContinentData", errUnmarshal.Error())
 		return mcontinent.Response{}, errUnmarshal
 	}
