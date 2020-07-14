@@ -47,7 +47,7 @@ type Response []struct {
 func (c ContinentOB) UnmarshalContintent(body io.Reader) (Response, error) {
 	b, errorReadAll := ioutil.ReadAll(body)
 	if errorReadAll != nil {
-		applogger.Log("ERROR", "continent", "requestContinentData", errorReadAll.Error())
+		applogger.Log("ERROR", "continent", "UnmarshalContintent", errorReadAll.Error())
 		return Response{}, errorReadAll
 	}
 

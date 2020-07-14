@@ -1,6 +1,7 @@
 package continent
 
 import (
+	"fmt"
 	"net/http"
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
@@ -49,8 +50,9 @@ func (r requestData) requestContinentData() (mcontinent.Response, error) {
 		applogger.Log("ERROR", "continent", "requestContinentData", reqErr.Error())
 		return mcontinent.Response{}, reqErr
 	}
-
 	res, resError := client.Do(req)
+	fmt.Println(res.Body)
+
 	if resError != nil {
 		applogger.Log("ERROR", "continent", "requestContinentData", resError.Error())
 		return mcontinent.Response{}, resError
