@@ -6,6 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+//TODO fix this test it looks bad
+
 func TestGetAppConfig(t *testing.T) {
 	assert := assert.New(t)
 

@@ -10,7 +10,7 @@ import (
 )
 
 func TestInsertProvince(t *testing.T) {
-	jsonFile, _ := os.Open("t1.json")
+	jsonFile, _ := os.Open("../../../test/files/csse_t1.json")
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
 	var sc []mcsse.ResponseCountry
@@ -24,17 +24,17 @@ func TestInsertProvince(t *testing.T) {
 	for _, v := range countries {
 		if v.Country == "Italy" {
 			if len(v.Data) != 1 {
-				t.Fatal("Ammount of data for Italy ")
+				t.Fatalf("Ammount of data for Italy having %d", len(v.Data))
 			}
 
 			if v.Data[0].Province != "Abruzzo" {
-				t.Fatal("Italy's province data was wrong")
+				t.Fatalf("Italy's province data was wrong wanted Abruzzo but having %s", v.Data[0].Province)
 			}
 		}
 
 		if v.Country == "Russia" {
 			if len(v.Data) != 3 {
-				t.Fatal("Ammount of data for Russia ")
+				t.Fatalf("Ammount of data for Russia having %d", len(v.Data))
 			}
 		}
 	}
@@ -65,7 +65,7 @@ func TestCSSEData(t *testing.T) {
 	reqCacheOB = requestCacheDataMock{}
 	reqDataOB = requestDataMock{}
 
-	jsonFile, _ := os.Open("t2re.json")
+	jsonFile, _ := os.Open("../../../test/files/csse_t2re.json")
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
 	var sc []mcsse.ResponseCountry
@@ -91,27 +91,28 @@ func TestCSSEData(t *testing.T) {
 	for _, v := range withNoCashedData.Data {
 		if v.Country == "Italy" {
 			if len(v.Data) != 1 {
-				t.Fatal("Ammount of data for Italy ")
+				t.Fatalf("Ammount of data for Italy having %d", len(v.Data))
 			}
 
 			if v.Data[0].Province != "Abruzzo" {
-				t.Fatal("Italy's province data was wrong")
+				t.Fatalf("Italy's province data was wrong wanted Abruzzo but having %s", v.Data[0].Province)
 			}
 		}
 
 		if v.Country == "Russia" {
 			if len(v.Data) != 3 {
-				t.Fatal("Ammount of data for Russia ")
+				t.Fatalf("Ammount of data for Russia having %d", len(v.Data))
 			}
 		}
 	}
 
-	jsonFileCa, _ := os.Open("t3ca.json")
+	jsonFileCa, _ := os.Open("../../../test/files/csse_t3ca.json")
 	byteValueCa, _ := ioutil.ReadAll(jsonFileCa)
 
 	var scCA []mcsse.ResponseCountry
 	json.Unmarshal(byteValueCa, &scCA)
 	withCashedData, errWithCacheData := GetCSSEData()
+
 	if errWithCacheData != nil {
 		t.Fatal(errWithCacheData)
 	}
@@ -119,17 +120,17 @@ func TestCSSEData(t *testing.T) {
 	for _, v := range withCashedData.Data {
 		if v.Country == "US" {
 			if len(v.Data) != 1 {
-				t.Fatal("Ammount of data for US ")
+				t.Fatalf("Ammount of data for US having %d", len(v.Data))
 			}
 
 			if v.Data[0].Province != "Abruzzo" {
-				t.Fatal("US's province data was wrong")
+				t.Fatalf("US's province data was wrong wanted Abruzzo but having %s", v.Data[0].Province)
 			}
 		}
 
 		if v.Country == "Greece" {
 			if len(v.Data) != 3 {
-				t.Fatal("Ammount of data for Russia ")
+				t.Fatalf("Ammount of data for Russia having %d", len(v.Data))
 			}
 		}
 	}
@@ -139,7 +140,7 @@ func TestCSSECountryData(t *testing.T) {
 	reqCacheOB = requestCacheDataMock{}
 	reqDataOB = requestDataMock{}
 
-	jsonFile, _ := os.Open("t2re.json")
+	jsonFile, _ := os.Open("../../test/files/csse_t2re.json")
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
 	var sc []mcsse.ResponseCountry
@@ -159,10 +160,10 @@ func TestCSSECountryData(t *testing.T) {
 	}
 
 	if withNoCashedData.Country != "Russia" {
-		t.Fatal("Wrong country data ")
+		t.Fatalf("Wrong country data needed Russia but having %s", withNoCashedData.Country)
 	}
 	if len(withNoCashedData.Data) != 3 {
-		t.Fatal("Ammount of data for Russia ")
+		t.Fatalf("Ammount of data for Russia having %d", len(withNoCashedData.Data))
 	}
 }
 
