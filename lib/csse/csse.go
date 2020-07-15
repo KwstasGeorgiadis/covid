@@ -1,9 +1,7 @@
 package csse
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
@@ -17,6 +15,7 @@ var (
 	reqDataOB  requestAPI
 	reqCacheOB requestCache
 	redis      caching.RedisST
+	csseObject mcsse.CSSEOB
 )
 
 func init() {
@@ -55,14 +54,8 @@ func (r requestData) requestCSSEData() ([]mcsse.ResponseCountry, error) {
 	}
 	defer res.Body.Close()
 
-	b, errorReadAll := ioutil.ReadAll(res.Body)
-	if errorReadAll != nil {
-		applogger.Log("ERROR", "csse", "requestCSSEData", errorReadAll.Error())
-		return []mcsse.ResponseCountry{}, errorReadAll
-	}
-
-	var responseData []mcsse.ResponseCountry
-	if errUnmarshal := json.Unmarshal(b, &responseData); errUnmarshal != nil {
+	responseData, errUnmarshal := csseObject.UnmarshalCSSE(res.Body)
+	if errUnmarshal != nil {
 		applogger.Log("ERROR", "csse", "requestCSSEData", errUnmarshal.Error())
 		return []mcsse.ResponseCountry{}, errUnmarshal
 	}
