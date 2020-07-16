@@ -1,7 +1,0 @@
-mode: set
-github.com/junkd0g/covid/lib/model/continent/mcontinent.go:20.13,22.2 1 1
-github.com/junkd0g/covid/lib/model/continent/mcontinent.go:47.76,49.25 2 1
-github.com/junkd0g/covid/lib/model/continent/mcontinent.go:54.2,55.75 2 1
-github.com/junkd0g/covid/lib/model/continent/mcontinent.go:60.2,60.26 1 1
-github.com/junkd0g/covid/lib/model/continent/mcontinent.go:49.25,52.3 2 0
-github.com/junkd0g/covid/lib/model/continent/mcontinent.go:55.75,58.3 2 0
