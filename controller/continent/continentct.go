@@ -102,14 +102,14 @@ func perform() ([]byte, int) {
 	continentData, err := continent.GetContinentData()
 	if err != nil {
 		applogger.Log("ERROR", "continentct", "perform", err.Error())
-		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
+		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{Message: err.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	jsonBody, jsonBodyErr := json.Marshal(continentData)
 	if jsonBodyErr != nil {
 		applogger.Log("ERROR", "continentct", "perform", jsonBodyErr.Error())
-		errorJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
+		errorJSONBody, _ := json.Marshal(merror.ErrorMessage{Message: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}
 

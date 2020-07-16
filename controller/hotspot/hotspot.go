@@ -136,21 +136,21 @@ func perform(days string) ([]byte, int) {
 	i, errAtoi := strconv.Atoi(days)
 	if errAtoi != nil {
 		applogger.Log("ERROR", "hotspot", "perform", errAtoi.Error())
-		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: errAtoi.Error(), Code: 400})
+		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{Message: errAtoi.Error(), Code: 400})
 		return statsErrJSONBody, 400
 	}
 
 	worldData, err := analytics.MostCasesDeathsNearPast(i)
 	if err != nil {
 		applogger.Log("ERROR", "hotspot", "perform", err.Error())
-		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
+		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{Message: err.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	jsonBody, jsonBodyErr := json.Marshal(worldData)
 	if jsonBodyErr != nil {
 		applogger.Log("ERROR", "hotspot", "perform", jsonBodyErr.Error())
-		errorJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
+		errorJSONBody, _ := json.Marshal(merror.ErrorMessage{Message: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}
 	return jsonBody, 200

@@ -94,14 +94,14 @@ func perform() ([]byte, int) {
 	countries, err := stats.GetAllCountries()
 	if err != nil {
 		applogger.Log("ERROR", "countriescon", "perform", err.Error())
-		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
+		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{Message: err.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	jsonBody, jsonBodyErr := json.Marshal(countries)
 	if err != nil {
 		applogger.Log("ERROR", "countriescon", "perform", jsonBodyErr.Error())
-		errorJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
+		errorJSONBody, _ := json.Marshal(merror.ErrorMessage{Message: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}
 

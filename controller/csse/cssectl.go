@@ -55,14 +55,14 @@ func perform(country string) ([]byte, int) {
 	csseData, err := csse.GetCSSECountryData(country)
 	if err != nil {
 		applogger.Log("ERROR", "cssectl", "perform", err.Error())
-		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
+		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{Message: err.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	jsonBody, jsonBodyErr := json.Marshal(csseData)
 	if jsonBodyErr != nil {
 		applogger.Log("ERROR", "cssectl", "perform", jsonBodyErr.Error())
-		errorJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
+		errorJSONBody, _ := json.Marshal(merror.ErrorMessage{Message: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}
 

@@ -95,7 +95,7 @@ func perform(r *http.Request) ([]byte, int) {
 	b, errIoutilReadAll := ioutil.ReadAll(r.Body)
 	if errIoutilReadAll != nil {
 		applogger.Log("ERROR", "countrycon", "perform", errIoutilReadAll.Error())
-		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: errIoutilReadAll.Error(), Code: 500})
+		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{Message: errIoutilReadAll.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
@@ -104,14 +104,14 @@ func perform(r *http.Request) ([]byte, int) {
 	country, err := stats.GetCountry(countryRequest.Name)
 	if err != nil {
 		applogger.Log("ERROR", "countrycon", "perform", err.Error())
-		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: err.Error(), Code: 500})
+		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{Message: err.Error(), Code: 500})
 		return statsErrJSONBody, 500
 	}
 
 	jsonBody, jsonBodyErr := json.Marshal(country)
 	if jsonBodyErr != nil {
 		applogger.Log("ERROR", "countrycon", "perform", jsonBodyErr.Error())
-		errorJSONBody, _ := json.Marshal(merror.ErrorMessage{ErrorMessage: jsonBodyErr.Error(), Code: 500})
+		errorJSONBody, _ := json.Marshal(merror.ErrorMessage{Message: jsonBodyErr.Error(), Code: 500})
 		return errorJSONBody, 500
 	}
 
