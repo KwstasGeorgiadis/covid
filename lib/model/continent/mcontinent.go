@@ -47,13 +47,13 @@ type Response []struct {
 func (c ContinentOB) UnmarshalContintent(body io.Reader) (Response, error) {
 	b, errorReadAll := ioutil.ReadAll(body)
 	if errorReadAll != nil {
-		applogger.Log("ERROR", "continent", "UnmarshalContintent", errorReadAll.Error())
+		applogger.Log("ERROR", "mcontinent", "UnmarshalContintent", errorReadAll.Error())
 		return Response{}, errorReadAll
 	}
 
 	var responseData Response
 	if errUnmarshal := json.Unmarshal(b, &responseData); errUnmarshal != nil {
-		applogger.Log("ERROR", "continent", "requestContinentData", errUnmarshal.Error())
+		applogger.Log("ERROR", "mcontinent", "UnmarshalContintent", errUnmarshal.Error())
 		return Response{}, errUnmarshal
 	}
 
