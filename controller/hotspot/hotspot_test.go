@@ -39,7 +39,7 @@ type HotspotExpectedResponse struct {
 
 type ErrorExpectedResponse struct {
 	Message string `json:"message"`
-	Code    int    `json:"code"`
+	Status  int    `json:"status"`
 }
 
 func Test_APIHotspotError(t *testing.T) {
@@ -63,7 +63,7 @@ func Test_APIHotspotError(t *testing.T) {
 	var eer ErrorExpectedResponse
 	json.Unmarshal([]byte(rr.Body.String()), &eer)
 
-	if eer.Code != 400 {
+	if eer.Status != 400 {
 		t.Errorf("Wrong code value")
 	}
 

@@ -6,9 +6,9 @@ import (
 	"time"
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
-	merror "github.com/junkd0g/covid/lib/model/error"
 	mnews "github.com/junkd0g/covid/lib/model/news"
 	news "github.com/junkd0g/covid/lib/news"
+	merror "github.com/junkd0g/neji"
 )
 
 /*
@@ -102,21 +102,21 @@ func perform() ([]byte, int) {
 	generalNews, err := news.GetNews()
 	if err != nil {
 		applogger.Log("ERROR", "crnews", "perform", err.Error())
-		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{Message: err.Error(), Code: 500})
+		statsErrJSONBody, _ := merror.SimpeErrorResponseWithStatus(500, err)
 		return statsErrJSONBody, 500
 	}
 
 	newsTreatment, errNewsTreatment := news.GetTreatmentNews()
 	if errNewsTreatment != nil {
 		applogger.Log("ERROR", "crnews", "perform", err.Error())
-		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{Message: errNewsTreatment.Error(), Code: 500})
+		statsErrJSONBody, _ := merror.SimpeErrorResponseWithStatus(500, errNewsTreatment)
 		return statsErrJSONBody, 500
 	}
 
 	newsVaccine, errNewsVaccine := news.GetVaccineNews()
 	if errNewsVaccine != nil {
 		applogger.Log("ERROR", "crnews", "perform", err.Error())
-		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{Message: errNewsVaccine.Error(), Code: 500})
+		statsErrJSONBody, _ := merror.SimpeErrorResponseWithStatus(500, errNewsVaccine)
 		return statsErrJSONBody, 500
 	}
 
@@ -128,7 +128,7 @@ func perform() ([]byte, int) {
 	jsonBody, jsonBodyErr := json.Marshal(allArticlesData)
 	if jsonBodyErr != nil {
 		applogger.Log("ERROR", "crnews", "perform", err.Error())
-		errorJSONBody, _ := json.Marshal(merror.ErrorMessage{Message: jsonBodyErr.Error(), Code: 500})
+		errorJSONBody, _ := merror.SimpeErrorResponseWithStatus(500, jsonBodyErr)
 		return errorJSONBody, 500
 	}
 

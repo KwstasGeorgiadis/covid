@@ -6,8 +6,8 @@ import (
 	"time"
 
 	applogger "github.com/junkd0g/covid/lib/applogger"
-	merror "github.com/junkd0g/covid/lib/model/error"
 	stats "github.com/junkd0g/covid/lib/stats"
+	merror "github.com/junkd0g/neji"
 )
 
 /*
@@ -61,14 +61,14 @@ func perform() ([]byte, int) {
 	totalStats, statsErr := stats.GetTotalStats()
 	if statsErr != nil {
 		applogger.Log("ERROR", "totalcon", "perform", statsErr.Error())
-		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{Message: statsErr.Error(), Code: 500})
+		statsErrJSONBody, _ := merror.SimpeErrorResponseWithStatus(500, statsErr)
 		return statsErrJSONBody, 500
 	}
 
 	jsonBody, err := json.Marshal(totalStats)
 	if err != nil {
 		applogger.Log("ERROR", "totalcon", "perform", err.Error())
-		errorJSONBody, _ := json.Marshal(merror.ErrorMessage{Message: err.Error(), Code: 500})
+		errorJSONBody, _ := merror.SimpeErrorResponseWithStatus(500, err)
 		return errorJSONBody, 500
 	}
 	return jsonBody, 200

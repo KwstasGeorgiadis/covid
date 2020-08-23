@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/mux"
 	analytics "github.com/junkd0g/covid/lib/analytics"
 	applogger "github.com/junkd0g/covid/lib/applogger"
-	merror "github.com/junkd0g/covid/lib/model/error"
+	merror "github.com/junkd0g/neji"
 )
 
 /*
@@ -136,21 +136,21 @@ func perform(days string) ([]byte, int) {
 	i, errAtoi := strconv.Atoi(days)
 	if errAtoi != nil {
 		applogger.Log("ERROR", "hotspot", "perform", errAtoi.Error())
-		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{Message: errAtoi.Error(), Code: 400})
+		statsErrJSONBody, _ := merror.SimpeErrorResponseWithStatus(400, errAtoi)
 		return statsErrJSONBody, 400
 	}
 
 	worldData, err := analytics.MostCasesDeathsNearPast(i)
 	if err != nil {
 		applogger.Log("ERROR", "hotspot", "perform", err.Error())
-		statsErrJSONBody, _ := json.Marshal(merror.ErrorMessage{Message: err.Error(), Code: 500})
+		statsErrJSONBody, _ := merror.SimpeErrorResponseWithStatus(500, err)
 		return statsErrJSONBody, 500
 	}
 
 	jsonBody, jsonBodyErr := json.Marshal(worldData)
 	if jsonBodyErr != nil {
 		applogger.Log("ERROR", "hotspot", "perform", jsonBodyErr.Error())
-		errorJSONBody, _ := json.Marshal(merror.ErrorMessage{Message: jsonBodyErr.Error(), Code: 500})
+		errorJSONBody, _ := merror.SimpeErrorResponseWithStatus(500, jsonBodyErr)
 		return errorJSONBody, 500
 	}
 	return jsonBody, 200
