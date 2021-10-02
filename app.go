@@ -77,6 +77,9 @@ func main() {
 
 	c := cors.New(cors.Options{
 		AllowCredentials: true,
+		AllowedOrigins:   []string{"http://localhost:8080", "Origin: https://news-covid-kukot.ondigitalocean.app"},
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		AllowedHeaders:   []string{"Content-Type", "Origin", "Accept", "*", "Authorization"},
 	})
 
 	handler := c.Handler(router)
